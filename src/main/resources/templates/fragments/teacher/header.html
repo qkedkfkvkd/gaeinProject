@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Begin Header -->
+<th:block th:fragment="headerFragment">
+    <!-- 로그인 모달창 -->
+    <div class="modal fade" id="loginModal">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        
+          <!-- 모달 제목 -->
+          <div class="modal-header">
+            <h4 class="modal-title">회원 로그인</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          
+          <!-- 모달 로그인 입력 -->
+          <div class="modal-body">
+            <form action="/loginMember" method="post"> <!-- onsubmit="return false;" -->
+              <table class="table table-hover">
+                <tr>
+                  <td>
+                    <label for="memberId">아이디:</label>
+                    <input type="text" class="form-control" id="memberId" name="memberId">
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <label for="memberPw">비밀번호:</label>
+                    <input type="password" class="form-control" id="memberPw" name="memberPw">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <button type="submit" class="btn btn-primary form-control">KSMART 로그인</button>
+                  </td>
+                </tr>
+              </table>
+              <label id="loginError" th:if="${result ne null}" th:text="${result}"></label>
+              <!-- result가 객체일 경우 값 비교하기 (ne: != ) -->
+            </form>
+          </div>
+          
+          <!-- 모달 하단 -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">닫기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+         
+	<!-- partial:header.html -->
+	<nav class="navbar col-lg-12 col-12 p-0 fixed-top bg-light d-flex flex-row">
+      <div class="navbar-brand-wrapper d-flex justify-content-center">
+        <div class="navbar-brand-inner-wrapper d-flex justify-content-between align-items-center w-100">  
+          <a class="navbar-brand brand-logo" href="/"><img src="images/logo.png" alt="logo"/></a>
+          <span class="nav-profile-name">Smart Light</span>
+        </div>  
+      </div>
+      
+      <!-- <div th:if="${session.memId eq null}"> -->	<!-- data-toggle="modal" data-target="#loginModal" -->
+        <form action="/loginMember" method="post" class="form-inline" th:if="${session.memId eq null}">
+          <!-- 회원 아이디 -->
+          <div class="form-group">
+            <label for="memberId">아이디</label>
+            <input type="text" id="memberId" name="memberId">
+          </div>
+          
+          <!-- 회원 비밀번호 -->
+          <div class="form-group">
+            <label for="memberPw">비밀번호</label>
+            <input type="password" id="memberPw" name="memberPw">
+          </div>
+      	  <button type="submit" class="btn btn-info">	<!-- onclick="location.href='/loginMember'" -->
+            로그인
+          </button>&nbsp;&nbsp;&nbsp;
+        </form>
+      <!-- </div> -->
+      
+      
+      <div th:unless="${session.memId eq null}" class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+        <ul class="navbar-nav navbar-nav-right">
+          <li class="nav-item nav-profile dropdown">
+            <a class="nav-link dropdown-toggle" th:href="@{#}"
+            	data-toggle="dropdown" id="profileDropdown">
+              <i class="mdi mdi-account-circle icon-md"></i>
+              <span class="nav-profile-name">[[${session.memLevel}]]권한 [[${session.memName}]]님</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+              <a class="dropdown-item" th:href="@{/modifyMember(memberId=${session.memId})}">
+                <i class="mdi mdi-settings text-primary"></i>
+                	나의정보보기
+              </a>
+              <a class="dropdown-item" th:href="@{/logoutMember}">
+                <i class="mdi mdi-logout text-primary"></i>
+                Logout
+              </a>
+            </div>
+          </li>
+        </ul>
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+          <span class="mdi mdi-menu"></span>
+        </button>
+      </div>
+    </nav>
+	<script type="text/javascript">
+ 	/* $('#loginBtn').click(function(event) {
+		event.stopPropagation();
+	    event.preventDefault();
+		
+	    let loginId = $('#memberId').val();
+	    let loginPw = $('#memberPw').val();
+	    
+	    console.log(`loginId:${loginId}`);
+	    console.log(`loginPw:${loginPw}`);
+	    
+		// ajax 웹 데이터를 요청
+		$.ajax({
+			url:'/loginMember'
+			,type:'post'
+			,data:{"memberId":loginId, "memberPw":loginPw}
+			,dataType:'json'
+			,success:function(result){
+				//console.log(`result:${result}`);
+				console.log('success 진입');
+				
+				console.log(JSON.stringify(result));
+				//성공하면 그 코드를 완전히 자바스크립트 코드로 바꿔서 가지고 오겠다. -> result
+				
+				if (result.result == null) { // 로그인 성공시 
+					console.log('로그인 성공');
+					$("#loginModal").modal("hide");
+					location.href = "/";
+				} else { //로그인 실패시 
+					$("#loginError").text(result.result);
+					//'아이디나 비번이 틀립니다' 문구 출력 후 바로 창이 닫힘
+				}
+				
+			},
+			error:function(xhr, status, error) {
+				console.log(xhr.status + " : " + error + " : " + xhr.responseText);
+			}
+		});
+	}); */
+	</script>
+</th:block>
+<!-- End Header -->
+
+</html>

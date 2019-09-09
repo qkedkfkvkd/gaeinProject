@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cafe24.smart_academy.academy_manage.member.mapper.MemberMapper">
+	
+	<!-- 로그인 테이블에서 해당 아이디 존재여부 확인 -->
+	<select id="memberLoginInfoById" parameterType="String" resultType="String">
+		select
+			member_id
+		from
+			member_login
+		where
+			member_id = #{member_id}
+	</select>
+	
+	
+	<!-- 로그인 테이블에서 아이디와 비밀번호 일치 여부 확인 -->
+	<select id="memberLogin" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member_login"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.Member_login">
+		select
+			 member_id
+			,member_level
+		from
+			member_login
+		where
+			member_id = #{member_id}
+		and
+			member_pw = #{member_pw};
+	</select>
+	
+	
+	<!-- 로그인 테이블과 회원신상정보 테이블을 아이디로 조인하여 값을 가지고 온다. -->
+	<select id="memberLoginInfo" parameterType="String" resultType="map">
+		select
+			 m.member_id
+			,m.member_level
+			,me.member_name
+		from
+			member_login m
+		inner join
+			member me
+		on
+			m.member_id = me.member_id
+		where
+			m.member_id = #{member_id};
+	</select>
+	
+	
+	<!-- 관리자가 회원등록할 시 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인 -->
+	<select id="memberByEmail" parameterType="String" resultType="String">
+		select
+			member_email
+		from
+			member
+		where
+			member_email = #{member_email};
+	</select>
+	
+	
+	<!-- 관리자가 회원등록할 시 로그인 테이블 등록 -->
+	<insert id="addMemberLogin" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member_login">
+		insert into member_login (
+			 member_id
+			,member_pw
+			,member_level
+			,member_registered_date
+		) values (
+			 #{member_id}
+			,#{member_pw}
+			,#{member_level}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자가 회원등록할 시 회원신상정보 테이블 등록 -->
+	<insert id="addMember" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member">
+		insert into member (
+			 member_id
+			,member_name
+			,member_birth
+			,member_email
+			,member_tel
+			,member_phone
+			,member_address
+			,member_registered_date
+		) values (
+			 #{member_id}
+			,#{member_name}
+			,#{member_birth}
+			,#{member_email}
+			,#{member_tel}
+			,#{member_phone}
+			,#{member_address}
+			,curdate()
+		)
+	</insert>
+</mapper>

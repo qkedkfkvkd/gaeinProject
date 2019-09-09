@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head th:replace="fragments/head :: headFragment"></head>
+
+<body>
+	<div class="container-scroller">
+		
+		<span th:if="${session.member_level eq '관리자'.toString()}">
+			<th:block th:replace="fragments/admin/header :: headerFragment"></th:block>
+		</span>
+		
+		<span th:if="${session.member_level eq '선생님'.toString()}">
+			<th:block th:replace="fragments/teacher/header :: headerFragment"></th:block>
+		</span>
+		
+		<span th:if="${session.member_level eq '학생'.toString() || session.member_level eq null}">
+			<th:block th:replace="fragments/header_ilban :: headerFragment"></th:block>
+		</span>
+		
+		<!-- partial -->
+		<div class="container-fluid page-body-wrapper">
+			<span th:if="${session.member_level eq '관리자'.toString()}">
+				<th:block th:replace="fragments/admin/leftmenu :: leftmenuFragment">
+				</th:block>
+			</span>
+			
+			<span th:if="${session.member_level eq '선생님'.toString()}">
+				<th:block th:replace="fragments/teacher/leftmenu :: leftmenuFragment">
+				</th:block>
+			</span>
+			
+					  
+			<span th:if="${session.member_level eq '학생'.toString() || session.member_level eq null}">
+				<th:block th:replace="fragments/leftmenu_ilban :: leftmenuFragment">
+				</th:block>
+			</span>
+			
+			<div class="main-panel">
+        		<div class="content-wrapper">
+					<th:block layout:fragment="customContents"></th:block>			
+				</div>
+				<th:block th:replace="fragments/footer :: footerFragment"></th:block>
+			</div>
+			
+		</div>
+	</div>
+	
+	<th:block th:replace="fragments/footerscript::footerScriptFragment"></th:block>
+	<th:block layout:fragment="customScript"></th:block>
+</body>
+
+</html>

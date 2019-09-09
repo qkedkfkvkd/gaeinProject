@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="leftmenuFragment">
+ 	<!-- partial:partials/_sidebar.html -->
+	<nav class="sidebar sidebar-offcanvas" id="sidebar">
+		<ul class="nav">
+			<li class="nav-item">
+				<a class="nav-link" th:href="@{/addMember}"> <!-- 회원가입 링크 -->
+					<i class="mdi mdi-account-plus menu-icon"></i><span class="menu-title">회원가입</span>
+				</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" data-toggle="collapse" href="#ui-member" aria-expanded="false" aria-controls="ui-basic">
+					<i class="mdi mdi-account-multiple menu-icon"></i> 
+					<span class="menu-title">회원관리</span> <i class="menu-arrow"></i>
+				</a>
+				<div class="collapse" id="ui-member">
+					<ul class="nav flex-column sub-menu">
+						<li class="nav-item"> <!-- 회원 전체 리스트 보기 -->
+							<a class="nav-link" th:href="@{/memberList}">회원전체목록</a>
+						</li>
+						<li class="nav-item"> <!-- 회원 리스트에 검색 메뉴가 있으므로.. -->
+							<a class="nav-link" href="/memberList">회원검색</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<li class="nav-item"
+				th:if="${session.memLevel eq '관리자'.toString() || session.memLevel == '판매자'}">
+				<!-- 상품 등록은 권한이 관리자 혹은 판매자여야만 할 수 있게 권한 조정 하였다. -->
+				
+				<a class="nav-link" data-toggle="collapse" href="#ui-goods" aria-expanded="false" aria-controls="ui-basic">
+					<i class="mdi mdi-package-variant menu-icon"></i> 
+					<span class="menu-title">상품관리</span> <i class="menu-arrow"></i>
+				</a>
+				<div class="collapse" id="ui-goods">
+					<ul class="nav flex-column sub-menu">
+						<li class="nav-item"> <!-- 상품 등록 폼 이동 -->
+							<a class="nav-link" th:href="@{/addGoods}">상품등록</a>
+						</li>
+						<li class="nav-item"> <!-- 상품 리스트에 상품 검색 폼이 있다. -->
+							<a class="nav-link" th:href="@{/goodsList}">상품검색</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+			
+			<li th:if="${session.memLevel eq '관리자'.toString()}" class="nav-item">
+				<!-- 권한이 관리자 이여야만 관리자 메뉴를 볼 수 있게 조정한다. -->
+				
+				<a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth"> 
+					<i class="mdi mdi-account menu-icon"></i> 
+					<span class="menu-title">관리자 페이지</span> 
+					<i class="menu-arrow"></i>
+				</a>
+				<div class="collapse" id="auth">
+					<ul class="nav flex-column sub-menu">
+						<li class="nav-item">
+							<a class="nav-link" href="pages/samples/login.html"> Login </a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="pages/samples/register.html"> Register </a>
+						</li>
+					</ul>
+				</div>
+			</li>
+			
+			<li class="nav-item">
+				<a class="nav-link" data-toggle="collapse" href="#ui-board" aria-expanded="false" aria-controls="ui-basic">
+					<i class="mdi mdi-bulletin-board menu-icon"></i> 
+					<span class="menu-title">게시판관리</span> <i class="menu-arrow"></i>
+				</a>
+				<div class="collapse" id="ui-board">
+					<ul class="nav flex-column sub-menu">
+						<li class="nav-item"> <!-- 로그인 시에만 게시글 등록 폼 이동 -->
+							<a class="nav-link" th:href="@{/addBoard}"
+							   th:if="${session.memId ne null and session.member ne ''.toString()}">게시글 등록</a>
+						</li>
+						<li class="nav-item"> <!-- 게시판 리스트 이동 -->
+							<a class="nav-link" th:href="@{/boardList}">게시판</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+	</nav>
+</th:block>>
+</html>

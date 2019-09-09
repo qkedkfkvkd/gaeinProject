@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>회원등록</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>회원등록</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-6 col-md-offset-3">
+		<form role="form" id="member_join_frm" action="/addMember" method="post">
+			<div class="form-group">
+				<label for="inputId">아이디</label>
+				<input type="text" class="form-control" id="inputId" name="member_id"
+					   placeholder="아이디를 입력해주세요">
+				<button type="button" id="idOverlapChk" class="btn btn-info btn-xs"
+						style="margin-top: 3px; font-size: small;">중복확인</button>
+				<input type="hidden" id="idOverlapClickChk" value="0"> <!-- 0값은 중복확인 안함 -->
+				<!-- <span th:if="${idOverlap ne null}" th:text="${idOverlap}"
+					  id="idOverlapMessage"></span> -->
+			</div>
+			
+			<div class="form-group">
+				<label for="inputPassword">비밀번호</label>
+				<input type="password" class="form-control" id="inputPassword" name="member_pw"
+					   placeholder="비밀번호를 입력해주세요">
+			</div>
+			
+			<div class="form-group">
+				<label for="inputPasswordCheck">비밀번호 확인</label>
+				<input type="password" class="form-control" id="inputPasswordCheck"
+					   placeholder="비밀번호 확인을 위해 다시한번 입력 해 주세요">
+			</div>
+			
+			<div class="form-group">
+				<label for="level" style="font-size: large;">권한:</label>
+				<div class="form-check-inline">
+					<label class="form-check-label" style="font-size: medium;">
+						<input type="radio" class="form-check-input" value="강사"
+							   name="member_level">강사
+					</label>
+				</div>
+				
+				<div class="form-check-inline">
+					<label class="form-check-label" style="font-size: medium;">
+						<input type="radio" class="form-check-input" value="학생"
+							   name="member_level" checked="checked">학생
+					</label>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label for="inputName">이름</label>
+				<input type="text" class="form-control" id="inputName" name="member_name"
+					   placeholder="이름을 입력해 주세요">
+			</div>
+			
+			<div class="form-group">
+				<label for="inputBirth">생년월일</label>
+				<input type="date" class="form-control" id="inputBirth" name="member_birth"
+					   placeholder="생년월일을 입력해 주세요">
+			</div>
+			
+			<div class="form-group">
+				<label for="inputEmail">이메일 주소</label>
+				<input type="email" class="form-control" id="inputEmail" name="member_email"
+					   placeholder="이메일 주소를 입력해주세요">
+				<button type="button" id="emailOverlapChk" class="btn btn-info btn-xs"
+						style="margin-top: 3px; font-size: small;">중복확인</button>
+				<input type="hidden" id="emailOverlapClickChk" value="0"> <!-- 0값은 중복확인 안함 -->
+				<!-- <span th:if="${emailOverlap ne null}" th:text="${emailOverlap}"></span> -->
+			</div>
+			
+			<div class="form-group">
+				<label for="inputTel">집전화</label>
+				<input type="tel" class="form-control" id="inputTel" name="member_tel"
+					   placeholder="집전화를 입력해주세요(생략가능)">
+			</div>
+			
+			<div class="form-group">
+				<label for="inputMobile">휴대폰 번호</label>
+				<input type="tel" class="form-control" id="inputMobile" name="member_phone"
+					   placeholder="휴대폰번호를 입력해 주세요">
+			</div>
+			<div class="form-group">
+				<label for="inputAddr">집주소</label>
+				<input type="text" class="form-control" id="inputAddr" name="member_address"
+					   placeholder="주소를 입력해 주세요">
+			</div>
+			
+			<!-- <div class="form-group">
+				<label>약관 동의</label>
+				<div data-toggle="buttons">
+					<label class="btn btn-primary active">
+						<span class="fa fa-check"></span>
+						<input id="agree" type="checkbox" autocomplete="off" checked>
+					</label>
+					<a href="#">이용약관</a>에 동의합니다.
+				</div>
+			</div> -->
+			
+			<div class="form-group text-center">
+				<button type="button" id="join-submit" class="btn btn-primary">
+					회원가입<i class="fa fa-check spaceLeft"></i>
+				</button>
+				<button type="reset" class="btn btn-warning">
+					입력취소<i class="fa fa-times spaceLeft" ></i>
+				</button>
+			</div>
+		</form>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+</th:block>
+
+</html>
