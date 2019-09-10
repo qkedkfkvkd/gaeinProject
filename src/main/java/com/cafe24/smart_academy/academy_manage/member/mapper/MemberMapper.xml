@@ -13,22 +13,22 @@
 		from
 			member_login
 		where
-			member_id = #{member_id}
+			member_id = #{memberId}
 	</select>
 	
 	
 	<!-- 로그인 테이블에서 아이디와 비밀번호 일치 여부 확인 -->
-	<select id="memberLogin" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member_login"
-			resultType="com.cafe24.smart_academy.academy_manage.member.vo.Member_login">
+	<select id="memberLogin" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin">
 		select
 			 member_id
 			,member_level
 		from
 			member_login
 		where
-			member_id = #{member_id}
+			member_id = #{memberId}
 		and
-			member_pw = #{member_pw};
+			member_pw = #{memberPw};
 	</select>
 	
 	
@@ -45,7 +45,7 @@
 		on
 			m.member_id = me.member_id
 		where
-			m.member_id = #{member_id};
+			m.member_id = #{memberId};
 	</select>
 	
 	
@@ -56,21 +56,21 @@
 		from
 			member
 		where
-			member_email = #{member_email};
+			member_email = #{memberEmail};
 	</select>
 	
 	
 	<!-- 관리자가 회원등록할 시 로그인 테이블 등록 -->
-	<insert id="addMemberLogin" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member_login">
+	<insert id="addMemberLogin" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin">
 		insert into member_login (
 			 member_id
 			,member_pw
 			,member_level
 			,member_registered_date
 		) values (
-			 #{member_id}
-			,#{member_pw}
-			,#{member_level}
+			 #{memberId}
+			,#{memberPw}
+			,#{memberLevel}
 			,curdate()
 		)
 	</insert>
@@ -88,13 +88,13 @@
 			,member_address
 			,member_registered_date
 		) values (
-			 #{member_id}
-			,#{member_name}
-			,#{member_birth}
-			,#{member_email}
-			,#{member_tel}
-			,#{member_phone}
-			,#{member_address}
+			 #{memberId}
+			,#{memberName}
+			,#{memberBirth}
+			,#{memberEmail}
+			,#{memberTel}
+			,#{memberPhone}
+			,#{memberAddress}
 			,curdate()
 		)
 	</insert>

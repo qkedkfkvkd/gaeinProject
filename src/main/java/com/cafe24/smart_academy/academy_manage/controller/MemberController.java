@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cafe24.smart_academy.academy_manage.member.service.MemberService;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
-import com.cafe24.smart_academy.academy_manage.member.vo.Member_login;
+import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
 
 @Controller
 public class MemberController {
@@ -33,9 +33,9 @@ public class MemberController {
 	
 	// 로그인 처리
 	@PostMapping("/loginMember")
-	public String memberLogin(Model model, HttpSession session, Member_login login) {
-		System.out.println(login.getMember_id() + " <- member_id   memberLogin()   MemberController.java");
-		System.out.println(login.getMember_pw() + " <- member_pw   memberLogin()   MemberController.java");
+	public String memberLogin(Model model, HttpSession session, MemberLogin login) {
+		System.out.println(login.getMemberId() + " <- memberId   memberLogin()   MemberController.java");
+		System.out.println(login.getMemberPw() + " <- memberPw   memberLogin()   MemberController.java");
 		
 		Map<String, Object> map = memberService.memberLogin(login);
 		// 아이디와 비밀번호를 가지고 로그인 서비스 실행
@@ -44,19 +44,19 @@ public class MemberController {
 		// 페이지 이동할 경로
 		
 		if(map.get("result") == null) { // result 키값의 객체가 없다 -> 로그인 성공했다.
-			System.out.println(map.get("member_id") + "<- map.member_id   memberLogin()   MemberController.java");
-			System.out.println(map.get("member_level") + "<- map.member_level   memberLogin()   MemberController.java");
-			System.out.println(map.get("member_name") + "<- map.member_name   memberLogin()   MemberController.java");
+			System.out.println(map.get("memberId") + "<- map.memberId   memberLogin()   MemberController.java");
+			System.out.println(map.get("memberLevel") + "<- map.memberLevel   memberLogin()   MemberController.java");
+			System.out.println(map.get("memberName") + "<- map.memberName   memberLogin()   MemberController.java");
 			
-			session.setAttribute("member_id", map.get("member_id"));
-			session.setAttribute("member_level", map.get("member_level"));
-			session.setAttribute("member_name", map.get("member_name"));
+			session.setAttribute("memberId", map.get("memberId"));
+			session.setAttribute("memberLevel", map.get("memberLevel"));
+			session.setAttribute("memberName", map.get("memberName"));
 			
-			String level = (String)map.get("member_level");
+			String level = (String)map.get("memberLevel");
 			if(level.equals("관리자")) {
-				path = "/view/admin_index";
+				path = "/view/adminIndex";
 			} else if(level.equals("강사")) {
-				path = "/view/teacher_index";
+				path = "/view/teacherIndex";
 			} else {
 				path = "/view/index";
 			}
@@ -91,15 +91,15 @@ public class MemberController {
 	}
 	
 	
-	// 회원 등록 폼에서 아이디 중복버튼 눌렀을 경우
+	// 관리자 전용 회원 등록 폼에서 아이디 중복버튼 눌렀을 경우
 	@PostMapping("/memberIdOverlapChk")
 	@ResponseBody
-	public Map<Object, Object> memberIdOverlapChk(@RequestBody String member_id) {
-		System.out.println(member_id + "<- member_id   memberIdOverlapChk()   MemberController.java");
+	public Map<Object, Object> memberIdOverlapChk(@RequestBody String memberId) {
+		System.out.println(memberId + "<- memberId   memberIdOverlapChk()   MemberController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
 		
-		String member_id_result = memberService.memberLoginById(member_id);
+		String member_id_result = memberService.memberLoginById(memberId);
 		// 서비스의 아이디 중복확인 메소드 호출
 		
 		if(member_id_result == null) {
@@ -118,15 +118,15 @@ public class MemberController {
 	}
 	
 	
-	// 회원 등록 폼에서 이메일 중복버튼 눌렀을 경우
+	// 관리자 전용 회원 등록 폼에서 이메일 중복버튼 눌렀을 경우
 	@PostMapping("/memberEmailOverlapChk")
 	@ResponseBody
-	public Map<Object, Object> memberEmailOverlapChk(@RequestBody String member_email) {
-		System.out.println(member_email + "<- member_email   memberEmailOverlapChk()   MemberController.java");
+	public Map<Object, Object> memberEmailOverlapChk(@RequestBody String memberEmail) {
+		System.out.println(memberEmail + "<- memberEmail   memberEmailOverlapChk()   MemberController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
 		
-		String member_email_result = memberService.memberByEmail(member_email);
+		String member_email_result = memberService.memberByEmail(memberEmail);
 		// 서비스의 이메일 중복확인 메소드 호출
 		
 		if(member_email_result == null) {
@@ -141,19 +141,39 @@ public class MemberController {
 		return map;
 	}
 	
-	// 회원 추가 처리 메소드
+	
+	// 관리자 전용 회원 추가 처리 메소드
 	@PostMapping("/addMember")
-	public String addMember(Member_login loginInfo, Member memberInfo) {
+	public String addMember(Model model, MemberLogin loginInfo, Member memberInfo) {
 		String message = memberService.addMember(loginInfo, memberInfo);
 		
 		String path = "/view/academyRegister/memberInfo/memberInfo";
 		// 입력 실패했을 경우 회원 등록 폼으로 이동한다.
 		
 		if(message == null) { // 널값이면 입력 성공했다는 뜻이다.
-			path = "redirect:/";
-			// 관리자 인덱스 페이지로 이동
+			if(loginInfo.getMemberLevel().equals("학생")) {
+				path = "/view/academyRegister/memberInfo/student/addParent";
+				// 학생을 등록했을 경우 곧바로 학부모를 등록하기위해 학부모 등록 페이지로 이동한다.
+			} else {
+				path = "redirect:/";
+				// 강사를 등록했을 경우 관리자 인덱스 페이지로 이동
+			}
+		} else if(message.equals("idUsed")) { // 아이디 중복 메세지가 넘어올 경우
+			model.addAttribute("idOverlap", "이미 사용 중인 아이디입니다.");
+		} else {  // 이메일 중복 메세지가 넘어올 경우
+			model.addAttribute("emailOverlap", "이미 사용 중인 이메일입니다.");
 		}
 		
 		return path;
 	}
+	
+	
+	// 관리자 전용 학생관리 페이지 이동
+	@GetMapping("/studentManage")
+	public String studentManage() {
+		return "/view/academyRegister/memberInfo/student/studentManage";
+	}
+	
+	
+	
 }

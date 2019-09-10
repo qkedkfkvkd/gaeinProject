@@ -1,10 +1,10 @@
 $(function(){
 	
 	// 아이디 중복 확인
-	$('#idOverlapChk').click(function(e){
+	$('#idOverlapBtn').click(function(e){
 		e.preventDefault();
-		var member_id = $('#inputId').val();
-		console.log(`member_id:${member_id}`);
+		var memberId = $('#inputId').val();
+		console.log(`memberId:${memberId}`);
 		
 		if($("#inputId").val() ==''){
             alert('아이디를 입력하세요');
@@ -15,7 +15,7 @@ $(function(){
 		$.ajax({
             url: '/memberIdOverlapChk',
             type: 'POST',
-            data: member_id,
+            data: memberId,
             dataType: 'json',
             contentType: "application/json; charset=UTF-8",
             success: function (response) {
@@ -38,18 +38,18 @@ $(function(){
 	
 	
 	// 이메일 중복 확인
-	$('#emailOverlapChk').click(function(e){
+	$('#emailOverlapBtn').click(function(e){
 		e.preventDefault();
-		var member_email = $('#inputEmail').val();
-		console.log(`member_email:${member_email}`);
+		var memberEmail = $('#inputEmail').val();
+		console.log(`memberEmail:${memberEmail}`);
 		
-        if(member_email == ''){
+        if(memberEmail == ''){
             alert('이메일을 입력하세요');
             $("#inputEmail").focus();
             return false;
         } else {
             var emailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-            if (!emailRegex.test(member_email)) {
+            if (!emailRegex.test(memberEmail)) {
                 alert('이메일 주소가 유효하지 않습니다. ex)abc@gmail.com');
                 $("#inputEmail").focus();
                 return false;
@@ -59,7 +59,7 @@ $(function(){
 		$.ajax({
             url: '/memberEmailOverlapChk',
             type: 'POST',
-            data: member_email,
+            data: memberEmail,
             dataType: 'json',
             contentType: "application/json; charset=UTF-8",
             success: function (response) {
@@ -82,8 +82,8 @@ $(function(){
 	});
 	
 	
-	// 회원 가입 처리
-	$('#join-submit').click(function(e){
+	// 회원 가입 처리 전 공백  및  이메일 유효성 검사  ex)abc@gmail.com
+	$('#member-join-submit').click(function(e){
 		e.preventDefault();
 		
 		var idOverlapClickChk = $('#idOverlapClickChk').val();
@@ -171,7 +171,7 @@ $(function(){
             return false;      
         }*/
         
-        $('#member_join_frm').submit();
+        $('#memberJoinFrm').submit();
         
         /*$.ajax({
             url: '/addMember',

@@ -14,13 +14,13 @@
 		</div>
 	</div>
 	
-	<div class="col-sm-6 col-md-offset-3">
-		<form role="form" id="member_join_frm" action="/addMember" method="post">
+	<div class="col-sm-7 col-md-offset-3">
+		<form role="form" id="memberJoinFrm" action="/addMember" method="post">
 			<div class="form-group">
 				<label for="inputId">아이디</label>
-				<input type="text" class="form-control" id="inputId" name="member_id"
+				<input type="text" class="form-control" id="inputId" name="memberId"
 					   placeholder="아이디를 입력해주세요">
-				<button type="button" id="idOverlapChk" class="btn btn-info btn-xs"
+				<button type="button" id="idOverlapBtn" class="btn btn-info btn-xs"
 						style="margin-top: 3px; font-size: small;">중복확인</button>
 				<input type="hidden" id="idOverlapClickChk" value="0"> <!-- 0값은 중복확인 안함 -->
 				<!-- <span th:if="${idOverlap ne null}" th:text="${idOverlap}"
@@ -29,7 +29,7 @@
 			
 			<div class="form-group">
 				<label for="inputPassword">비밀번호</label>
-				<input type="password" class="form-control" id="inputPassword" name="member_pw"
+				<input type="password" class="form-control" id="inputPassword" name="memberPw"
 					   placeholder="비밀번호를 입력해주세요">
 			</div>
 			
@@ -44,35 +44,35 @@
 				<div class="form-check-inline">
 					<label class="form-check-label" style="font-size: medium;">
 						<input type="radio" class="form-check-input" value="강사"
-							   name="member_level">강사
+							   name="memberLevel">강사
 					</label>
 				</div>
 				
 				<div class="form-check-inline">
 					<label class="form-check-label" style="font-size: medium;">
 						<input type="radio" class="form-check-input" value="학생"
-							   name="member_level" checked="checked">학생
+							   name="memberLevel" checked="checked">학생
 					</label>
 				</div>
 			</div>
 			
 			<div class="form-group">
 				<label for="inputName">이름</label>
-				<input type="text" class="form-control" id="inputName" name="member_name"
+				<input type="text" class="form-control" id="inputName" name="memberName"
 					   placeholder="이름을 입력해 주세요">
 			</div>
 			
 			<div class="form-group">
 				<label for="inputBirth">생년월일</label>
-				<input type="date" class="form-control" id="inputBirth" name="member_birth"
+				<input type="date" class="form-control" id="inputBirth" name="memberBirth"
 					   placeholder="생년월일을 입력해 주세요">
 			</div>
 			
 			<div class="form-group">
 				<label for="inputEmail">이메일 주소</label>
-				<input type="email" class="form-control" id="inputEmail" name="member_email"
+				<input type="email" class="form-control" id="inputEmail" name="memberEmail"
 					   placeholder="이메일 주소를 입력해주세요">
-				<button type="button" id="emailOverlapChk" class="btn btn-info btn-xs"
+				<button type="button" id="emailOverlapBtn" class="btn btn-info btn-xs"
 						style="margin-top: 3px; font-size: small;">중복확인</button>
 				<input type="hidden" id="emailOverlapClickChk" value="0"> <!-- 0값은 중복확인 안함 -->
 				<!-- <span th:if="${emailOverlap ne null}" th:text="${emailOverlap}"></span> -->
@@ -80,18 +80,18 @@
 			
 			<div class="form-group">
 				<label for="inputTel">집전화</label>
-				<input type="tel" class="form-control" id="inputTel" name="member_tel"
+				<input type="tel" class="form-control" id="inputTel" name="memberTel"
 					   placeholder="집전화를 입력해주세요(생략가능)">
 			</div>
 			
 			<div class="form-group">
 				<label for="inputMobile">휴대폰 번호</label>
-				<input type="tel" class="form-control" id="inputMobile" name="member_phone"
+				<input type="tel" class="form-control" id="inputMobile" name="memberPhone"
 					   placeholder="휴대폰번호를 입력해 주세요">
 			</div>
 			<div class="form-group">
 				<label for="inputAddr">집주소</label>
-				<input type="text" class="form-control" id="inputAddr" name="member_address"
+				<input type="text" class="form-control" id="inputAddr" name="memberAddress"
 					   placeholder="주소를 입력해 주세요">
 			</div>
 			
@@ -107,7 +107,7 @@
 			</div> -->
 			
 			<div class="form-group text-center">
-				<button type="button" id="join-submit" class="btn btn-primary">
+				<button type="button" id="member-join-submit" class="btn btn-primary">
 					회원가입<i class="fa fa-check spaceLeft"></i>
 				</button>
 				<button type="reset" class="btn btn-warning">

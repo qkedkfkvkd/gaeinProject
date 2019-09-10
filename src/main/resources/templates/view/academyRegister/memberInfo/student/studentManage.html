@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>학생관리</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-10 col-md-offset-3">
+			<h3>학생관리</h3>
+		</div>
+	</div>
+	
+	<div class="col-md-10 col-md-offset-3">
+		<div role="tabpanel">
+			<!-- Nav tabs -->
+			<ul class="nav nav-tabs" role="tablist">
+				<li role="presentation" class="active">
+					<a href="#studentInfo" aria-controls="studentInfo" role="tab" data-toggle="tab">
+						<button type="button" class="btn btn-primary btn-sm">신상정보</button>
+					</a>
+				</li>
+				
+				<li role="presentation">
+					<a href="#studentPayment" aria-controls="studentPayment" role="tab" data-toggle="tab">
+						<button type="button" class="btn btn-primary btn-sm">결제정보</button>
+					</a>
+				</li>
+				
+				<li role="presentation">
+					<a href="#courseEnrollee" aria-controls="courseEnrollee" role="tab" data-toggle="tab">
+						<button type="button" class="btn btn-primary btn-sm">수강신청</button>
+					</a>
+				</li>
+				
+				<li role="presentation">
+					<a href="#courseResult" aria-controls="courseResult" role="tab" data-toggle="tab">
+						<button type="button" class="btn btn-primary btn-sm">수업결과</button>
+					</a>
+				</li>
+				
+				<li role="presentation">
+					<a href="#testResult" aria-controls="testResult" role="tab" data-toggle="tab">
+						<button type="button" class="btn btn-primary btn-sm">성적결과</button>
+					</a>
+				</li>
+				
+				<li role="presentation">
+					<a href="#applicationCounsel" aria-controls="applicationCounsel" role="tab" data-toggle="tab">
+						<button type="button" class="btn btn-primary btn-sm">입학상담</button>
+					</a>
+				</li>
+				
+				<li role="presentation">
+					<a href="#generalCounsel" aria-controls="generalCounsel" role="tab" data-toggle="tab">
+						<button type="button" class="btn btn-primary btn-sm">일반상담</button>
+					</a>
+				</li>
+			</ul>
+			
+			<!-- Tab panes -->
+			<div class="tab-content" style="margin-top: 5px;">
+				<div role="tabpanel" class="tab-pane active" id="studentInfo">
+					<form action="/updateStudentInfo" method="post">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="viewName">학생명</label>
+									<input type="text" class="form-control" id="viewName"
+										   name="memberName" > <!-- th:text="${member.memberName}" -->
+								</div>
+								
+								<div class="form-group">
+									<label for="viewBirth">생년월일</label>
+									<input type="text" class="form-control" id="viewBirth"
+										   name="memberBirth" > <!-- th:text="${member.memberBirth}" -->
+								</div>
+								
+								<div class="form-group">
+									<label for="viewEmail">이메일</label>
+									<div class="input-group">
+										<input type="email" class="form-control" id="viewEmail"
+											   name="memberEmail" > <!-- th:text="${member.memberEmail}" -->
+										<span class="input-group-btn">
+											<button type="button" class="btn btn-primary btn-sm"
+													id="studentManageEmailOverlapBtn">중복확인</button>
+											<input type="hidden" id="studentManageEmailOverlapClickChk" value="0">
+										</span>
+									</div>
+								</div>
+								
+								<div class="form-group">
+									<label for="viewPhone">학생 휴대폰번호</label>
+									<input type="text" class="form-control" id="viewPhone"
+										   name="memberPhone" > <!-- th:text="${member.memberPhone}" -->
+								</div>
+								
+								<div class="form-group">
+									<label for="view_registered_date">최초 등록일</label>
+									<input type="text" class="form-control" id="view_registered_date"
+										   name="member_registered_date" > <!-- th:text="${member.member_registered_date}" -->
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="viewParentName">학부모명</label>
+									<input type="text" class="form-control" id="viewParentName"
+										   name="parentName" > <!-- th:text="${parent.parentName}" -->
+								</div>
+								
+								<div class="form-group">
+									<label for="viewParentPhone">학부모 휴대폰 번호</label>
+									<input type="text" class="form-control" id="viewParentPhone"
+										   name="parentPhone" > <!-- th:text="${parent.parentPhone}" -->
+								</div>
+								
+								<div class="form-group">
+									<label for="viewTel">집전화</label>
+									<input type="text" class="form-control" id="viewTel"
+										   name="memberTel" > <!-- th:text="${member.memberTel}" -->
+								</div>
+								
+								<div class="form-group">
+									<label for="viewAddress">주소</label>
+									<input type="text" class="form-control" id="viewAddress"
+										   name="memberAddress" > <!-- th:text="${member.memberAddress}" -->
+								</div>
+								
+								<div class="form-group">
+									<div class="row"> <!-- style="vertical-align: bottom;" -->
+										<div class="col-md-6">
+											<button type="button" onclick=""
+													class="btn btn-danger btn-sm btn-block">삭제</button>
+										</div>
+										<div class="col-md-6">
+											<button type="button" id="updateStudentBtn"
+													class="btn btn-primary btn-sm btn-block">수정</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="studentPayment">
+					결제정보
+				</div>
+				<div role="tabpanel" class="tab-pane" id="courseEnrollee">
+					수강신청
+				</div>
+				<div role="tabpanel" class="tab-pane" id="courseResult">
+					수업결과
+				</div>
+				<div role="tabpanel" class="tab-pane" id="testResult">
+					성적결과
+				</div>
+				<div role="tabpanel" class="tab-pane" id="applicationCounsel">
+					입학상담
+				</div>
+				<div role="tabpanel" class="tab-pane" id="generalCounsel">
+					일반상담
+				</div>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+</th:block>
+
+</html>

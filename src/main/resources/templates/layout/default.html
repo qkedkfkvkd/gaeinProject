@@ -6,33 +6,32 @@
 <body>
 	<div class="container-scroller">
 		
-		<span th:if="${session.member_level eq '관리자'.toString()}">
+		<span th:if="${session.memberLevel eq '관리자'.toString()}">
 			<th:block th:replace="fragments/admin/header :: headerFragment"></th:block>
 		</span>
 		
-		<span th:if="${session.member_level eq '선생님'.toString()}">
+		<span th:if="${session.memberLevel eq '선생님'.toString()}">
 			<th:block th:replace="fragments/teacher/header :: headerFragment"></th:block>
 		</span>
 		
-		<span th:if="${session.member_level eq '학생'.toString() || session.member_level eq null}">
-			<th:block th:replace="fragments/header_ilban :: headerFragment"></th:block>
+		<span th:if="${session.memberLevel eq '학생'.toString() || session.memberLevel eq null}">
+			<th:block th:replace="fragments/header :: headerFragment"></th:block>
 		</span>
 		
 		<!-- partial -->
 		<div class="container-fluid page-body-wrapper">
-			<span th:if="${session.member_level eq '관리자'.toString()}">
+			<span th:if="${session.memberLevel eq '관리자'.toString()}">
 				<th:block th:replace="fragments/admin/leftmenu :: leftmenuFragment">
 				</th:block>
 			</span>
 			
-			<span th:if="${session.member_level eq '선생님'.toString()}">
+			<span th:if="${session.memberLevel eq '선생님'.toString()}">
 				<th:block th:replace="fragments/teacher/leftmenu :: leftmenuFragment">
 				</th:block>
 			</span>
 			
-					  
-			<span th:if="${session.member_level eq '학생'.toString() || session.member_level eq null}">
-				<th:block th:replace="fragments/leftmenu_ilban :: leftmenuFragment">
+			<span th:if="${session.memberLevel eq '학생'.toString() || session.memberLevel eq null}">
+				<th:block th:replace="fragments/leftmenu :: leftmenuFragment">
 				</th:block>
 			</span>
 			
