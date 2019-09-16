@@ -5,11 +5,34 @@
 	<nav class="sidebar sidebar-offcanvas" id="sidebar">
 		<ul class="nav">
 			<li class="nav-item">
-				<a class="nav-link" th:href="@{/addMember}"> <!-- 회원등록 링크 -->
-					<i class="mdi mdi-account-plus menu-icon"></i><span class="menu-title">회원등록</span>
+				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-commonCode" aria-expanded="false" aria-controls="ui-commonCode">
+					<i class="mdi mdi-account-multiple menu-icon"></i> 
+					<span class="menu-title">공통코드관리</span> <i class="menu-arrow"></i>
 				</a>
+				<div class="collapse" id="ui-commonCode">
+					<ul class="nav flex-column sub-menu" style="">
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/asadsaasasd}">상담구분코드</a>
+						</li>
+						
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/fsdadfseasfd}">상담결과코드</a>
+						</li>
+						
+						<li class="nav-item">
+							<a class="nav-link" href="/memberList">1111</a>
+						</li>
+						
+						<li class="nav-item">
+							<a class="nav-link" href="/memberList">111111</a>
+						</li>
+						
+						<li class="nav-item">
+							<a class="nav-link" href="/memberList">1111111</a>
+						</li>
+					</ul>
+				</div>
 			</li>
-			
 			<li class="nav-item">
 				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-student" aria-expanded="false" aria-controls="ui-student">
 					<i class="mdi mdi-account-multiple menu-icon"></i> 
@@ -18,23 +41,20 @@
 				<div class="collapse" id="ui-student">
 					<ul class="nav flex-column sub-menu" style="">
 						<li class="nav-item">
-							<a class="nav-link" th:href="@{/studentManage}">학생관리</a>
+							<a class="nav-link" th:href="@{/addStudent}">학생등록</a>
 						</li>
 						
 						<li class="nav-item">
 							<a class="nav-link" th:href="@{/studentList}">학생목록</a>
+							<!-- 학생신상정보디테일에서 하단에 버튼을 줘서 결제 정보 등을 볼 수 있게 한다. -->
 						</li>
 						
 						<li class="nav-item">
-							<a class="nav-link" href="/memberList">재학생현황</a>
+							<a class="nav-link" href="/listCurrentReservationState">상담예약현황</a>
 						</li>
 						
 						<li class="nav-item">
-							<a class="nav-link" href="/memberList">정규생상담</a>
-						</li>
-						
-						<li class="nav-item">
-							<a class="nav-link" href="/memberList">학급학생명단</a>
+							<a class="nav-link" href="/addPayment">미납현황</a>
 						</li>
 					</ul>
 				</div>
@@ -42,24 +62,54 @@
 			<li class="nav-item">
 				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-class" aria-expanded="false" aria-controls="ui-class">
 					<i class="mdi mdi-package-variant menu-icon"></i> 
-					<span class="menu-title">학급관리</span> <i class="menu-arrow"></i>
+					<span class="menu-title">강좌관리</span> <i class="menu-arrow"></i>
 				</a>
 				<div class="collapse" id="ui-class">
 					<ul class="nav flex-column sub-menu" style="">
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/addGoods}">학급목록</a>
+							<a class="nav-link" th:href="@{/addCourseInfo}">강좌등록</a>
 						</li>
+						
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">강좌등록</a>
+							<a class="nav-link" th:href="@{/courseList}">강좌목록</a>
 						</li>
+						
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/goodsList}">수업계획관리</a>
 						</li>
+						
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/goodsList}">전체시간표</a>
 						</li>
+						
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/goodsList}">강좌별수납관리</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+			
+			<li class="nav-item">
+				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-teacher" aria-expanded="false" aria-controls="ui-teacher">
+					<i class="mdi mdi-package-variant menu-icon"></i> 
+					<span class="menu-title">강사관리</span> <i class="menu-arrow"></i>
+				</a>
+				<div class="collapse" id="ui-teacher">
+					<ul class="nav flex-column sub-menu">
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/addGoods}">강사등록</a>
+						</li>
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/addGoods}">강사목록</a>
+						</li>
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/goodsList}">교사수업현황</a>
+						</li>
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/goodsList}">교사 3개월 수업현황</a>
+						</li>
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/goodsList}">교사 3개월 수업현황</a>
 						</li>
 					</ul>
 				</div>
@@ -109,29 +159,6 @@
 						</li>
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/goodsList}">상담결과목록</a>
-						</li>
-					</ul>
-				</div>
-			</li>
-			
-			<li class="nav-item">
-				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-teacher" aria-expanded="false" aria-controls="ui-teacher">
-					<i class="mdi mdi-package-variant menu-icon"></i> 
-					<span class="menu-title">강사관리</span> <i class="menu-arrow"></i>
-				</a>
-				<div class="collapse" id="ui-teacher">
-					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/addGoods}">강사목록</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">교사수업현황</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">교사 3개월 수업현황</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">교사 3개월 수업현황</a>
 						</li>
 					</ul>
 				</div>

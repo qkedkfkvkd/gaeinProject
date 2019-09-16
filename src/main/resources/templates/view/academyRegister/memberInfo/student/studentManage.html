@@ -18,18 +18,6 @@
 		<div role="tabpanel">
 			<!-- Nav tabs -->
 			<ul class="nav nav-tabs" role="tablist">
-				<li role="presentation" class="active">
-					<a href="#studentInfo" aria-controls="studentInfo" role="tab" data-toggle="tab">
-						<button type="button" class="btn btn-primary btn-sm">신상정보</button>
-					</a>
-				</li>
-				
-				<li role="presentation">
-					<a href="#studentPayment" aria-controls="studentPayment" role="tab" data-toggle="tab">
-						<button type="button" class="btn btn-primary btn-sm">결제정보</button>
-					</a>
-				</li>
-				
 				<li role="presentation">
 					<a href="#courseEnrollee" aria-controls="courseEnrollee" role="tab" data-toggle="tab">
 						<button type="button" class="btn btn-primary btn-sm">수강신청</button>
@@ -47,121 +35,227 @@
 						<button type="button" class="btn btn-primary btn-sm">성적결과</button>
 					</a>
 				</li>
-				
-				<li role="presentation">
-					<a href="#applicationCounsel" aria-controls="applicationCounsel" role="tab" data-toggle="tab">
-						<button type="button" class="btn btn-primary btn-sm">입학상담</button>
-					</a>
-				</li>
-				
-				<li role="presentation">
-					<a href="#generalCounsel" aria-controls="generalCounsel" role="tab" data-toggle="tab">
-						<button type="button" class="btn btn-primary btn-sm">일반상담</button>
-					</a>
-				</li>
 			</ul>
 			
 			<!-- Tab panes -->
 			<div class="tab-content" style="margin-top: 5px;">
-				<div role="tabpanel" class="tab-pane active" id="studentInfo">
-					<form action="/updateStudentInfo" method="post">
-						<div class="row">
-							<div class="col-md-6">
+				<div role="tabpanel" class="tab-pane" id="courseEnrollee">
+					<div class="form-group my-auto">
+						<div class="col-md-10 col-md-offset-3">
+							<h4>수강신청</h4>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<form action="/addCourseEnrollee" method="post">
+							<!-- <input type="hidden" th:value="${member.memberId}" name="memberId"> -->
 								<div class="form-group">
-									<label for="viewName">학생명</label>
-									<input type="text" class="form-control" id="viewName"
-										   name="memberName" > <!-- th:text="${member.memberName}" -->
-								</div>
-								
-								<div class="form-group">
-									<label for="viewBirth">생년월일</label>
-									<input type="text" class="form-control" id="viewBirth"
-										   name="memberBirth" > <!-- th:text="${member.memberBirth}" -->
-								</div>
-								
-								<div class="form-group">
-									<label for="viewEmail">이메일</label>
+									<label for="inputCourseEnrolleeCode">수강신청코드</label>
 									<div class="input-group">
-										<input type="email" class="form-control" id="viewEmail"
-											   name="memberEmail" > <!-- th:text="${member.memberEmail}" -->
+										<input type="email" class="form-control" id="inputCourseEnrolleeCode"
+											   name="courseEnrolleeCode" > <!-- th:text="${courseEnrollee.courseEnrolleeCode}" -->
 										<span class="input-group-btn">
 											<button type="button" class="btn btn-primary btn-sm"
-													id="studentManageEmailOverlapBtn">중복확인</button>
-											<input type="hidden" id="studentManageEmailOverlapClickChk" value="0">
+													id="courseEnrolleeCodeOverlapBtn">중복확인</button>
+											<input type="hidden" id="courseEnrolleeCodeOverlapClickChk" value="0">
 										</span>
 									</div>
 								</div>
 								
 								<div class="form-group">
-									<label for="viewPhone">학생 휴대폰번호</label>
-									<input type="text" class="form-control" id="viewPhone"
-										   name="memberPhone" > <!-- th:text="${member.memberPhone}" -->
+									<label for="viewStudentName">회원명</label>
+									<input type="text" class="form-control" id="viewStudentName"
+										   readonly="readonly" > <!-- th:text="${paymentInfo.paymentContent}" -->
 								</div>
 								
-								<div class="form-group">
-									<label for="view_registered_date">최초 등록일</label>
-									<input type="text" class="form-control" id="view_registered_date"
-										   name="member_registered_date" > <!-- th:text="${member.member_registered_date}" -->
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-									<label for="viewParentName">학부모명</label>
-									<input type="text" class="form-control" id="viewParentName"
-										   name="parentName" > <!-- th:text="${parent.parentName}" -->
+								<div class="checkbox icheck-primary">
+									<input type="checkbox" id="primary" />
+									<label for="primary">강의실</label>
+									<label>강좌</label>
+									<label>시간대</label>
 								</div>
 								
-								<div class="form-group">
-									<label for="viewParentPhone">학부모 휴대폰 번호</label>
-									<input type="text" class="form-control" id="viewParentPhone"
-										   name="parentPhone" > <!-- th:text="${parent.parentPhone}" -->
-								</div>
-								
-								<div class="form-group">
-									<label for="viewTel">집전화</label>
-									<input type="text" class="form-control" id="viewTel"
-										   name="memberTel" > <!-- th:text="${member.memberTel}" -->
-								</div>
-								
-								<div class="form-group">
-									<label for="viewAddress">주소</label>
-									<input type="text" class="form-control" id="viewAddress"
-										   name="memberAddress" > <!-- th:text="${member.memberAddress}" -->
+								<div class="checkbox icheck-primary">
+									<input type="checkbox" id="aaa" />
+									<label for="aaa">강의실2</label>
+									<label>강좌2</label>
+									<label>시간대2</label>
 								</div>
 								
 								<div class="form-group">
 									<div class="row"> <!-- style="vertical-align: bottom;" -->
 										<div class="col-md-6">
-											<button type="button" onclick=""
-													class="btn btn-danger btn-sm btn-block">삭제</button>
+											<button type="reset" class="btn btn-danger btn-sm btn-block">입력취소</button>
 										</div>
 										<div class="col-md-6">
-											<button type="button" id="updateStudentBtn"
-													class="btn btn-primary btn-sm btn-block">수정</button>
+											<button type="submit"class="btn btn-primary btn-sm btn-block">수강신청</button>
 										</div>
 									</div>
 								</div>
-							</div>
+							</form>
 						</div>
-					</form>
-				</div>
-				<div role="tabpanel" class="tab-pane" id="studentPayment">
-					결제정보
-				</div>
-				<div role="tabpanel" class="tab-pane" id="courseEnrollee">
-					수강신청
+						<div class="col-md-6">
+							<table 
+									class="table table-striped"><!-- th:if="${courseEnrollee.enrollee neq null}" -->
+								<thead>
+									<tr>
+										<th>번호</th>
+										<th>강좌명</th>
+										<th>강사명</th>
+										<th>신청일</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ><!-- th:each="course, lists : ${courseEnrollee.enrolleeList}" -->
+										<td ></td> <!-- th:text="${lists.count}" -->
+										<td ></td>
+										<td ></td>
+										<td ></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="courseResult">
-					수업결과
+					<div class="form-group my-auto">
+						<div class="col-md-10 col-md-offset-3">
+							<h4>수업결과</h4>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<form action="/viewOneStudentCourseResult" method="post">
+								<!-- <input type="hidden" th:value="${member.memberId}" name="memberId"> -->
+								<div class="form-group">
+									<label for="searchAttendDay">일자</label>
+									<!-- <div class="input-group"> -->
+										<select id="searchAttendDay" name="searchbygenerals[currency]"
+												class="form-control">
+											<option value="1">HUF</option>
+											<option value="2">EUR</option>
+										</select>
+									<!-- </div> -->
+								</div>
+								
+								<div class="form-group">
+									<label for="searchAttendDay">강좌선택</label>
+									<!-- <div class="input-group"> -->
+										<select id="searchbygenerals_currency" name="searchbygenerals[currency]"
+												class="form-control">
+											<option value="1">HUF</option>
+											<option value="2">EUR</option>
+										</select>
+									<!-- </div> -->
+								</div>
+								
+								<div class="form-group">
+									<div class="row"> <!-- style="vertical-align: bottom;" -->
+										<div class="col-md-6">
+											<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+										</div>
+										<div class="col-md-6">
+											<button type="submit"class="btn btn-primary btn-sm btn-block">검색</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="col-md-6">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th>번호</th>
+										<th>강좌</th>
+										<th>강사</th>
+										<th>시작시간</th>
+										<th>마침시간</th>
+										<th>출결여부</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr><!-- th:each="course, lists : ${courseEnrollee.enrolleeList}" -->
+										<td ></td><!-- th:text="${lists.count}" -->
+										<td ></td>
+										<td ></td>
+										<td ></td>
+										<td ></td>
+										<td ></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="testResult">
-					성적결과
-				</div>
-				<div role="tabpanel" class="tab-pane" id="applicationCounsel">
-					입학상담
-				</div>
-				<div role="tabpanel" class="tab-pane" id="generalCounsel">
-					일반상담
+					<div class="form-group my-auto">
+						<div class="col-md-10 col-md-offset-3">
+							<h4>성적결과</h4>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<form action="/viewOneStudentgradeResult" method="post">
+								<!-- <input type="hidden" th:value="${member.memberId}" name="memberId"> -->
+								<div class="form-group">
+									<label for="searchAttendDay">일자</label>
+									<!-- <div class="input-group"> -->
+										<select id="searchAttendDay" name="attendDay"
+												class="form-control">
+											<option value="1">HUF</option>
+											<option value="2">EUR</option>
+										</select>
+									<!-- </div> -->
+								</div>
+								
+								<div class="form-group">
+									<label for="searchAttendDay">강좌선택</label>
+									<!-- <div class="input-group"> -->
+										<select id="searchAttendDay" name="attendDay"
+												class="form-control">
+											<option value="1">HUF</option>
+											<option value="2">EUR</option>
+										</select>
+									<!-- </div> -->
+								</div>
+								
+								<div class="form-group">
+									<div class="row"> <!-- style="vertical-align: bottom;" -->
+										<div class="col-md-6">
+											<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+										</div>
+										<div class="col-md-6">
+											<button type="submit"class="btn btn-primary btn-sm btn-block">검색</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="col-md-6">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th>번호</th>
+										<th>강좌</th>
+										<th>학생명</th>
+										<th>점수</th>
+										<th>등급</th>
+										<th>순위</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr><!-- th:each="course, lists : ${courseRank.enrolleeList}" -->
+										<td ></td><!-- th:text="${lists.count}" -->
+										<td ></td>
+										<td ></td>
+										<td ></td>
+										<td ></td>
+										<td ></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -4,14 +4,14 @@ import java.util.Date;
 
 // 회원 신상정보 테이블
 public class Member {
-	private String memberId;				// 아이디(기본키) - 로그인테이블 외래키 1:1 대응
-	private String memberName;				// 이름
-	private String memberBirth;				// 생년월일
-	private String memberEmail;				// 이메일(유니크) - 중복 불가
-	private String memberTel;				// 집전화 (널 가능)
-	private String memberPhone;				// 휴대폰(유니크) - 중복 불가
-	private String memberAddress;			// 주소
-	private Date member_registered_date;	// 등록일(가입일)
+	private String	memberId;					// 아이디(기본키) - 로그인테이블 외래키 1:1 대응
+	private String	memberName;					// 이름
+	private String	memberBirth;				// 생년월일
+	private String	memberEmail;				// 이메일(유니크) - 중복 불가
+	private String	memberTel;					// 집전화 (널 가능)
+	private String	memberPhone;				// 휴대폰(유니크) - 중복 불가
+	private String	memberAddress;				// 주소
+	private Date	member_registered_date;		// 등록일(가입일)
 	
 	public String getMemberId() {
 		return memberId;

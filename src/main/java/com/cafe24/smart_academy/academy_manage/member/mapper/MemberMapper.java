@@ -1,11 +1,13 @@
 package com.cafe24.smart_academy.academy_manage.member.mapper;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
+import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
 
 @Mapper
 public interface MemberMapper {
@@ -21,11 +23,22 @@ public interface MemberMapper {
 	// 회원가입 시 로그인 테이블 먼저 insert 해준 후 신상정보 입력하기
 	
 	public String memberByEmail(String memberEmail);
-	// 관리자가 회원등록할 시 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인
+	// 관리자가 학생 혹은 강사를 등록할 때 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인
+	
+	public String parentByPhone(String inputParentPhone);
+	// 관리자가 학생 등록시 학부모 테이블에서 유니크값인 폰번호 중복 체크
 	
 	public int addMemberLogin(MemberLogin loginInfo);
-	// 관리자가 회원 등록할 때 회원 등록 처리 (로그인 테이블 먼저 등록 처리)
+	// 관리자가 학생 혹은 강사 등록할 때 회원 등록 처리 (로그인 테이블 먼저 등록 처리)
 	
 	public int addMember(Member memberInfo);
-	// 관리자가 회원 등록할 때 회원 등록 처리 (로그인 테이블 먼저 등록 후 회원 신상정보 등록)
+	// 관리자가 학생 혹은 강사 등록할 때 회원 등록 처리 (로그인 테이블 먼저 등록 후 회원 신상정보 등록)
+	
+	public int addParent(Parent parent);
+	// 관리자가 학생 등록할 때 학부모 등록 처리
+	
+	public List<Map<String, Object>> listStudentInfo();
+	// 관리자가 학생 목록 페이지로 이동할 때 가져올 목록
+	
+	
 }

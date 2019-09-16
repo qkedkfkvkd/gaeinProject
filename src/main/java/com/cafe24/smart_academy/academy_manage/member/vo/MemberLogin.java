@@ -4,10 +4,10 @@ import java.util.Date;
 
 // 회원 로그인 테이블 VO 객체
 public class MemberLogin {
-	private String memberId;				// 아이디(기본키)
-	private String memberPw;				// 비밀번호
-	private String memberLevel;				// 권한
-	private Date member_registered_date;	// 등록일(가입일)
+	private String	memberId;					// 아이디(기본키)
+	private String	memberPw;					// 비밀번호
+	private String	memberLevel;				// 권한
+	private Date	member_registered_date;		// 등록일(가입일)
 	
 	public String getMemberId() {
 		return memberId;

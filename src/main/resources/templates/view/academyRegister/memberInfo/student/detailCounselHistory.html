@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>상담내역상세</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>상담내역상세</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-7 col-md-offset-3">
+		<form role="form" action="/addCounselHistoryNo" method="post">
+		<!-- <input type="hidden" th:value="${member.memberId}" name="memberId"> -->
+			<div class="form-group">
+				<label for="inputCounselHistoryNo">상담내역코드</label>
+				<div class="input-group">
+					<input type="email" class="form-control" id="inputCounselHistoryNo"
+						   name="counselHistoryNo">
+					<span class="input-group-btn">
+						<button type="button" class="btn btn-primary btn-sm"
+								id="counselHistoryNoOverlapBtn">중복확인</button>
+						<input type="hidden" id="counselHistoryNoOverlapClickChk" value="0">
+					</span>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label for="inputCounselDate">상담일자</label>
+				<input type="date" class="form-control" id="inputCounselDate"
+					   name="counselDate">
+			</div>
+			
+			<div class="form-group">
+				<label for="inputCounselContent">상담내용</label>
+				<textarea class="form-control" rows="10" id="inputCounselContent"
+						  name="counselContent"></textarea>
+			</div>
+			
+			<div class="form-group">
+				<div class="row"> <!-- style="vertical-align: bottom;" -->
+					<div class="col-md-6">
+						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+					</div>
+					<div class="col-md-6">
+						<button type="submit" class="btn btn-primary btn-sm btn-block">입력</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+</th:block>
+
+</html>

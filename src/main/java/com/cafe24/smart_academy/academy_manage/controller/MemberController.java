@@ -1,6 +1,7 @@
 package com.cafe24.smart_academy.academy_manage.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cafe24.smart_academy.academy_manage.member.service.MemberService;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
+import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
 
 @Controller
 public class MemberController {
@@ -84,14 +86,22 @@ public class MemberController {
 	}
 	
 	
-	// 관리자의 회원 등록폼 이동하기
-	@GetMapping("/addMember")
-	public String addMember() {
-		return "/view/academyRegister/memberInfo/memberInfo";
+	// 관리자의 학생 등록폼 이동하기
+	@GetMapping("/addStudent")
+	public String addStudent() {
+		//System.out.println("멤버컨트롤러 학생등록폼 이동메소드 들어왔다");
+		return "/view/academyRegister/memberInfo/student/addStudentInfo";
 	}
 	
 	
-	// 관리자 전용 회원 등록 폼에서 아이디 중복버튼 눌렀을 경우
+	// 관리자의 회원 등록폼 이동하기
+//	@GetMapping("/addMember")
+//	public String addMember() {
+//		return "/view/academyRegister/memberInfo/memberInfo";
+//	}
+	
+	
+	// 관리자 전용 학생, 강사 등록 폼에서 아이디 중복버튼 눌렀을 경우
 	@PostMapping("/memberIdOverlapChk")
 	@ResponseBody
 	public Map<Object, Object> memberIdOverlapChk(@RequestBody String memberId) {
@@ -99,10 +109,10 @@ public class MemberController {
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
 		
-		String member_id_result = memberService.memberLoginById(memberId);
+		String memberIdResult = memberService.memberLoginById(memberId);
 		// 서비스의 아이디 중복확인 메소드 호출
 		
-		if(member_id_result == null) {
+		if(memberIdResult == null) {
 			map.put("result", 1);
 			// 로그인 테이블에 해당 아이디값이 존재하지 않음 : 사용 가능한 아이디
 			
@@ -118,7 +128,7 @@ public class MemberController {
 	}
 	
 	
-	// 관리자 전용 회원 등록 폼에서 이메일 중복버튼 눌렀을 경우
+	// 관리자 전용 학생, 강사 등록 폼에서 이메일 중복버튼 눌렀을 경우
 	@PostMapping("/memberEmailOverlapChk")
 	@ResponseBody
 	public Map<Object, Object> memberEmailOverlapChk(@RequestBody String memberEmail) {
@@ -126,10 +136,10 @@ public class MemberController {
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
 		
-		String member_email_result = memberService.memberByEmail(memberEmail);
+		String memberEmailResult = memberService.memberByEmail(memberEmail);
 		// 서비스의 이메일 중복확인 메소드 호출
 		
-		if(member_email_result == null) {
+		if(memberEmailResult == null) {
 			map.put("result", 1);
 			// 회원신상정보 테이블에 해당 이메일 값이 존재하지 않음 : 사용 가능한 이메일
 			
@@ -142,38 +152,103 @@ public class MemberController {
 	}
 	
 	
-	// 관리자 전용 회원 추가 처리 메소드
-	@PostMapping("/addMember")
-	public String addMember(Model model, MemberLogin loginInfo, Member memberInfo) {
-		String message = memberService.addMember(loginInfo, memberInfo);
+	// 관리자 전용 학생 등록 폼에서 학부모 휴대폰 번호 중복확인 버튼을 눌렀을 때
+	@PostMapping("/parentPhoneOverlapChk")
+	@ResponseBody
+	public Map<Object, Object> parentPhoneOverlapChk(@RequestBody String inputParentPhone) {
+		System.out.println(inputParentPhone + "<- inputParentPhone   parentPhoneOverlapChk()   MemberController.java");
 		
-		String path = "/view/academyRegister/memberInfo/memberInfo";
-		// 입력 실패했을 경우 회원 등록 폼으로 이동한다.
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		
+		String parentPhoneResult = memberService.parentByPhone(inputParentPhone);
+		// 서비스의 학부모 휴대폰 중복확인 메소드 호출
+		
+		if(parentPhoneResult == null) {
+			map.put("result", 1);
+			// 학부모 테이블에 해당 휴대폰 값이 존재하지 않음 : 사용 가능한 휴대폰번호
+			
+		} else {
+			map.put("result", 0);
+			// 학부모 테이블에 해당 휴대폰 값이 존재함 : 사용 중인 휴대폰 번호
+		}
+		
+		return map;
+	}
+	
+	
+	// 관리자 전용 학생 혹은 강사 추가 처리 메소드
+	@PostMapping("/addMember")
+	public String addMember(Model model, MemberLogin loginInfo, Member memberInfo, Parent parent) {
+		String message = memberService.addMember(loginInfo, memberInfo, parent);
+		
+		String path = "";
+		
+		
+		// 입력 실패했을 경우 이동될 페이지로 미리 초기화시킨다.
+		if(loginInfo.getMemberLevel().equals("학생")) {
+			path = "/view/academyRegister/memberInfo/student/addStudentInfo";
+			// 학생 권한의 회원을 등록하려 했을 경우 학생 등록 폼으로 이동한다.
+		} else {
+			path = "/view/academyRegister/memberInfo/teacher/addTeacherInfo";
+			// 강사 권한의 회원을 등록하려 했을 경우 강사 등록 폼으로 이동한다.
+		}
+		
 		
 		if(message == null) { // 널값이면 입력 성공했다는 뜻이다.
 			if(loginInfo.getMemberLevel().equals("학생")) {
-				path = "/view/academyRegister/memberInfo/student/addParent";
-				// 학생을 등록했을 경우 곧바로 학부모를 등록하기위해 학부모 등록 페이지로 이동한다.
+				path = "redirect:/studentList";
+				// 학생을 등록했을 경우 학생 목록 페이지로 이동한다.
 			} else {
 				path = "redirect:/";
 				// 강사를 등록했을 경우 관리자 인덱스 페이지로 이동
 			}
 		} else if(message.equals("idUsed")) { // 아이디 중복 메세지가 넘어올 경우
 			model.addAttribute("idOverlap", "이미 사용 중인 아이디입니다.");
-		} else {  // 이메일 중복 메세지가 넘어올 경우
+			
+		} else if(message.equals("emailUsed")) {  // 이메일 중복 메세지가 넘어올 경우
 			model.addAttribute("emailOverlap", "이미 사용 중인 이메일입니다.");
+			
+		} else { // 학부모 중복 메세지가 넘어올 경우
+			model.addAttribute("parentPhoneOverlap", "이미 사용 중인 휴대폰번호입니다.");
 		}
 		
 		return path;
 	}
 	
 	
-	// 관리자 전용 학생관리 페이지 이동
-	@GetMapping("/studentManage")
-	public String studentManage() {
-		return "/view/academyRegister/memberInfo/student/studentManage";
+	// 관리자 전용 학생 목록 페이지 이동
+	@GetMapping("/studentList")
+	public String listStudentInfo(Model model) {
+		List<Map<String, Object>> studentList = memberService.listStudentInfo();
+		// 디비에서 권한이 학생인 사람들만 목록을 가져온다. (로그인 테이블 - 회원 신상정보 테이블 아이디로 조인)
+		
+		model.addAttribute("studentList", studentList);
+		
+		return "/view/academyRegister/memberInfo/student/listStudentInfo";
 	}
 	
+	
+	// 관리자 전용 학생관리 페이지 이동
+//	@GetMapping("/studentManage")
+//	public String studentManage() {
+//		return "/view/academyRegister/memberInfo/student/studentManage";
+//	}
+	
+	
+	// 관리자 전용 특정학생 결제정보 폼으로 이동
+	@GetMapping("/addPayment")
+	public String addPayment(@RequestParam(value = "memberId") String memberId, Model model) {
+		System.out.println(memberId + " <- memberId   addPayment()   MemberController.java");
+		model.addAttribute("memberId", memberId);
+		return "/view/academyRegister/memberInfo/student/addPaymentInfo";
+	}
+	
+	
+	// 관리자 전용 예약 현황 리스트 이동
+	@GetMapping("/listCurrentReservationState")
+	public String listCurrentReservationState() {
+		return "/view/academyRegister/memberInfo/student/listCurrentReservationState";
+	}
 	
 	
 }

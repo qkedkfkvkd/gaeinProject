@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>학생 목록</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-10 col-md-offset-3">
+			<h3>학생 목록</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-10 col-md-offset-3">
+		<form class="form-inline" action="/searchStudentInfo" method="post">
+			<div class="form-group">
+				<label for="searchMemberName">학생명</label>
+				<input type="text" class="form-control" id="searchMemberName"
+						   name="memberName" placeholder="학생 이름을 입력하세요.">
+			</div>
+			
+			<div class="form-group" style="margin-left: 6px;">
+				<label for="inputJoinDate">가입기간</label>
+				<div class="input-group">
+					<input type="date" class="form-control" id="inputJoinDate"
+						   name="startJoinDate" placeholder="시작 가입일을 선택하세요.">-
+					<input type="date" class="form-control" id="inputJoinDate"
+						   name="endJoinDate" placeholder="마지막 가입일을 선택하세요.">	  
+				</div>
+			</div>
+			<button type="submit" class="btn btn-default">검색</button>
+		</form>
+		
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>아이디</th>
+					<th>권한</th>
+					<th>학생명</th>
+					<th>생년월일</th>
+					<th>가입일</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="student, lists : ${studentList}" th:if="${studentList eq null}">
+					<td th:text="${lists.count}"></td>
+					<td>
+						<div class="navbar-menu-wrapper d-flex align-items-center">
+							<ul class="navbar-nav navbar-nav-right">
+								<li class="nav-item nav-profile dropdown">
+									<a class="nav-link dropdown-toggle" th:href="@{#}"
+										data-toggle="dropdown" id="profileDropdown">
+										<span class="nav-profile-name">
+											[[${student.memberId}]]
+										</span>
+									</a>
+									<div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+										<a class="dropdown-item"
+										   th:href="@{/viewPayment(memberId=${student.memberId})}">
+											결제정보
+										</a>
+										<a class="dropdown-item"
+										   th:href="@{/counselHistoryList(memberId=${student.memberId})}">
+											상담내역목록
+										</a>
+									</div>
+								</li>
+							</ul>
+							<button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+								<span class="mdi mdi-menu"></span>
+							</button>
+						</div>
+					</td>
+					<td th:text="${student.memberLevel}"></td>
+					<td th:text="${student.memberName}"></td>
+					<td th:text="${student.memberBirth}"></td>
+					<td th:text="${student.member_registered_date}"></td>
+				</tr>
+				
+				<tr th:unless="${studentList eq null}">
+					<td colspan="6">등록된 학생이 없습니다.</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+</th:block>
+
+</html>

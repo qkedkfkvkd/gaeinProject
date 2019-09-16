@@ -21,8 +21,8 @@
 	<select id="memberLogin" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin"
 			resultType="com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin">
 		select
-			 member_id
-			,member_level
+			 member_id			AS memberId
+			,member_level		AS memberLevel
 		from
 			member_login
 		where
@@ -35,9 +35,9 @@
 	<!-- 로그인 테이블과 회원신상정보 테이블을 아이디로 조인하여 값을 가지고 온다. -->
 	<select id="memberLoginInfo" parameterType="String" resultType="map">
 		select
-			 m.member_id
-			,m.member_level
-			,me.member_name
+			 m.member_id			AS memberId
+			,m.member_level			AS memberLevel
+			,me.member_name			AS memberName
 		from
 			member_login m
 		inner join
@@ -57,6 +57,17 @@
 			member
 		where
 			member_email = #{memberEmail};
+	</select>
+	
+	
+	<!-- 관리자가 학생 등록시 학부모 테이블에서 유니크값인 폰번호 중복 체크 -->
+	<select id="parentByPhone" parameterType="String" resultType="String">
+		select
+			parent_phone
+		from
+			parent
+		where
+			parent_phone = #{inputParentPhone}
 	</select>
 	
 	
@@ -98,4 +109,39 @@
 			,curdate()
 		)
 	</insert>
+	
+	
+	<!--  -->
+	<insert id="addParent" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Parent">
+		insert into parent (
+			 member_id
+			,parent_name
+			,parent_phone
+			,parent_registered_date
+		) values (
+			 #{memberId}
+			,#{parentName}
+			,#{parentPhone}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자가 학생목록페이지로 이동하고자 할때 가져올 리스트 -->
+	<select id="listStudentInfo" resultType="map">
+		select
+			 m.member_id					AS memberId
+			,m.member_level					AS memberLevel
+			,me.member_name					AS memberName
+			,me.member_birth				AS memberBirth
+			,me.member_registered_date
+		from
+			member_login m
+		inner join
+			member me
+		on
+			m.member_id = me.member_id
+		where
+			m.member_level = '학생';
+	</select>
 </mapper>

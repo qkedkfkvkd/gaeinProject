@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>결제정보등록</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-10 col-md-offset-3">
+			<h3>결제정보등록</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-10 col-md-offset-3">
+		<form action="/studentPaymentInfo" method="post">
+			<!-- <input type="hidden" th:value="${member.memberId}" name="memberId"> -->
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="checkPaymentWay">결제수단</label>
+						<!-- <div class="input-group"> -->
+							<select id="checkPaymentWay" name="paymentWay"
+									class="form-control">
+								<option value="카드">카드</option>
+								<option value="현금">현금</option>
+								<option value="가상계좌">가상계좌</option>
+								<option value="무통장입금">무통장입금</option>
+							</select>
+						<!-- </div> -->
+					</div>
+					
+					
+					<!-- <div class="form-group">
+						<label for="checkPaymentWay" style="font-size: large;">결제수단:</label>
+						<div class="form-check-inline">
+							<label class="form-check-label" style="font-size: medium;">
+								<input type="radio" class="form-check-input" value="카드"
+									   name="paymentWay">카드
+							</label>
+						</div>
+						
+						<div class="form-check-inline">
+							<label class="form-check-label" style="font-size: medium;">
+								<input type="radio" class="form-check-input" value="현금"
+									   name="paymentWay" checked="checked">현금
+							</label>
+						</div>
+						
+						<div class="form-check-inline">
+							<label class="form-check-label" style="font-size: medium;">
+								<input type="radio" class="form-check-input" value="가상계좌"
+									   name="paymentWay" checked="checked">가상계좌
+							</label>
+						</div>
+						
+						<div class="form-check-inline">
+							<label class="form-check-label" style="font-size: medium;">
+								<input type="radio" class="form-check-input" value="무통장입금"
+									   name="paymentWay" checked="checked">무통장입금
+							</label>
+						</div>
+					</div> -->
+					
+					
+					<div class="form-group">
+						<label for="inputPaymentContent">결제수단내용</label>
+						<input type="text" class="form-control" id="inputPaymentContent"
+							   name="paymentContent" > <!-- th:text="${paymentInfo.paymentContent}" -->
+					</div>
+					
+					<div class="form-group">
+						<label for="inputPaymentContent">납부예정금액</label>
+						<input type="text" class="form-control" id="inputPaymentContent"
+							   name="paymentContent" > <!-- th:text="${paymentInfo.paymentContent}" -->
+					</div>
+					
+					<div class="form-group">
+						<label for="inputPaymentContent">실 납부 금액</label>
+						<input type="text" class="form-control" id="inputPaymentContent"
+							   name="paymentContent" > <!-- th:text="${paymentInfo.paymentContent}" -->
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="inputPaymentContent">시작 수업일</label>
+						<input type="text" class="form-control" id="inputPaymentContent"
+							   name="paymentContent" > <!-- th:text="${paymentInfo.paymentContent}" -->
+					</div>
+					
+					<div class="form-group">
+						<label for="inputPaymentContent">마지막 수업일</label>
+						<input type="text" class="form-control" id="inputPaymentContent"
+							   name="paymentContent" > <!-- th:text="${paymentInfo.paymentContent}" -->
+					</div>
+					
+					<div class="form-group">
+						<label for="inputPaymentContent">참고사항</label>
+						<textarea class="form-control" rows="3" id="inputPaymentContent"
+								  name="paymentContent"></textarea>
+						<!-- th:text="${paymentInfo.paymentContent}" -->
+					</div>
+					
+					<div class="form-group">
+						<div class="row"> <!-- style="vertical-align: bottom;" -->
+							<div class="col-md-6">
+								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+							</div>
+							<div class="col-md-6">
+								<button type="submit"class="btn btn-primary btn-sm btn-block">입력</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+</th:block>
+
+</html>
