@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
+import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 
 @Mapper
 public interface MemberMapper {
@@ -40,5 +41,19 @@ public interface MemberMapper {
 	public List<Map<String, Object>> listStudentInfo();
 	// 관리자가 학생 목록 페이지로 이동할 때 가져올 목록
 	
+	public PaymentInfo paymentInfoById(String memberId);
+	// 관리자 전용 특정 학생의 결제정보 가져오기
+	
+	public int addPaymentInfo(PaymentInfo paymentInfo);
+	// 관리자 전용 특정 학생 결제정보 입력 처리
+	
+	public Member studentInfoIdNameBirthById(String memberId);
+	// 관리자 상담관리 페이지에 보여줄 특정 학생의 이름과 생년월일 가져오기
+	
+	public List<Map<String, Object>> oneStudentCounselHistoryList(String memberId);
+	// 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담내역 리스트
+
+	public List<Map<String, Object>> oneStudentCounselAppointmentList(String memberId);
+	// 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담예약현황 리스트
 	
 }

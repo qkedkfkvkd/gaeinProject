@@ -5,15 +5,15 @@ import java.util.Date;
 // 학생의 결제정보 테이블 VO객체
 public class PaymentInfo {
 	private String		memberId;					// 학생 아이디(기본키, 로그인테이블 외래키 1:1 대응)
-	private Date		paymentDay;					// 납부일자
+	private String		paymentDay;					// 납부일자
 	private String		paymentWay;					// 결제수단방법  ex)카드, 현금결제, 무통장입금 등
 	private String		paymentContent;				// 결제수단내용  ex) 일시불, 부분입금 등
 	private int			paymentScheduleMoney;		// 납부예정금액(부분 미납시에만)
 	private int			actualityPaymentMoney;		// 실납부금액
-	private Date		startCourseDay;				// 시작 수업일
-	private Date		endCourseDay;				// 마지막 수업일
+	private String		startCourseDay;				// 시작 수업일
+	private String		endCourseDay;				// 마지막 수업일
 	private String		paymentReference;			// 결제 참고사항
-	private Date		payment_registered_date;	// 결제정보 등록일
+	private Date		paymentRegisteredDate;		// 결제정보 등록일
 	
 	public String getMemberId() {
 		return memberId;
@@ -22,10 +22,10 @@ public class PaymentInfo {
 		System.out.println(memberId + " <- memberId   setMemberId()   PaymentInfo.java");
 		this.memberId = memberId;
 	}
-	public Date getPaymentDay() {
+	public String getPaymentDay() {
 		return paymentDay;
 	}
-	public void setPaymentDay(Date paymentDay) {
+	public void setPaymentDay(String paymentDay) {
 		System.out.println(paymentDay + " <- paymentDay   setPaymentDay()   PaymentInfo.java");
 		this.paymentDay = paymentDay;
 	}
@@ -57,17 +57,17 @@ public class PaymentInfo {
 		System.out.println(actualityPaymentMoney + " <- actualityPaymentMoney   setActualityPaymentMoney()   PaymentInfo.java");
 		this.actualityPaymentMoney = actualityPaymentMoney;
 	}
-	public Date getStartCourseDay() {
+	public String getStartCourseDay() {
 		return startCourseDay;
 	}
-	public void setStartCourseDay(Date startCourseDay) {
+	public void setStartCourseDay(String startCourseDay) {
 		System.out.println(startCourseDay + " <- startCourseDay   setStartCourseDay()   PaymentInfo.java");
 		this.startCourseDay = startCourseDay;
 	}
-	public Date getEndCourseDay() {
+	public String getEndCourseDay() {
 		return endCourseDay;
 	}
-	public void setEndCourseDay(Date endCourseDay) {
+	public void setEndCourseDay(String endCourseDay) {
 		System.out.println(endCourseDay + " <- endCourseDay   setEndCourseDay()   PaymentInfo.java");
 		this.endCourseDay = endCourseDay;
 	}
@@ -78,11 +78,11 @@ public class PaymentInfo {
 		System.out.println(paymentReference + " <- paymentReference   setPaymentReference()   PaymentInfo.java");
 		this.paymentReference = paymentReference;
 	}
-	public Date getPayment_registered_date() {
-		return payment_registered_date;
+	public Date getPaymentRegisteredDate() {
+		return paymentRegisteredDate;
 	}
-	public void setPayment_registered_date(Date payment_registered_date) {
-		System.out.println(payment_registered_date + " <- payment_registered_date   setPayment_registered_date()   PaymentInfo.java");
-		this.payment_registered_date = payment_registered_date;
+	public void setPaymentRegisteredDate(Date paymentRegisteredDate) {
+		System.out.println(paymentRegisteredDate + " <- paymentRegisteredDate   setPaymentRegisteredDate()   PaymentInfo.java");
+		this.paymentRegisteredDate = paymentRegisteredDate;
 	}
 }

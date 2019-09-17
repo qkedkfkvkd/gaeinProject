@@ -12,6 +12,7 @@ import com.cafe24.smart_academy.academy_manage.member.mapper.MemberMapper;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
+import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 
 @Service
 @Transactional
@@ -147,5 +148,49 @@ public class MemberService {
 	// 관리자 학생 목록 페이지 목록 가져오기
 	public List<Map<String, Object>> listStudentInfo() {
 		return memberMapper.listStudentInfo();
+	}
+	
+	
+	// 관리자 특정 학생 결제정보 가져오기
+	public PaymentInfo viewPaymentInfo(String memberId) {
+		PaymentInfo paymentInfo = memberMapper.paymentInfoById(memberId);
+		// 학생의 아이디를 가지고 결제정보 테이블에서 객체를 얻어온다.
+		return paymentInfo;
+	}
+	
+	
+	// 관리자 특정 학생 결제정보 입력 처리
+	public String addPaymentInfo(PaymentInfo paymentInfo) {
+		int result = memberMapper.addPaymentInfo(paymentInfo);
+		// 특정학생 결제정보 입력 처리
+		
+		String message = null;
+		// 널값이 그대로 리턴되면 입력 성공
+		
+		if(result == 0) {  // 입력이 안됬다면
+			message = "paymentInfoInsertFail";
+			// 입력실패 메세지
+		}
+		
+		return message;
+	}
+	
+	
+	// 관리자 상담관리 페이지에 보여줄 특정 학생의 이름과 생년월일 가져오기
+	public Member studentInfoIdNameBirthById(String memberId) {
+		return memberMapper.studentInfoIdNameBirthById(memberId);
+	}
+	
+	
+	// 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담내역 리스트
+	public List<Map<String, Object>> oneStudentCounselHistoryList(String memberId) {
+		System.out.println(memberId + " <- memberId   oneStudentCounselHistoryList()   MemberService.java");
+		return memberMapper.oneStudentCounselHistoryList(memberId);
+	}
+	
+	
+	// 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담예약현황 리스트
+	public List<Map<String, Object>> oneStudentCounselAppointmentList(String memberId) {
+		return memberMapper.oneStudentCounselAppointmentList(memberId);
 	}
 }

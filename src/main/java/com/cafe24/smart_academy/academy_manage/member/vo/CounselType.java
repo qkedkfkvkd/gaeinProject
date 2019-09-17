@@ -4,12 +4,12 @@ import java.util.Date;
 
 // 상담구분코드 테이블 VO 객체
 public class CounselType {
-	private String		counselTypeNo;						// 상담구분코드(기본키)
-	private String		counselTypeName;					// 상담구분명  ex) 전화상담, 방문상담
-	private String		counselTypeIsChanged;				// 코드 변경 유무
-	private String		counselTypeReasonForChange;			// 변경 사유
-	private Date		counselTypeChangedDate;				// 변경 일자
-	private Date		counsel_type_registered_date;		// 등록일
+	private String		counselTypeNo;					// 상담구분코드(기본키)
+	private String		counselTypeName;				// 상담구분명  ex) 전화상담, 방문상담
+	private String		counselTypeIsChanged;			// 코드 변경 유무
+	private String		counselTypeReasonForChange;		// 변경 사유
+	private Date		counselTypeChangedDate;			// 변경 일자
+	private Date		counselTypeRegisteredDate;		// 등록일
 	
 	public String getCounselTypeNo() {
 		return counselTypeNo;
@@ -46,11 +46,11 @@ public class CounselType {
 		System.out.println(counselTypeChangedDate + " <- counselTypeChangedDate   setCounselTypeChangedDate()   CounselType.java");
 		this.counselTypeChangedDate = counselTypeChangedDate;
 	}
-	public Date getCounsel_type_registered_date() {
-		return counsel_type_registered_date;
+	public Date getCounselTypeRegisteredDate() {
+		return counselTypeRegisteredDate;
 	}
-	public void setCounsel_type_registered_date(Date counsel_type_registered_date) {
-		System.out.println(counsel_type_registered_date + " <- counsel_type_registered_date   setCounsel_type_registered_date()   CounselType.java");
-		this.counsel_type_registered_date = counsel_type_registered_date;
+	public void setCounselTypeRegisteredDate(Date counselTypeRegisteredDate) {
+		System.out.println(counselTypeRegisteredDate + " <- counselTypeRegisteredDate   setCounselTypeRegisteredDate()   CounselType.java");
+		this.counselTypeRegisteredDate = counselTypeRegisteredDate;
 	}
 }

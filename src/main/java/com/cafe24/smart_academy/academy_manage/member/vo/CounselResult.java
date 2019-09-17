@@ -10,7 +10,7 @@ public class CounselResult {
 	private String		counselResultIsChanged;				// 코드 변경 유무
 	private String		counselResultReasonForChange;		// 코드 변경 사유
 	private Date		counselResultChangeDate;			// 코드 변경일
-	private Date		counsel_result_registered_date;		// 등록일
+	private Date		counselResultRegisteredDate;		// 등록일
 	
 	public String getCounselResultNo() {
 		return counselResultNo;
@@ -54,11 +54,11 @@ public class CounselResult {
 		System.out.println(counselResultChangeDate + " <- counselResultChangeDate   setCounselResultChangeDate()   CounselResult.java");
 		this.counselResultChangeDate = counselResultChangeDate;
 	}
-	public Date getCounsel_result_registered_date() {
-		return counsel_result_registered_date;
+	public Date getCounselResultRegisteredDate() {
+		return counselResultRegisteredDate;
 	}
-	public void setCounsel_result_registered_date(Date counsel_result_registered_date) {
-		System.out.println(counsel_result_registered_date + " <- counsel_result_registered_date   setCounsel_result_registered_date()   CounselResult.java");
-		this.counsel_result_registered_date = counsel_result_registered_date;
+	public void setCounselResultRegisteredDate(Date counselResultRegisteredDate) {
+		System.out.println(counselResultRegisteredDate + " <- counselResultRegisteredDate   setCounselResultRegisteredDate()   CounselResult.java");
+		this.counselResultRegisteredDate = counselResultRegisteredDate;
 	}
 }

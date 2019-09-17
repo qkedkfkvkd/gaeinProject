@@ -7,7 +7,7 @@ public class MemberLogin {
 	private String	memberId;					// 아이디(기본키)
 	private String	memberPw;					// 비밀번호
 	private String	memberLevel;				// 권한
-	private Date	member_registered_date;		// 등록일(가입일)
+	private Date	memberRegisteredDate;		// 등록일(가입일)
 	
 	public String getMemberId() {
 		return memberId;
@@ -30,11 +30,11 @@ public class MemberLogin {
 		System.out.println(memberLevel + " <- memberLevel   setMemberLevel()   Member_login.java");
 		this.memberLevel = memberLevel;
 	}
-	public Date getMember_registered_date() {
-		return member_registered_date;
+	public Date getMemberRegisteredDate() {
+		return memberRegisteredDate;
 	}
-	public void setMember_registered_date(Date member_registered_date) {
-		System.out.println(member_registered_date + " <- member_registered_date   setMember_registered_date()   Member_login.java");
-		this.member_registered_date = member_registered_date;
+	public void setMemberRegisteredDate(Date memberRegisteredDate) {
+		System.out.println(memberRegisteredDate + " <- memberRegisteredDate   setMemberRegisteredDate()   Member_login.java");
+		this.memberRegisteredDate = memberRegisteredDate;
 	}
 }

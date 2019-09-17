@@ -7,7 +7,7 @@ public class Parent {
 	private String	memberId;					// 학생 아이디(기본키, 로그인테이블 외래키 1:1 대응)
 	private String	parentName;					// 학부모명
 	private String	parentPhone;				// 학부모 핸드폰번호
-	private Date	parent_registered_date;		// 학부모 등록일
+	private Date	parentRegisteredDate;		// 학부모 등록일
 	
 	public String getMemberId() {
 		return memberId;
@@ -30,11 +30,11 @@ public class Parent {
 		System.out.println(parentPhone + " <- parentPhone   setParentPhone()   Parent.java");
 		this.parentPhone = parentPhone;
 	}
-	public Date getParent_registered_date() {
-		return parent_registered_date;
+	public Date getParentRegisteredDate() {
+		return parentRegisteredDate;
 	}
-	public void setParent_registered_date(Date parent_registered_date) {
-		System.out.println(parent_registered_date + " <- parent_registered_date   setParent_registered_date()   Parent.java");
-		this.parent_registered_date = parent_registered_date;
+	public void setParentRegisteredDate(Date parentRegisteredDate) {
+		System.out.println(parentRegisteredDate + " <- parentRegisteredDate   setParentRegisteredDate()   Parent.java");
+		this.parentRegisteredDate = parentRegisteredDate;
 	}	
 }

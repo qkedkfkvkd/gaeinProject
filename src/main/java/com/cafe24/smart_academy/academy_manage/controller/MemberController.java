@@ -19,9 +19,11 @@ import com.cafe24.smart_academy.academy_manage.member.service.MemberService;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
+import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 
 @Controller
 public class MemberController {
+// 로그인, 학생 및 강사의 개인신상정보 및 학생의 상담내역 관리하는 컨트롤러
 	
 	@Autowired
 	private MemberService memberService;
@@ -236,11 +238,46 @@ public class MemberController {
 	
 	
 	// 관리자 전용 특정학생 결제정보 폼으로 이동
-	@GetMapping("/addPayment")
-	public String addPayment(@RequestParam(value = "memberId") String memberId, Model model) {
+	@GetMapping("/viewPayment")
+	public String viewPaymentInfo(@RequestParam(value = "memberId") String memberId, Model model) {
 		System.out.println(memberId + " <- memberId   addPayment()   MemberController.java");
+		
+		PaymentInfo paymentInfo = memberService.viewPaymentInfo(memberId);
+		// 학생의 아이디를 가지고 결제정보 테이블에서 객체를 얻어온다.
+		
+		String path = "/view/academyRegister/memberInfo/student/addPaymentInfo";
+		// 결제정보가 없을 경우 결제정보를 추가할 수 있도록 경로를 설정해준다.
+		
+		if(paymentInfo != null) { // 결제정보가 있다면
+			path = "/view/academyRegister/memberInfo/student/detailPaymentInfo";
+			// 결제정보 테이블에 있는 내용을 볼 수 있는 페이지로 이동
+			
+			model.addAttribute("paymentInfo", paymentInfo);
+			// 결제정보 객체를 모델에 넣어준다.
+		}
+		
 		model.addAttribute("memberId", memberId);
-		return "/view/academyRegister/memberInfo/student/addPaymentInfo";
+		
+		return path;
+	}
+	
+	
+	// 관리자 전용 특정학생 결제정보 입력처리
+	@PostMapping("/addPaymentInfo")
+	public String addPaymentInfo(Model model, PaymentInfo paymentInfo) {
+		String message = memberService.addPaymentInfo(paymentInfo);
+		
+		String path = "/view/academyRegister/memberInfo/student/detailPaymentInfo";
+		// 입력 성공시 결제정보 상세 페이지로 이동한다.
+		
+		if(message != null) { // 메세지가 널이 아니다. 메세지에 값이 존재한다면 입력 실패이다.
+			path = "/view/academyRegister/memberInfo/student/addPaymentInfo";
+			// 결제정보를 다시 입력해야한다.
+			
+			model.addAttribute("insertFail", "입력실패! 다시 입력해주세요.");
+		}
+		
+		return path;
 	}
 	
 	
@@ -251,4 +288,65 @@ public class MemberController {
 	}
 	
 	
+	// 관리자가 학생 목록에서 특정 학생의 상담 관리 페이지로 이동
+	@GetMapping("/counselManage")
+	public String oneStudentCounselManage(@RequestParam(value = "memberId") String memberId, Model model) {
+		model.addAttribute("studentInfo", memberService.studentInfoIdNameBirthById(memberId));
+		// 서비스에서 아이디로 해당 학생의 아이디, 이름과 생년월일만 가져와서 바로 모델에 넣어준다.
+		
+		//model.addAttribute("counselTypeList", memberService.counselTypeList());
+		// 검색할때 사용할 상담구분테이블에 있는 모든 객체 가져오기
+		
+		//model.addAttribute("counselResultList", memberService.counselResultList());
+		// 검색할때 사용할 상담결과테이블에 있는 모든 객체 가져오기.
+		
+		List<Map<String, Object>> counselHistoryList = 
+					memberService.oneStudentCounselHistoryList(memberId);
+		// 화면에 보여줄 해당 학생 상담 내역 리스트
+		
+		System.out.println(counselHistoryList
+					+ " <- counselHistoryList   oneStudentCounselManage()   MemberController.java");
+		
+		
+		System.out.println("상담내역리스트 크기 : " + counselHistoryList.size());
+		
+		
+		if(counselHistoryList.size() == 0) { // 해당 학생의 상담 내역이 존재하지 않는다면
+			counselHistoryList = null; // 객체참조변수에 할당된 주소값을 날려버린다.
+		}
+		
+		
+		System.out.println(counselHistoryList
+				+ " <- counselHistoryList   oneStudentCounselManage()   MemberController.java");
+		
+		
+		model.addAttribute("counselHistoryList", counselHistoryList);
+		// 화면에 보여줄 해당 학생 상담내역 리스트
+		
+		
+		List<Map<String, Object>> counselAppointmentList = 
+				memberService.oneStudentCounselAppointmentList(memberId);
+		// 화면에 보여줄 해당 학생 상담예약현황 리스트
+		
+		System.out.println(counselAppointmentList
+				+ " <- counselAppointmentList   oneStudentCounselManage()   MemberController.java");
+		
+		
+		System.out.println("상담예약현황리스트 크기 : " + counselAppointmentList.size());
+		
+		
+		if(counselAppointmentList.size() == 0) { // 해당 학생의 상담예약현황이 존재하지 않는다면
+			counselAppointmentList = null; // 객체참조변수에 할당된 주소값을 날려버린다.
+		}
+		
+		
+		System.out.println(counselAppointmentList
+				+ " <- counselAppointmentList   oneStudentCounselManage()   MemberController.java");
+		
+		
+		model.addAttribute("counselAppointmentList", counselAppointmentList);
+		// 화면에 보여줄 해당 학생 상담예약현황 리스트
+		
+		return "/view/academyRegister/memberInfo/student/counselManage";
+	}
 }

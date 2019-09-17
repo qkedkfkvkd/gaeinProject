@@ -11,7 +11,7 @@ public class Member {
 	private String	memberTel;					// 집전화 (널 가능)
 	private String	memberPhone;				// 휴대폰(유니크) - 중복 불가
 	private String	memberAddress;				// 주소
-	private Date	member_registered_date;		// 등록일(가입일)
+	private Date	memberRegisteredDate;		// 등록일(가입일)
 	
 	public String getMemberId() {
 		return memberId;
@@ -62,11 +62,11 @@ public class Member {
 		System.out.println(memberAddress + " <- memberAddress   setMemberAddress()   Member.java");
 		this.memberAddress = memberAddress;
 	}
-	public Date getMember_registered_date() {
-		return member_registered_date;
+	public Date getMemberRegisteredDate() {
+		return memberRegisteredDate;
 	}
-	public void setMember_registered_date(Date member_registered_date) {
-		System.out.println(member_registered_date + " <- member_registered_date   setMember_registered_date()   Member.java");
-		this.member_registered_date = member_registered_date;
+	public void setMemberRegisteredDate(Date memberRegisteredDate) {
+		System.out.println(memberRegisteredDate + " <- memberRegisteredDate   setMemberRegisteredDate()   Member.java");
+		this.memberRegisteredDate = memberRegisteredDate;
 	}
 }

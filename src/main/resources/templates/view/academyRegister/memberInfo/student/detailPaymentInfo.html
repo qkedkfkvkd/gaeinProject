@@ -12,11 +12,21 @@
 		<div class="col-md-10 col-md-offset-3">
 			<h3>결제정보상세</h3>
 		</div>
+		
+		<script th:inline="javascript">
+			/*<![CDATA[*/
+				var paymentInfo = /*[[ ${paymentInfo.paymentWay} ]]*/;
+			/*]]*/
+			
+			$(document).ready(function(){
+				$("#checkPaymentWay").val(paymentInfo);
+			});
+		</script>
 	</div>
 	
 	<div class="col-sm-10 col-md-offset-3">
-		<form action="/studentPaymentInfo" method="post">
-			<!-- <input type="hidden" th:value="${member.memberId}" name="memberId"> -->
+		<form action="/updatePaymentInfo" id="updatePaymentInfoFrm" method="post">
+			<input type="hidden" th:value="${memberId}" name="memberId">
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
@@ -24,6 +34,7 @@
 						<!-- <div class="input-group"> -->
 							<select id="checkPaymentWay" name="paymentWay"
 									class="form-control">
+								<option value="">선택</option>
 								<option value="카드">카드</option>
 								<option value="현금">현금</option>
 								<option value="가상계좌">가상계좌</option>
@@ -32,75 +43,49 @@
 						<!-- </div> -->
 					</div>
 					
-					
-					<!-- <div class="form-group">
-						<label for="checkPaymentWay" style="font-size: large;">결제수단:</label>
-						<div class="form-check-inline">
-							<label class="form-check-label" style="font-size: medium;">
-								<input type="radio" class="form-check-input" value="카드"
-									   name="paymentWay">카드
-							</label>
-						</div>
-						
-						<div class="form-check-inline">
-							<label class="form-check-label" style="font-size: medium;">
-								<input type="radio" class="form-check-input" value="현금"
-									   name="paymentWay" checked="checked">현금
-							</label>
-						</div>
-						
-						<div class="form-check-inline">
-							<label class="form-check-label" style="font-size: medium;">
-								<input type="radio" class="form-check-input" value="가상계좌"
-									   name="paymentWay" checked="checked">가상계좌
-							</label>
-						</div>
-						
-						<div class="form-check-inline">
-							<label class="form-check-label" style="font-size: medium;">
-								<input type="radio" class="form-check-input" value="무통장입금"
-									   name="paymentWay" checked="checked">무통장입금
-							</label>
-						</div>
-					</div> -->
-					
-					
 					<div class="form-group">
 						<label for="inputPaymentContent">결제수단내용</label>
 						<input type="text" class="form-control" id="inputPaymentContent"
-							   name="paymentContent" > <!-- th:text="${paymentInfo.paymentContent}" -->
+							   name="paymentContent" th:value="${paymentInfo.paymentContent}">
 					</div>
 					
 					<div class="form-group">
-						<label for="inputPaymentContent">납부예정금액</label>
-						<input type="text" class="form-control" id="inputPaymentContent"
-							   name="paymentContent" > <!-- th:text="${paymentInfo.paymentContent}" -->
+						<label for="inputPaymentDay">납부일자</label>
+						<input type="date" class="form-control" id="inputPaymentDay"
+							   name="paymentDay" th:value="${paymentInfo.paymentDay}">
 					</div>
 					
 					<div class="form-group">
-						<label for="inputPaymentContent">실 납부 금액</label>
-						<input type="text" class="form-control" id="inputPaymentContent"
-							   name="paymentContent" > <!-- th:text="${paymentInfo.paymentContent}" -->
+						<label for="inputPaymentScheduleMoney">납부예정금액</label>
+						<input type="number" class="form-control" id="inputPaymentScheduleMoney"
+							   name="paymentScheduleMoney" th:value="${paymentInfo.paymentScheduleMoney}">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputActualityPaymentMoney">실납부금액</label>
+						<input type="number" class="form-control" id="inputActualityPaymentMoney"
+							   name="actualityPaymentMoney" th:value="${paymentInfo.actualityPaymentMoney}">
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
-						<label for="inputPaymentContent">시작 수업일</label>
-						<input type="text" class="form-control" id="inputPaymentContent"
-							   name="paymentContent" > <!-- th:text="${paymentInfo.paymentContent}" -->
+						<label for="inputStartCourseDay">시작 수업일</label>
+						<input type="date" class="form-control" id="inputStartCourseDay"
+							   name="startCourseDay" th:value="${paymentInfo.startCourseDay}">
 					</div>
 					
 					<div class="form-group">
-						<label for="inputPaymentContent">마지막 수업일</label>
-						<input type="text" class="form-control" id="inputPaymentContent"
-							   name="paymentContent" > <!-- th:text="${paymentInfo.paymentContent}" -->
+						<label for="inputEndCourseDay">마지막 수업일</label>
+						<input type="date" class="form-control" id="inputEndCourseDay"
+							   name="endCourseDay" th:value="${paymentInfo.endCourseDay}">
 					</div>
 					
 					<div class="form-group">
-						<label for="inputPaymentContent">참고사항</label>
-						<textarea class="form-control" rows="3" id="inputPaymentContent"
-								  name="paymentContent"></textarea>
-						<!-- th:text="${paymentInfo.paymentContent}" -->
+						<label for="inputPaymentReference">참고사항</label>
+						<textarea class="form-control" rows="3" id="inputPaymentReference"
+								  name="paymentReference"
+								  th:text="${paymentInfo.paymentReference}"
+								  placeholder="결제 참고사항을 입력해주세요(생략가능)"></textarea>
 					</div>
 					
 					<div class="form-group">
@@ -109,7 +94,8 @@
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
 							<div class="col-md-6">
-								<button type="submit"class="btn btn-primary btn-sm btn-block">입력</button>
+								<button type="button" id="updatePaymentInfoFrmBtn"
+										class="btn btn-primary btn-sm btn-block">수정</button>
 							</div>
 						</div>
 					</div>
