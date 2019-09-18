@@ -16,7 +16,8 @@ public class CounselResult {
 		return counselResultNo;
 	}
 	public void setCounselResultNo(String counselResultNo) {
-		System.out.println(counselResultNo + " <- counselResultNo   setCounselResultNo()   CounselResult.java");
+		System.out.println(counselResultNo
+				+ " <- counselResultNo   setCounselResultNo()   CounselResult.java");
 		this.counselResultNo = counselResultNo;
 	}
 	public String getCounselTypeNo() {
@@ -30,35 +31,40 @@ public class CounselResult {
 		return counselResultName;
 	}
 	public void setCounselResultName(String counselResultName) {
-		System.out.println(counselResultName + " <- counselResultName   setCounselResultName()   CounselResult.java");
+		System.out.println(counselResultName
+				+ " <- counselResultName   setCounselResultName()   CounselResult.java");
 		this.counselResultName = counselResultName;
 	}
 	public String getCounselResultIsChanged() {
 		return counselResultIsChanged;
 	}
 	public void setCounselResultIsChanged(String counselResultIsChanged) {
-		System.out.println(counselResultIsChanged + " <- counselResultIsChanged   setCounselResultIsChanged()   CounselResult.java");
+		System.out.println(counselResultIsChanged
+				+ " <- counselResultIsChanged   setCounselResultIsChanged()   CounselResult.java");
 		this.counselResultIsChanged = counselResultIsChanged;
 	}
 	public String getCounselResultReasonForChange() {
 		return counselResultReasonForChange;
 	}
 	public void setCounselResultReasonForChange(String counselResultReasonForChange) {
-		System.out.println(counselResultReasonForChange + " <- counselResultReasonForChange   setCounselResultReasonForChange()   CounselResult.java");
+		System.out.println(counselResultReasonForChange
+				+ " <- counselResultReasonForChange   setCounselResultReasonForChange()   CounselResult.java");
 		this.counselResultReasonForChange = counselResultReasonForChange;
 	}
 	public Date getCounselResultChangeDate() {
 		return counselResultChangeDate;
 	}
 	public void setCounselResultChangeDate(Date counselResultChangeDate) {
-		System.out.println(counselResultChangeDate + " <- counselResultChangeDate   setCounselResultChangeDate()   CounselResult.java");
+		System.out.println(counselResultChangeDate
+				+ " <- counselResultChangeDate   setCounselResultChangeDate()   CounselResult.java");
 		this.counselResultChangeDate = counselResultChangeDate;
 	}
 	public Date getCounselResultRegisteredDate() {
 		return counselResultRegisteredDate;
 	}
 	public void setCounselResultRegisteredDate(Date counselResultRegisteredDate) {
-		System.out.println(counselResultRegisteredDate + " <- counselResultRegisteredDate   setCounselResultRegisteredDate()   CounselResult.java");
+		System.out.println(counselResultRegisteredDate
+				+ " <- counselResultRegisteredDate   setCounselResultRegisteredDate()   CounselResult.java");
 		this.counselResultRegisteredDate = counselResultRegisteredDate;
 	}
 }

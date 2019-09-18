@@ -10,5 +10,41 @@ public class AcademyAttendance {
 	private String	attendState;				// 출결상태
 	private Date	attendanceRegisteredDate;	// 등록일
 	
-	
+	public String getAttendanceNo() {
+		return attendanceNo;
+	}
+	public void setAttendanceNo(String attendanceNo) {
+		System.out.println(attendanceNo + " <- attendanceNo   setAttendanceNo()   AcademyAttendance.java");
+		this.attendanceNo = attendanceNo;
+	}
+	public String getScheduleNo() {
+		return scheduleNo;
+	}
+	public void setScheduleNo(String scheduleNo) {
+		System.out.println(scheduleNo + " <- scheduleNo   setScheduleNo()   AcademyAttendance.java");
+		this.scheduleNo = scheduleNo;
+	}
+	public String getCourseEnrolleeNo() {
+		return courseEnrolleeNo;
+	}
+	public void setCourseEnrolleeNo(String courseEnrolleeNo) {
+		System.out.println(courseEnrolleeNo
+				+ " <- courseEnrolleeNo   setCourseEnrolleeNo()   AcademyAttendance.java");
+		this.courseEnrolleeNo = courseEnrolleeNo;
+	}
+	public String getAttendState() {
+		return attendState;
+	}
+	public void setAttendState(String attendState) {
+		System.out.println(attendState + " <- attendState   setAttendState()   AcademyAttendance.java");
+		this.attendState = attendState;
+	}
+	public Date getAttendanceRegisteredDate() {
+		return attendanceRegisteredDate;
+	}
+	public void setAttendanceRegisteredDate(Date attendanceRegisteredDate) {
+		System.out.println(attendanceRegisteredDate
+				+ " <- attendanceRegisteredDate   setAttendanceRegisteredDate()   AcademyAttendance.java");
+		this.attendanceRegisteredDate = attendanceRegisteredDate;
+	}
 }

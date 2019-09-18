@@ -40,28 +40,32 @@ public class PaymentInfo {
 		return paymentContent;
 	}
 	public void setPaymentContent(String paymentContent) {
-		System.out.println(paymentContent + " <- paymentContent   setPaymentContent()   PaymentInfo.java");
+		System.out.println(paymentContent
+				+ " <- paymentContent   setPaymentContent()   PaymentInfo.java");
 		this.paymentContent = paymentContent;
 	}
 	public int getPaymentScheduleMoney() {
 		return paymentScheduleMoney;
 	}
 	public void setPaymentScheduleMoney(int paymentScheduleMoney) {
-		System.out.println(paymentScheduleMoney + " <- paymentScheduleMoney   setPaymentScheduleMoney()   PaymentInfo.java");
+		System.out.println(paymentScheduleMoney
+				+ " <- paymentScheduleMoney   setPaymentScheduleMoney()   PaymentInfo.java");
 		this.paymentScheduleMoney = paymentScheduleMoney;
 	}
 	public int getActualityPaymentMoney() {
 		return actualityPaymentMoney;
 	}
 	public void setActualityPaymentMoney(int actualityPaymentMoney) {
-		System.out.println(actualityPaymentMoney + " <- actualityPaymentMoney   setActualityPaymentMoney()   PaymentInfo.java");
+		System.out.println(actualityPaymentMoney
+				+ " <- actualityPaymentMoney   setActualityPaymentMoney()   PaymentInfo.java");
 		this.actualityPaymentMoney = actualityPaymentMoney;
 	}
 	public String getStartCourseDay() {
 		return startCourseDay;
 	}
 	public void setStartCourseDay(String startCourseDay) {
-		System.out.println(startCourseDay + " <- startCourseDay   setStartCourseDay()   PaymentInfo.java");
+		System.out.println(startCourseDay
+				+ " <- startCourseDay   setStartCourseDay()   PaymentInfo.java");
 		this.startCourseDay = startCourseDay;
 	}
 	public String getEndCourseDay() {
@@ -75,14 +79,16 @@ public class PaymentInfo {
 		return paymentReference;
 	}
 	public void setPaymentReference(String paymentReference) {
-		System.out.println(paymentReference + " <- paymentReference   setPaymentReference()   PaymentInfo.java");
+		System.out.println(paymentReference
+				+ " <- paymentReference   setPaymentReference()   PaymentInfo.java");
 		this.paymentReference = paymentReference;
 	}
 	public Date getPaymentRegisteredDate() {
 		return paymentRegisteredDate;
 	}
 	public void setPaymentRegisteredDate(Date paymentRegisteredDate) {
-		System.out.println(paymentRegisteredDate + " <- paymentRegisteredDate   setPaymentRegisteredDate()   PaymentInfo.java");
+		System.out.println(paymentRegisteredDate
+				+ " <- paymentRegisteredDate   setPaymentRegisteredDate()   PaymentInfo.java");
 		this.paymentRegisteredDate = paymentRegisteredDate;
 	}
 }

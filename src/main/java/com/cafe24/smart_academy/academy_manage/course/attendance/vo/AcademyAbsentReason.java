@@ -8,5 +8,26 @@ public class AcademyAbsentReason {
 	private String		absentReason;					// 결석사유
 	private Date		absentReasonRegisteredDate;		// 등록일
 	
-	
+	public String getAttendanceNo() {
+		return attendanceNo;
+	}
+	public void setAttendanceNo(String attendanceNo) {
+		System.out.println(attendanceNo + " <- attendanceNo   setAttendanceNo()   AcademyAbsentReason.java");
+		this.attendanceNo = attendanceNo;
+	}
+	public String getAbsentReason() {
+		return absentReason;
+	}
+	public void setAbsentReason(String absentReason) {
+		System.out.println(absentReason + " <- absentReason   setAbsentReason()   AcademyAbsentReason.java");
+		this.absentReason = absentReason;
+	}
+	public Date getAbsentReasonRegisteredDate() {
+		return absentReasonRegisteredDate;
+	}
+	public void setAbsentReasonRegisteredDate(Date absentReasonRegisteredDate) {
+		System.out.println(absentReasonRegisteredDate
+				+ " <- absentReasonRegisteredDate   setAbsentReasonRegisteredDate()   AcademyAbsentReason.java");
+		this.absentReasonRegisteredDate = absentReasonRegisteredDate;
+	}
 }

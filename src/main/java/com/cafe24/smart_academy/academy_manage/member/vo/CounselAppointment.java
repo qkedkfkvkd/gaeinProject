@@ -13,14 +13,16 @@ public class CounselAppointment {
 		return counselHistoryNo;
 	}
 	public void setCounselHistoryNo(String counselHistoryNo) {
-		System.out.println(counselHistoryNo + " <- counselHistoryNo   setCounselHistoryNo()   Counsel.java");
+		System.out.println(counselHistoryNo
+				+ " <- counselHistoryNo   setCounselHistoryNo()   Counsel.java");
 		this.counselHistoryNo = counselHistoryNo;
 	}
 	public String getCounselResultNo() {
 		return counselResultNo;
 	}
 	public void setCounselResultNo(String counselResultNo) {
-		System.out.println(counselResultNo + " <- counselResultNo   setCounselResultNo()   Counsel.java");
+		System.out.println(counselResultNo
+				+ " <- counselResultNo   setCounselResultNo()   Counsel.java");
 		this.counselResultNo = counselResultNo;
 	}
 	public String getMemberId() {
@@ -34,7 +36,8 @@ public class CounselAppointment {
 		return counselAppointmentDate;
 	}
 	public void setCounselAppointmentDate(String counselAppointmentDate) {
-		System.out.println(counselAppointmentDate + " <- counselAppointmentDate   setCounselAppointmentDate()   Counsel.java");
+		System.out.println(counselAppointmentDate
+				+ " <- counselAppointmentDate   setCounselAppointmentDate()   Counsel.java");
 		this.counselAppointmentDate = counselAppointmentDate;
 	}
 	public Date getCounselAppointmentRegisteredDate() {

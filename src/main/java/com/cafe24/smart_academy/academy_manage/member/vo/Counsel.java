@@ -12,7 +12,8 @@ public class Counsel {
 		return counselHistoryNo;
 	}
 	public void setCounselHistoryNo(String counselHistoryNo) {
-		System.out.println(counselHistoryNo + " <- counselHistoryNo   setCounselHistoryNo()   Counsel.java");
+		System.out.println(counselHistoryNo
+				+ " <- counselHistoryNo   setCounselHistoryNo()   Counsel.java");
 		this.counselHistoryNo = counselHistoryNo;
 	}
 	public String getCounselContent() {
@@ -26,7 +27,8 @@ public class Counsel {
 		return counselRegisteredDate;
 	}
 	public void setCounselRegisteredDate(Date counselRegisteredDate) {
-		System.out.println(counselRegisteredDate + " <- counselRegisteredDate   setCounselRegisteredDate()   Counsel.java");
+		System.out.println(counselRegisteredDate
+				+ " <- counselRegisteredDate   setCounselRegisteredDate()   Counsel.java");
 		this.counselRegisteredDate = counselRegisteredDate;
 	}
 }

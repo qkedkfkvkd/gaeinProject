@@ -34,7 +34,8 @@ public class MemberLogin {
 		return memberRegisteredDate;
 	}
 	public void setMemberRegisteredDate(Date memberRegisteredDate) {
-		System.out.println(memberRegisteredDate + " <- memberRegisteredDate   setMemberRegisteredDate()   Member_login.java");
+		System.out.println(memberRegisteredDate
+				+ " <- memberRegisteredDate   setMemberRegisteredDate()   Member_login.java");
 		this.memberRegisteredDate = memberRegisteredDate;
 	}
 }

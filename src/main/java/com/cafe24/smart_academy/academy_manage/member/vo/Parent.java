@@ -34,7 +34,8 @@ public class Parent {
 		return parentRegisteredDate;
 	}
 	public void setParentRegisteredDate(Date parentRegisteredDate) {
-		System.out.println(parentRegisteredDate + " <- parentRegisteredDate   setParentRegisteredDate()   Parent.java");
+		System.out.println(parentRegisteredDate
+				+ " <- parentRegisteredDate   setParentRegisteredDate()   Parent.java");
 		this.parentRegisteredDate = parentRegisteredDate;
 	}	
 }

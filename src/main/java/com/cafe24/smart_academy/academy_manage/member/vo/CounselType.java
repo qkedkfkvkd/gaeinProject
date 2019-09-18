@@ -22,35 +22,40 @@ public class CounselType {
 		return counselTypeName;
 	}
 	public void setCounselTypeName(String counselTypeName) {
-		System.out.println(counselTypeName + " <- counselTypeName   setCounselTypeName()   CounselType.java");
+		System.out.println(counselTypeName
+				+ " <- counselTypeName   setCounselTypeName()   CounselType.java");
 		this.counselTypeName = counselTypeName;
 	}
 	public String getCounselTypeIsChanged() {
 		return counselTypeIsChanged;
 	}
 	public void setCounselTypeIsChanged(String counselTypeIsChanged) {
-		System.out.println(counselTypeIsChanged + " <- counselTypeIsChanged   setCounselTypeIsChanged()   CounselType.java");
+		System.out.println(counselTypeIsChanged
+				+ " <- counselTypeIsChanged   setCounselTypeIsChanged()   CounselType.java");
 		this.counselTypeIsChanged = counselTypeIsChanged;
 	}
 	public String getCounselTypeReasonForChange() {
 		return counselTypeReasonForChange;
 	}
 	public void setCounselTypeReasonForChange(String counselTypeReasonForChange) {
-		System.out.println(counselTypeReasonForChange + " <- counselTypeReasonForChange   setCounselTypeReasonForChange()   CounselType.java");
+		System.out.println(counselTypeReasonForChange
+				+ " <- counselTypeReasonForChange   setCounselTypeReasonForChange()   CounselType.java");
 		this.counselTypeReasonForChange = counselTypeReasonForChange;
 	}
 	public Date getCounselTypeChangedDate() {
 		return counselTypeChangedDate;
 	}
 	public void setCounselTypeChangedDate(Date counselTypeChangedDate) {
-		System.out.println(counselTypeChangedDate + " <- counselTypeChangedDate   setCounselTypeChangedDate()   CounselType.java");
+		System.out.println(counselTypeChangedDate
+				+ " <- counselTypeChangedDate   setCounselTypeChangedDate()   CounselType.java");
 		this.counselTypeChangedDate = counselTypeChangedDate;
 	}
 	public Date getCounselTypeRegisteredDate() {
 		return counselTypeRegisteredDate;
 	}
 	public void setCounselTypeRegisteredDate(Date counselTypeRegisteredDate) {
-		System.out.println(counselTypeRegisteredDate + " <- counselTypeRegisteredDate   setCounselTypeRegisteredDate()   CounselType.java");
+		System.out.println(counselTypeRegisteredDate
+				+ " <- counselTypeRegisteredDate   setCounselTypeRegisteredDate()   CounselType.java");
 		this.counselTypeRegisteredDate = counselTypeRegisteredDate;
 	}
 }

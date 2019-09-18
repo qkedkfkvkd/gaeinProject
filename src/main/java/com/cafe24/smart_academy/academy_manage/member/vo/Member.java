@@ -66,7 +66,8 @@ public class Member {
 		return memberRegisteredDate;
 	}
 	public void setMemberRegisteredDate(Date memberRegisteredDate) {
-		System.out.println(memberRegisteredDate + " <- memberRegisteredDate   setMemberRegisteredDate()   Member.java");
+		System.out.println(memberRegisteredDate
+				+ " <- memberRegisteredDate   setMemberRegisteredDate()   Member.java");
 		this.memberRegisteredDate = memberRegisteredDate;
 	}
 }
