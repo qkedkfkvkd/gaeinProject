@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>상담구분코드 등록</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>상담구분코드 등록</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-7 col-md-offset-3">
+		<form role="form" id="counselTypeJoinFrm"
+			  action="/addCounselStandard" method="post">
+			<div class="form-group">
+				<label for="inputCounselTypeNo">상담구분코드</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="inputCounselTypeNo"
+						   name="counselTypeNo" >
+					<span class="input-group-btn">
+						<button type="button" class="btn btn-primary btn-sm"
+								id="counselTypeNoOverlapBtn">중복확인</button>
+						<input type="hidden" id="counselTypeNoOverlapClickChk" value="0">
+					</span>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label for="inputCounselTypeName">상담구분명</label>
+				<input type="text" class="form-control" id="inputCounselTypeName"
+					   name="counselTypeName" >
+			</div>
+			
+			<div class="form-group">
+				<div class="row"> <!-- style="vertical-align: bottom;" -->
+					<div class="col-md-6">
+						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+					</div>
+					<div class="col-md-6">
+						<button type="button" id="counselStandardJoinFrmBtn"
+								class="btn btn-primary btn-sm btn-block">입력</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		
+		// 상담구분코드 중복 확인
+		$('#counselTypeNoOverlapBtn').on('click', function(e){
+			e.preventDefault();
+			var inputCounselTypeNo = $('#inputCounselTypeNo').val();
+			console.log(`inputCounselTypeNo:${inputCounselTypeNo}`);
+			
+			if($("#inputCounselTypeNo").val() ==''){
+	            alert('상담구분코드를 입력하세요');
+	            $("#inputCounselTypeNo").focus();
+	            return false;
+	        }
+			
+			$.ajax({
+	            url: '/counselTypeNoOverlapChk',
+	            type: 'POST',
+	            data: inputCounselTypeNo,
+	            dataType: 'json',
+	            contentType: "application/json; charset=UTF-8",
+	            success: function (response) {
+	                if(response.result == 1){
+	                	alert('사용 가능한 코드 입니다.')
+	                    $('#counselTypeNoOverlapClickChk').val(1);
+	                } else if(response.result == 0){
+	                	alert('이미 등록된 코드 입니다');
+	                } else {
+	                    alert('검사 중 에러가 발생했습니다');
+	                }
+	            },
+	            error: function(jqXHR, textStatus, errorThrown){
+	                alert("arjax error : " + textStatus + "\n" + errorThrown);
+	            }
+	        });
+		});
+		
+		// 값을 바꿨을 경우 중복확인 버튼을 다시 눌러야함 (중복확인 버튼 눌럿는지 체크하는 값을 0으로 셋팅) 0:안누름 / 1:누름
+		$("#inputCounselTypeNo").on('change', function(e) {
+			e.preventDefault();
+			$('#counselTypeNoOverlapClickChk').val(0);
+		});
+		
+		
+		// 상담기준코드 등록 처리 전 공백 및 중복확인버튼 눌렀는지 유효성 검사
+		$('#counselStandardJoinFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+			var counselTypeNoOverlapClickChk = $('#counselTypeNoOverlapClickChk').val();
+			var counselResultNoOverlapClickChk = $('#counselResultNoOverlapClickChk').val();
+			
+			console.log(`counselTypeNoOverlapClickChk:${counselTypeNoOverlapClickChk}`);
+			console.log(`counselResultNoOverlapClickChk:${counselResultNoOverlapClickChk}`);
+			console.log('0이면 사용 중, 1이면 사용 가능');
+			
+	        if($("#inputCounselTypeNo").val() ==''){
+	            alert('상담구분코드를 입력하세요');
+	            $('#counselTypeNoOverlapClickChk').val(0);
+	            // 만약 상담구분코드를 입력하고 중복확인 버튼을 눌러서 사용가능한 코드라고 나오면 중복확인 버튼 체크값이 1로 바뀐다.
+	            // 재입력하고자 값을 지웠을 경우 다시 눌러줘야한다.
+	            $("#inputCounselTypeNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#counselTypeNoOverlapClickChk").val() == 0){
+	            alert('상담구분코드 중복확인을 해주세요');
+	            $("#inputCounselTypeNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputCounselResultNo").val() ==''){
+	            alert('상담결과코드를 입력하세요');
+	            $('#counselResultNoOverlapClickChk').val(0);
+	            // 중복확인 버튼을 눌러줘야하므로 중복확인 버튼을 안누른 값으로 셋팅한다.
+	            // 0:안누름 / 1:누름
+	            $("#inputCounselResultNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#counselResultNoOverlapClickChk").val() == 0){
+	            alert('상담결과코드 중복확인을 해주세요');
+	            $("#inputCounselResultNo").focus();
+	            return false;
+	        }
+	        
+	        $('#studentJoinFrm').submit();
+	    });
+	</script>
+</th:block>
+
+</html>

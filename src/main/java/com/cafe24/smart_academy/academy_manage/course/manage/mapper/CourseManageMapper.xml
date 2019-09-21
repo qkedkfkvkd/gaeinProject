@@ -72,4 +72,33 @@
 		where
 		room_no = ${roomNo}
 	</select>
+	
+	
+	<!-- 관리자 : 성적기준 리스트 가져오기 -->
+	<select id="listGradingCriteria"
+			resultType="com.cafe24.smart_academy.academy_manage.course.manage.vo.GradingCriteria">
+		select
+			 grading_criteria_rating				AS gradingCriteriaRating
+			,grading_criteria_start_of_section		AS gradingCriteriaStartOfSection
+			,grading_criteria_end_of_section		AS gradingCriteriaEndOfSection
+			,grading_criteria						AS gradingCriteria
+			,grading_criteria_registered_date		AS gradingCriteriaRegisteredDate
+		from
+			grading_criteria
+	</select>
+	
+	
+	<!-- 관리자 : 성적기준 테이블의 기본키인 등급 중복 확인 -->
+	<select id="gradingCriteriaRatingOverlapCheck"
+			parameterType="String" resultType="String">
+		select
+			grading_criteria_rating
+		from
+			grading_criteria
+		where
+			grading_criteria_rating = #{gradingCriteriaRating}
+	</select>
+	
+	
+	
 </mapper>

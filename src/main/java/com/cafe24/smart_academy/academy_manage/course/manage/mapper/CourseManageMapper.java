@@ -1,10 +1,12 @@
 package com.cafe24.smart_academy.academy_manage.course.manage.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
 import com.cafe24.smart_academy.academy_manage.course.manage.vo.AcademyRoom;
+import com.cafe24.smart_academy.academy_manage.course.manage.vo.GradingCriteria;
 import com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject;
 
 @Mapper
@@ -24,4 +26,12 @@ public interface CourseManageMapper {
 	
 	public String academyRoomNoByacademyRoomNo(String roomNo);
 	// 관리자 : 강의실 코드 중복 확인
+	
+	public List<GradingCriteria> listGradingCriteria();
+	// 관리자 : 성적기준 리스트 가져오기
+	
+	public String gradingCriteriaRatingOverlapCheck(String inputGradingCriteriaRating);
+	// 관리자 : 성적기준 테이블의 기본키인 등급 중복 확인
+	
+	
 }

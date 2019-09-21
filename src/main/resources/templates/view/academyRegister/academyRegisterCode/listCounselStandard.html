@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>상담기준코드 목록</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>상담기준코드 목록</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-11 col-md-offset-3">
+		<form class="form-inline" action="/searchCounselStandard" method="post">
+			<div class="form-group">
+				<label class="sr-only" for="viewCounselTypeList">상담구분명</label>
+				<!-- 상담구분 테이블에서 리스트 뽑아올 것 -->
+				<!-- <div class="input-group"> -->
+				<select id="viewCounselTypeList" name="counselTypeNo"
+						class="form-control">
+					<option value="">상담구분</option>
+					<option value="전화상담구분코드">전화상담</option>
+					<!-- th:each="counselType : ${counselTypeList}" -->
+					<!-- th:value="${counselType.counselTypeNo}" -->
+					<!-- th:text="${counselType.counselTypeName}" -->
+				</select>
+				<!-- </div> -->
+			</div>
+			
+			<div class="form-group" style="margin-left: 6px;">
+				<label class="sr-only" for="viewCounselResultList">상담결과명</label>
+				<!-- 상담결과 테이블에서 리스트 뽑아올 것 -->
+				<!-- <div class="input-group"> -->
+				<select id="viewCounselResultList" name="counselResultNo"
+						class="form-control">
+					<option value="">상담결과</option>
+					<option value="전화상담구분코드">전화상담</option>
+					<!-- th:each="counselType : ${counselTypeList}" -->
+					<!-- th:value="${counselType.counselTypeNo}" -->
+					<!-- th:text="${counselType.counselTypeName}" -->
+				</select>
+				<!-- </div> -->
+			</div>
+			<button type="submit" class="btn btn-default">검색</button>
+		</form>
+		
+		<div class="row">
+			<div class="col-md-6" >
+				<table class="table">
+					<tbody>
+						<tr>
+							<td>
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										onclick="location.href='/addCounselType'">
+									상담구분코드등록
+								</button>
+							</td>
+							<td>
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										onclick="location.href='/addCounselResult'">
+									상담결과코드등록
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>항목코드</th>
+					<th>결과코드</th>
+					<th>항목명</th>
+					<th>결과명</th>
+					<th>등록일</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="counselStandard, lists : ${counselStandardList}"
+					th:if="${counselStandardListSize != 0}">
+					<td th:text="${lists.count}"></td>
+					<td th:text="${counselStandard.counselTypeNo}"></td>
+					<td th:text="${counselStandard.counselResultNo}"></td>
+					<td th:text="${counselStandard.counselTypeName}"></td>
+					<td th:text="${counselStandard.counselResultName}"></td>
+					<td th:text="${counselStandard.counselResultRegisteredDate}"></td>
+				</tr>
+				
+				<tr th:unless="${counselStandardListSize != 0}">
+					<td colspan="6">등록된 상담기준이 없습니다.</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+</th:block>
+
+</html>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cafe24.smart_academy.academy_manage.member.mapper.StudentInfoMapper">
+	
+	<!-- 로그인 테이블에서 해당 아이디 존재여부 확인 -->
+	<select id="memberLoginInfoById" parameterType="String" resultType="String">
+		select
+			member_id
+		from
+			member_login
+		where
+			member_id = #{memberId}
+	</select>
+	
+	
+	<!-- 관리자가 회원등록할 시 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인 -->
+	<select id="memberByEmail" parameterType="String" resultType="String">
+		select
+			member_email
+		from
+			member
+		where
+			member_email = #{memberEmail}
+	</select>
+	
+	
+	<!-- 관리자가 학생 등록시 학부모 테이블에서 유니크값인 폰번호 중복 체크 -->
+	<select id="parentByPhone" parameterType="String" resultType="String">
+		select
+			parent_phone
+		from
+			parent
+		where
+			parent_phone = #{inputParentPhone}
+	</select>
+	
+	
+	<!-- 관리자가 회원등록할 시 로그인 테이블 등록 -->
+	<insert id="addMemberLogin" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin">
+		insert into member_login (
+			 member_id
+			,member_pw
+			,member_level
+			,member_registered_date
+		) values (
+			 #{memberId}
+			,#{memberPw}
+			,#{memberLevel}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자가 회원등록할 시 회원신상정보 테이블 등록 -->
+	<insert id="addMember" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member">
+		insert into member (
+			 member_id
+			,member_name
+			,member_birth
+			,member_email
+			,member_tel
+			,member_phone
+			,member_address
+			,member_registered_date
+		) values (
+			 #{memberId}
+			,#{memberName}
+			,#{memberBirth}
+			,#{memberEmail}
+			,#{memberTel}
+			,#{memberPhone}
+			,#{memberAddress}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 학생 등록시 같이 입력된 학부모 정보를 학부모 테이블에 저장한다. -->
+	<insert id="addParent" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Parent">
+		insert into parent (
+			 member_id
+			,parent_name
+			,parent_phone
+			,parent_registered_date
+		) values (
+			 #{memberId}
+			,#{parentName}
+			,#{parentPhone}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자가 학생목록페이지로 이동하고자 할때 가져올 리스트 -->
+	<select id="listStudentInfo" resultType="map">
+		select
+			 m.member_id					AS memberId
+			,m.member_level					AS memberLevel
+			,me.member_name					AS memberName
+			,me.member_birth				AS memberBirth
+			,me.member_registered_date		AS memberRegisteredDate
+		from
+			member_login m
+		inner join
+			member me
+		on
+			m.member_id = me.member_id
+		where
+			m.member_level = '학생'
+	</select>
+	
+	
+	<!-- 관리자가 특정 학생의 결제정보를 가지고 오고자 할때 사용 -->
+	<select id="paymentInfoById" parameterType="String"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo">
+		select
+			 member_id					AS memberId
+			,payment_day				AS paymentDay
+			,payment_way				AS paymentWay
+			,payment_content			AS paymentContent
+			,payment_schedule_money		AS paymentScheduleMoney
+			,actuality_payment_money	AS actualityPaymentMoney
+			,start_course_day			AS startCourseDay
+			,end_course_day				AS endCourseDay
+			,payment_reference			AS paymentReference
+			,payment_registered_date	AS paymentRegisteredDate
+		from
+			payment_info
+		where
+			member_id = #{memberId}
+	</select>
+	
+	
+	<!-- 관리자 특정 학생의 결제정보 입력 처리 -->
+	<insert id="addPaymentInfo" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo">
+		insert into payment_info (
+			 member_id
+			,payment_day
+			,payment_way
+			,payment_content
+			,payment_schedule_money
+			,actuality_payment_money
+			,start_course_day
+			,end_course_day
+			,payment_reference
+			,payment_registered_date
+		) values (
+			 #{memberId}
+			,#{paymentDay}
+			,#{paymentWay}
+			,#{paymentContent}
+			,#{paymentScheduleMoney}
+			,#{actualityPaymentMoney}
+			,#{startCourseDay}
+			,#{endCourseDay}
+			,#{paymentReference}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 이미 학생 리스트를 가져올 때 권한을 학생만 가져오게 했으므로 굳이 또 권한 학생만 가져오게 조건을 줄 필요가 없다 -->
+	<!-- 관리자의 상담관리 페이지에서 보여줄 학생의 이름과 생년월일을 가져온다. -->
+	<select id="studentInfoIdNameBirthById" parameterType="String"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.Member">
+		select
+			 member_id			AS memberId
+			,member_name		AS memberName
+			,member_birth		AS memberBirth
+		from
+			member
+		where
+			member_id = #{memberId}
+	</select>
+	
+	
+	<!-- 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담내역 리스트 -->
+	<select id="oneStudentCounselHistoryList" parameterType="String" resultType="map">
+		select
+			 ct.counsel_type_no				AS counselTypeNo
+			,ct.counsel_type_name			AS counselTypeName
+			,cr.counsel_result_no			AS counselResultNo
+			,cr.counsel_result_name			AS counselResultName
+			,ca.counsel_history_no			AS counselHistoryNo
+			,ca.counsel_appointment_date	AS counselAppointmentDate
+			,login.member_id				AS memberId
+			,co.counsel_content				AS counselContent
+		from
+			 counsel_type			AS ct
+			,counsel_result			AS cr
+			,counsel_appointment	AS ca
+			,member_login			AS login
+			,counsel				AS co
+		where
+			ct.counsel_type_no = cr.counsel_type_no
+		and
+			cr.counsel_result_no = ca.counsel_result_no
+		and
+			ca.member_id = login.member_id
+		and
+			ca.counsel_history_no = co.counsel_history_no
+		and
+			ca.counsel_whether = 'Y'
+		and
+			ca.counsel_appointment_whether = 'Y'
+		and
+			login.member_id = #{memberId}
+	</select>
+	
+	
+	<!-- 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담예약현황 리스트  -->
+	<select id="oneStudentCounselAppointmentList" parameterType="String" resultType="map">
+		select
+			 ct.counsel_type_no				AS counselTypeNo
+			,ct.counsel_type_name			AS counselTypeName
+			,cr.counsel_result_no			AS counselResultNo
+			,cr.counsel_result_name			AS counselResultName
+			,ca.counsel_history_no			AS counselHistoryNo
+			,ca.counsel_appointment_date	AS counselAppointmentDate
+			,ca.counsel_appointment_whether	AS counselAppointmentWhether
+			,login.member_id				AS memberId
+		from
+			 counsel_type			AS ct
+			,counsel_result			AS cr
+			,counsel_appointment	AS ca
+			,member_login			AS login
+		where
+			ct.counsel_type_no = cr.counsel_type_no
+		and
+			cr.counsel_result_no = ca.counsel_result_no
+		and
+			ca.member_id = login.member_id
+		and
+			ca.counsel_whether = 'N'
+		and
+			ca.counsel_appointment_whether = 'N'
+		and
+			login.member_id = #{memberId}
+	</select>
+</mapper>
