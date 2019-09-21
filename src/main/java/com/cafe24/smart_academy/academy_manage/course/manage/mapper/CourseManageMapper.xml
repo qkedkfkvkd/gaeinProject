@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cafe24.smart_academy.academy_manage.course.manage.mapper.CourseManageMapper">
+	
+	<!-- 관리자 : 과목테이블에서 해당 과목코드가 이미 존재하는지 확인 -->
+	<select id="subjectBySubjectNo" parameterType="String" resultType="String">
+		select
+			subject_no
+		from
+			subject
+		where
+			subject_no = #{subjectNo}
+	</select>
+	
+	
+	<!-- 관리자 : 과목테이블에 과목 추가 처리 -->
+	<insert id="addSubjectCode"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject">
+		insert into subject (
+			 subject_no
+			,subject_name
+			,subject_is_changed
+			,subject_registered_date
+		) values (
+			 #{subjectNo}
+			,#{subjectName}
+			,#{subjectIsChanged}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자 : 과목코드 리스트 가져오기 -->
+	<select id="listSubjectCode"
+			resultType="com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject">
+		select
+			 subject_no						AS subjectNo
+			,subject_name					AS subjectName
+			,subject_is_changed				AS subjectIsChanged
+			,subject_registered_date		AS subjectRegisteredDate
+		from
+			subject
+	</select>
+	
+	
+	<!-- 관리자 : 강의실 리스트 가져오기 -->
+	<select id="listAcademyRoom"
+			resultType="com.cafe24.smart_academy.academy_manage.course.manage.vo.AcademyRoom">
+		select
+			 room_no				AS roomNo
+			,room_number			AS roomNumber
+			,room_floor				AS roomFloor
+			,room_usage				AS roomUsage
+			,room_is_changed		AS roomIsChanged
+			,room_registered_date	AS roomRegisteredDate
+		from
+			academy_room
+	</select>
+	
+	
+	<!-- 관리자 : 강의실 코드 중복 확인 -->
+	<select id="academyRoomNoByacademyRoomNo"
+			parameterType="String" resultType="String">
+		select
+			room_no
+		from
+			academy_room
+		where
+		room_no = ${roomNo}
+	</select>
+</mapper>

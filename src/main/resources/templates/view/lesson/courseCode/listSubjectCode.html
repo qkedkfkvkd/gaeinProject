@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>과목코드목록</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<!-- <div class="page-header"> -->
+		<div class="col-md-10 col-md-offset-3">
+			<h3>과목코드목록</h3>
+		</div>
+	<!-- </div> -->
+	
+	<div class="col-sm-11 col-md-offset-3">
+		<div class="row">
+			<div class="col-md-5" >
+				<table class="table">
+					<tbody>
+						<tr>
+							<td>
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										onclick="location.href='/addSubjectCode'">
+									과목등록
+								</button>
+							</td>
+							<td>
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										onclick="location.href='/updateSubjectCode'">
+									변경된과목
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>코드</th>
+					<th>과목</th>
+					<th>코드변경</th>
+					<th>등록일</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="subject, lists : ${subjectList}"
+					th:if="${subjectListSize != 0}">
+					<td th:text="${lists.count}"></td>
+					<td th:text="${subject.subjectNo}"></td>
+					<td th:text="${subject.subjectName}"></td>
+					<td th:text="${subject.subjectIsChanged}"></td>
+					<td th:text="${subject.subjectRegisteredDate}"></td>
+				</tr>
+				
+				<tr th:unless="${subjectListSize != 0}">
+					<td colspan="5">등록된 과목이 없습니다.</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+</th:block>
+
+</html>

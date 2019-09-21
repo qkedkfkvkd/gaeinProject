@@ -4,35 +4,49 @@
       layout:decorate="~{layout/default}">
 
 <th:block layout:fragment="customTitle">
-	<title>과목코드등록</title>
+	<title>강좌등록</title>
 </th:block>
 
 <th:block layout:fragment="customContents">
 	<div class="page-header">
 		<div class="col-md-6 col-md-offset-3">
-			<h3>과목코드등록</h3>
+			<h3>강좌등록</h3>
 		</div>
 	</div>
 	
 	<div class="col-sm-7 col-md-offset-3">
-		<form role="form" action="/addSubjectNo" method="post">
+		<form role="form" action="/addCourseNo" method="post">
 			<div class="form-group">
-				<label for="inputSubjectNo">과목코드</label>
+				<label for="inputCourseNo">강좌코드</label>
 				<div class="input-group">
-					<input type="text" class="form-control" id="inputSubjectNo"
-						   name="subjectNo">
+					<input type="text" class="form-control" id="inputCourseNo"
+						   name="courseNo">
 					<span class="input-group-btn">
 						<button type="button" class="btn btn-primary btn-sm"
-								id="subjectNoOverlapBtn">중복확인</button>
-						<input type="hidden" id="subjectNoOverlapClickChk" value="0">
+								id="courseNoOverlapBtn">중복확인</button>
+						<input type="hidden" id="courseNoOverlapClickChk" value="0">
 					</span>
 				</div>
 			</div>
 			
 			<div class="form-group">
-				<label for="inputSubjectName">과목명</label>
-				<input type="text" class="form-control" id="inputSubjectName"
-					   name="subjectName">
+				<label class="sr-only" for="viewSubjectList">과목명</label>
+				<!-- <div class="input-group"> -->
+				<select id="viewSubjectList" name="SubjectNo"
+						class="form-control"><!-- th:each="subject : ${subjectList}" -->
+					<option  value="국어">국어</option>
+					<!-- th:value="${subject.subjectNo}" -->
+					<!-- th:text="${subject.subjectName}" -->
+					<option value="영어">영어</option>
+					<option value="수학">수학</option>
+				</select>
+				<!-- </div> -->
+			</div>
+			
+			<div class="form-group">
+				<label for="inputCourseName">강좌명</label>
+				<input type="text" class="form-control" id="inputCourseName"
+					   name="courseName">
 			</div>
 			
 			<div class="form-group">

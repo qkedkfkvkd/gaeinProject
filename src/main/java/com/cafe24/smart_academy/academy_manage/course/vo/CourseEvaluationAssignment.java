@@ -1,4 +1,4 @@
-package com.cafe24.smart_academy.academy_manage.course.manage.vo;
+package com.cafe24.smart_academy.academy_manage.course.vo;
 
 import java.util.Date;
 

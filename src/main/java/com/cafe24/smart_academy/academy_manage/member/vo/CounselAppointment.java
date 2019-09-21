@@ -2,6 +2,7 @@ package com.cafe24.smart_academy.academy_manage.member.vo;
 
 import java.util.Date;
 
+// 상담예약 테이블 VO 객체
 public class CounselAppointment {
 	private String		counselHistoryNo;					// 상담내역코드(기본키)
 	private String		counselResultNo;					// 상담결과코드(상담결과코드 테이블 참조 외래키 1:다 대응)

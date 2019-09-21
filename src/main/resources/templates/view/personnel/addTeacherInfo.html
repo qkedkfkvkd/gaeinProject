@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>강사 등록</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-10 col-md-offset-3">
+			<h3>강사 등록</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-10 col-md-offset-3">
+		<form action="/addTeacher" id="teacherJoinFrm" method="post">
+			<input type="hidden" name="memberLevel" value="강사">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="inputId">아이디</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="inputId" name="memberId"
+								   placeholder="아이디를 입력해주세요">
+							<span class="input-group-btn">
+								<button type="button" id="idOverlapBtn" class="btn btn-primary btn-sm">중복확인</button>
+								<input type="hidden" id="idOverlapClickChk" value="0"> <!-- 0값은 중복확인 안함 -->
+								<!-- <span th:if="${idOverlap ne null}" th:text="${idOverlap}"
+										   id="idOverlapMessage"></span> -->
+							</span>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputPassword">비밀번호</label>
+						<input type="password" class="form-control" id="inputPassword" name="memberPw"
+							   placeholder="비밀번호를 입력해주세요">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputPasswordCheck">비밀번호 확인</label>
+						<input type="password" class="form-control" id="inputPasswordCheck"
+							   placeholder="비밀번호 확인을 위해 다시 한번 입력해주세요">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputName">강사명</label>
+						<input type="text" class="form-control" id="inputName"
+							   name="memberName" placeholder="강사의 이름을 입력해주세요">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputBirth">생년월일</label>
+						<input type="date" class="form-control" id="inputBirth"
+							   name="memberBirth">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputEmail">이메일</label>
+						<div class="input-group">
+							<input type="email" class="form-control" id="inputEmail"
+								   name="memberEmail" placeholder="강사의 이메일을 입력해주세요">
+							<span class="input-group-btn">
+								<button type="button" class="btn btn-primary btn-sm"
+										id="emailOverlapBtn">중복확인</button>
+								<input type="hidden" id="emailOverlapClickChk" value="0">
+							</span>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="inputPhone">강사 휴대폰번호</label>
+						<input type="tel" class="form-control" id="inputPhone"
+							   name="memberPhone" placeholder="강사의 휴대폰 번호를 입력해주세요">
+					</div>
+					
+					<div class="form-group">
+						<label for="checkSubject">담당 과목</label>
+						<!-- <div class="input-group"> -->
+						<table class="table">
+							<tbody>
+								<tr ><!-- th:each="" -->
+									<td>
+										<div class="form-check-inline">
+											<label class="form-check-label">
+												<input type="radio" class="form-check-input"
+													   name="memberLevel"
+													   th:value="${}"
+													   th:text="${}">
+											</label>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<select id="checkSubject" name="subjectNo"
+								class="form-control" ><!-- th:each="" -->
+							<!-- <option th:value="${}" th:text="${}"></option> -->
+						</select>
+						<!-- </div> -->
+					</div>
+					
+					<div class="form-group">
+						<label for="inputTel">집전화</label>
+						<input type="text" class="form-control" id="inputTel"
+							   name="memberTel" placeholder="집전화를 입력해주세요(생략가능)">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputAddr">주소</label>
+						<input type="text" class="form-control" id="inputAddr"
+							   name="memberAddress" placeholder="주소를 입력해주세요">
+					</div>
+					
+					<div class="form-group">
+						<div class="row"> <!-- style="vertical-align: bottom;" -->
+							<div class="col-md-6">
+								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+							</div>
+							<div class="col-md-6">
+								<button type="button" id="teacherJoinFrmBtn"
+										class="btn btn-primary btn-sm btn-block">등록</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+</th:block>
+
+</html>
