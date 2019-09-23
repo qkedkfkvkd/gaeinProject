@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cafe24.smart_academy.academy_manage.member.service.MemberService;
+import com.cafe24.smart_academy.academy_manage.member.vo.CounselResult;
+import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
@@ -145,12 +147,135 @@ public class MemberController {
 		
 		List<Map<String, Object>> counselStandardList =
 				memberService.listCounselStandard();
+		// 관리자 : 상담기준코드 리스트 가져오기
+		
+		int counselTypeListSize = memberService.counselTypeListSize();
+		// 관리자 : 상담기준코드 리스트에서 상담결과코드를 추가할려고 할 때
+		// 참조하는 테이블인 상담구분코드에 레코드가 존재하는지 리스트 사이즈 숫자 리턴
+		// --> 0: 존재하지 않음
+		
+		List<CounselType> counselTypeList = memberService.counselTypeList();
+		// 상담구분코드 테이블에서 전체 상담구분코드 리스트 가져오기
+		// (기본키 - 상담구분코드)와 상담구분명만 가져온다.
+		
+		List<CounselResult> counselResultList = memberService.counselResultList();
+		// 상담결과코드 테이블에서 전체 상담결과코드 리스트 가져오기
+		// (기본키 - 상담결과코드)와 상담결과명만 가져온다.
 		
 		model.addAttribute("counselStandardList", counselStandardList);
 		model.addAttribute("counselStandardListSize", counselStandardList.size());
+		model.addAttribute("counselTypeListSize", counselTypeListSize);
+		model.addAttribute("counselTypeList", counselTypeList);
+		model.addAttribute("counselResultList", counselResultList);
 		return "/view/academyRegister/academyRegisterCode/listCounselStandard";
 	}
 	
 	
-	// 
+	// 관리자 : 상담구분코드 추가폼 이동
+	@GetMapping("/addCounselType")
+	public String addCounselType() {
+		return "/view/academyRegister/academyRegisterCode/addCounselType";
+	}
+	
+	
+	// 관리자 : 상담구분코드 테이블에서 상담구분코드 중복확인
+	@PostMapping("/counselTypeNoOverlapChk")
+	@ResponseBody
+	public Map<Object, Object> counselTypeNoOverlapChk(
+			@RequestBody String inputCounselTypeNo) {
+		System.out.println(inputCounselTypeNo
+				+ "<- inputCounselTypeNo   counselTypeNoOverlapChk()   MemberController.java");
+		
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		
+		String counselTypeNoResult = memberService.counselTypeByCounselTypeNo(inputCounselTypeNo);
+		// 서비스의 상담구분코드 중복확인 메소드 호출
+		
+		if(counselTypeNoResult == null) {
+			map.put("result", 1);
+			// 상담구분코드 테이블에 해당 코드 값이 존재하지 않음 : 사용 가능한 코드
+			
+		} else {
+			map.put("result", 0);
+			// 상담구분코드 테이블에 해당 코드 값이 존재함 : 사용 중인 코드
+		}
+		
+		return map;
+	}
+	
+	
+	// 관리자 : 상담구분코드 추가처리
+	@PostMapping("/addCounselType")
+	public String addCounselType(Model model, CounselType counselType) {
+		String message = memberService.addCounselType(counselType);
+		
+		String path = "/view/academyRegister/academyRegisterCode/addCounselType";
+		// 상담구분코드 추가에 실패했을 경우 다시 상담구분코드를 추가하는 폼으로 이동하게 초기화한다.
+		
+		if(message == null) {
+			// 리턴받은 메세지가 널이라면 상담구분코드 추가에 성공했다는 뜻이다.
+			path = "redirect:/addCounselResult";
+			// 상담결과코드 추가 폼으로 이동한다.
+			
+			//path = "redirect:/listCounselStandard";
+			// 상담기준코드 리스트로 이동한다.
+		}
+		
+		return path;
+	}
+	
+	
+	// 관리자 : 상담결과코드 추가폼 이동
+	@GetMapping("/addCounselResult")
+	public String addCounselResult(Model model) {
+		List<CounselType> counselTypeList = memberService.counselTypeList();
+		
+		model.addAttribute("counselTypeList", counselTypeList);
+		return "/view/academyRegister/academyRegisterCode/addCounselResult";
+	}
+	
+	
+	// 관리자 : 상담결과코드 테이블에서 상담결과코드 중복확인
+	@PostMapping("/counselResultNoOverlapChk")
+	@ResponseBody
+	public Map<Object, Object> counselResultNoOverlapChk(
+			@RequestBody String inputCounselResultNo) {
+		System.out.println(inputCounselResultNo
+				+ "<- inputCounselResultNo   counselResultNoOverlapChk()   MemberController.java");
+		
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		
+		String counselResultNoResult =
+				memberService.counselResultByCounselResultNo(inputCounselResultNo);
+		// 서비스의 상담결과코드 중복확인 메소드 호출
+		
+		if(counselResultNoResult == null) {
+			map.put("result", 1);
+			// 상담결과코드 테이블에 해당 코드 값이 존재하지 않음 : 사용 가능한 코드
+			
+		} else {
+			map.put("result", 0);
+			// 상담결과코드 테이블에 해당 코드 값이 존재함 : 사용 중인 코드
+		}
+		
+		return map;
+	}
+	
+	
+	// 관리자 : 상담결과코드 추가처리
+	@PostMapping("/addCounselResult")
+	public String addCounselResult(Model model, CounselResult counselResult) {
+		String message = memberService.addCounselResult(counselResult);
+		
+		String path = "/view/academyRegister/academyRegisterCode/addCounselResult";
+		// 상담결과코드 추가에 실패했을 경우 다시 상담결과코드를 추가하는 폼으로 이동하게 초기화한다.
+		
+		if(message == null) {
+			// 리턴받은 메세지가 널이라면 상담결과코드 추가에 성공했다는 뜻이다.
+			path = "redirect:/listCounselStandard";
+			// 상담기준코드 리스트로 이동한다.
+		}
+		
+		return path;
+	}
 }

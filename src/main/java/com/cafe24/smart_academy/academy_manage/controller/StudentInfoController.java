@@ -1,8 +1,11 @@
 package com.cafe24.smart_academy.academy_manage.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,8 +15,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cafe24.smart_academy.academy_manage.member.service.MemberService;
 import com.cafe24.smart_academy.academy_manage.member.service.StudentInfoService;
+import com.cafe24.smart_academy.academy_manage.member.vo.Counsel;
+import com.cafe24.smart_academy.academy_manage.member.vo.CounselAppointment;
+import com.cafe24.smart_academy.academy_manage.member.vo.CounselResult;
+import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
+import com.cafe24.smart_academy.academy_manage.member.vo.GetCounselResultNo;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
@@ -22,6 +32,9 @@ import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 @Controller
 public class StudentInfoController {
 // 학생정보관리 컨트롤러
+	
+	@Autowired
+	private MemberService memberService;
 	
 	@Autowired
 	private StudentInfoService studentInfoService;
@@ -46,7 +59,7 @@ public class StudentInfoController {
 	@PostMapping("/parentPhoneOverlapChk")
 	@ResponseBody
 	public Map<Object, Object> parentPhoneOverlapChk(@RequestBody String inputParentPhone) {
-		System.out.println(inputParentPhone + "<- inputParentPhone   parentPhoneOverlapChk()   MemberController.java");
+		System.out.println(inputParentPhone + "<- inputParentPhone   parentPhoneOverlapChk()   StudentInfoController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
 		
@@ -115,7 +128,7 @@ public class StudentInfoController {
 	// 관리자 전용 특정학생 결제정보 폼으로 이동
 	@GetMapping("/viewPayment")
 	public String viewPaymentInfo(@RequestParam(value = "memberId") String memberId, Model model) {
-		System.out.println(memberId + " <- memberId   addPayment()   MemberController.java");
+		System.out.println(memberId + " <- memberId   addPayment()   StudentInfoController.java");
 		
 		PaymentInfo paymentInfo = studentInfoService.viewPaymentInfo(memberId);
 		// 학생의 아이디를 가지고 결제정보 테이블에서 객체를 얻어온다.
@@ -169,10 +182,10 @@ public class StudentInfoController {
 		model.addAttribute("studentInfo", studentInfoService.studentInfoIdNameBirthById(memberId));
 		// 서비스에서 아이디로 해당 학생의 아이디, 이름과 생년월일만 가져와서 바로 모델에 넣어준다.
 		
-		//model.addAttribute("counselTypeList", memberService.counselTypeList());
+		model.addAttribute("counselTypeList", memberService.counselTypeList());
 		// 검색할때 사용할 상담구분테이블에 있는 모든 객체 가져오기
 		
-		//model.addAttribute("counselResultList", memberService.counselResultList());
+		model.addAttribute("counselResultList", memberService.counselResultList());
 		// 검색할때 사용할 상담결과테이블에 있는 모든 객체 가져오기.
 		
 		List<Map<String, Object>> counselHistoryList = 
@@ -180,7 +193,7 @@ public class StudentInfoController {
 		// 화면에 보여줄 해당 학생 상담 내역 리스트
 		
 		System.out.println(counselHistoryList
-					+ " <- counselHistoryList   oneStudentCounselManage()   MemberController.java");
+					+ " <- counselHistoryList   oneStudentCounselManage()   StudentInfoController.java");
 		
 		
 		System.out.println("상담내역리스트 크기 : " + counselHistoryList.size());
@@ -192,7 +205,7 @@ public class StudentInfoController {
 		
 		
 		System.out.println(counselHistoryList
-				+ " <- counselHistoryList   oneStudentCounselManage()   MemberController.java");
+				+ " <- counselHistoryList   oneStudentCounselManage()   StudentInfoController.java");
 		
 		
 		model.addAttribute("counselHistoryList", counselHistoryList);
@@ -204,7 +217,7 @@ public class StudentInfoController {
 		// 화면에 보여줄 해당 학생 상담예약현황 리스트
 		
 		System.out.println(counselAppointmentList
-				+ " <- counselAppointmentList   oneStudentCounselManage()   MemberController.java");
+				+ " <- counselAppointmentList   oneStudentCounselManage()   StudentInfoController.java");
 		
 		
 		System.out.println("상담예약현황리스트 크기 : " + counselAppointmentList.size());
@@ -216,12 +229,130 @@ public class StudentInfoController {
 		
 		
 		System.out.println(counselAppointmentList
-				+ " <- counselAppointmentList   oneStudentCounselManage()   MemberController.java");
+				+ " <- counselAppointmentList   oneStudentCounselManage()   StudentInfoController.java");
 		
 		
 		model.addAttribute("counselAppointmentList", counselAppointmentList);
 		// 화면에 보여줄 해당 학생 상담예약현황 리스트
 		
 		return "/view/academyRegister/studentInfo/counselManage";
+	}
+	
+	
+	// 관리자 : 학생 상담내역 작성
+	@GetMapping("/addCounselHistory")
+	public String addCounselHistory(Model model
+			,@RequestParam(value = "memberId")String memberId
+	/* ,@RequestParam(value = "counselResultName")String counselResultName */) {
+		
+		model.addAttribute("memberId", memberId);
+		// 모델 객체에 회원 아이디 넣어준다.
+		
+		//List<Map<String, Object>> counselKindList =
+		//		studentInfoService.listCounselKind(counselResultName);
+		// 상담결과명이 입학상담인 레코드의 상담구분코드와 상담구분명,
+		// 상담결과코드에서 상담결과코드와 상담결과명을 두 테이블을 서로 조인해서 가져온다.
+		
+		//model.addAttribute("counselKindList", counselKindList);
+		
+		List<CounselResult> counselResultList =
+				studentInfoService.counselResultNameList();
+		// 상담결과코드 이름만 리스트로 가져오기
+		
+		model.addAttribute("counselResultList", counselResultList);
+		
+		return "/view/academyRegister/studentInfo/addCounselHistory";
+	}
+	
+	
+	// 관리자 : 선택한 상담결과코드로 상담구분코드 가져오기
+	@PostMapping("/counselTypeSelect")
+	@ResponseBody
+	public List<CounselType> counselTypeSelect(@RequestBody String counselResultName) {
+		System.out.println(counselResultName + "<- counselResultName   counselTypeSelect()   StudentInfoController.java");
+		
+		//Map<Object, Object> map = new HashMap<Object, Object>();
+		
+		List<CounselType> counselTypeList =
+				studentInfoService.counselTypeListByCounselResultName(counselResultName);
+		// 해당 상담결과코드로 상담구분코드 리스트 가져오기
+		
+		return counselTypeList;
+	}
+	
+	
+	// 관리자 : 상담내역코드 중복확인
+	@PostMapping("/counselHistoryNoOverlapChk")
+	@ResponseBody
+	public Map<Object, Object> counselHistoryNoOverlapChk(@RequestBody String inputCounselHistoryNo) {
+		System.out.println(inputCounselHistoryNo
+				+ "<- inputCounselHistoryNo   counselHistoryNoOverlapChk()   StudentInfoController.java");
+		
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		
+		String counselHistoryNoResult =
+				studentInfoService.counselAppointmentBycounselHistoryNo(inputCounselHistoryNo);
+		// 서비스의 상담내역코드 중복확인 메소드 호출
+		
+		if(counselHistoryNoResult == null) { // 조회한 값이 없다면
+			map.put("result", 1);
+			// 상담예약 테이블에 해당 상담내역코드 값이 존재하지 않음 : 사용 가능한 코드
+			
+			//result = "{\"result\":\"1\"}"; // {"result":"1"} -> 사용 가능한 코드
+		} else {
+			map.put("result", 0);
+			// 상담예약 테이블에 해당 상담내역코드 값이 존재함 : 사용 중인 코드
+			
+			//result = "{\"result\":\"0\"}"; // {"result":"0"} -> 사용 중인 코드
+		}
+		
+		return map;
+	}
+	
+	
+	// 관리자 : 학생 상담내역 추가 처리
+	@PostMapping("/addCounselHistory")
+	public String addCounselHistory(
+			 CounselAppointment appointment
+			,Counsel counsel
+			,GetCounselResultNo getCounselResultNo
+			,Model model
+			,RedirectAttributes redirectAttributes) {
+		// 상담예약객체(CounselAppointment)에는
+		// 상담내역코드, 회원아이디, 상담일자(상담예약일), 상담여부, 예약여부(임시)가 있다.
+		// 필수로 들어가야하는 상담결과코드가 없다.
+		// 상담결과코드는 상담구분코드와 상담결과명으로 구해야한다.
+		
+		String counselResultNo = studentInfoService.getCounselResultNo(getCounselResultNo);
+		// 원래는 이 코드도 학생이 상담예약 신청할 때 있어야하는 코드이다.
+		// 나중에 복붙하면 되지 않을까.
+		
+		appointment.setCounselResultNo(counselResultNo);
+		// 상담예약테이블에 필수로 들어가야하는 상담결과코드를 얻어온 코드로 셋팅한다.
+		// 원래는 학생이 상담예약신청을 하면 상담예약테이블에 객체가 추가되어야한다.
+		// 쿼리 실행을 위해 임시로 써놓았다.
+		// 학생까지 코드가 완료되면 수정할 것이다.
+		
+		String appointmentMessage = studentInfoService.addCounselAppointment(appointment);
+		// 상담예약 테이블 추가 처리
+		
+		int counselResult= studentInfoService.addCounsel(counsel);
+		// 상담 테이블 추가 처리
+		
+		String path = "redirect:/counselManage";
+		// 입력 성공시 해당 학생 상담 관리 페이지로 이동한다.
+		
+		if(appointmentMessage == null & counselResult == 1) { // 입력 성공
+			redirectAttributes.addAttribute("memberId", appointment.getMemberId());
+			// 학생 상담관리 페이지로 리다이렉트하면서 회원 아이디를 같이 넘겨준다.
+			
+		} else { // 메세지가 널이 아니다. 메세지에 값이 존재한다면 입력 실패이다.
+			path = "/view/academyRegister/studentInfo/addCounselHistory";
+			// 상담내역을 다시 입력해야한다.
+			
+			model.addAttribute("insertFail", "입력실패! 다시 입력해주세요.");
+		}
+		
+		return path;
 	}
 }

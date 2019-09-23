@@ -190,11 +190,11 @@
 			,login.member_id				AS memberId
 			,co.counsel_content				AS counselContent
 		from
-			 counsel_type			AS ct
-			,counsel_result			AS cr
-			,counsel_appointment	AS ca
-			,member_login			AS login
-			,counsel				AS co
+			 counsel_type					AS ct
+			,counsel_result					AS cr
+			,counsel_appointment			AS ca
+			,member_login					AS login
+			,counsel						AS co
 		where
 			ct.counsel_type_no = cr.counsel_type_no
 		and
@@ -224,10 +224,10 @@
 			,ca.counsel_appointment_whether	AS counselAppointmentWhether
 			,login.member_id				AS memberId
 		from
-			 counsel_type			AS ct
-			,counsel_result			AS cr
-			,counsel_appointment	AS ca
-			,member_login			AS login
+			 counsel_type					AS ct
+			,counsel_result					AS cr
+			,counsel_appointment			AS ca
+			,member_login					AS login
 		where
 			ct.counsel_type_no = cr.counsel_type_no
 		and
@@ -241,4 +241,110 @@
 		and
 			login.member_id = #{memberId}
 	</select>
+	
+	
+	<!-- 관리자 : 학생 상담관련 폼 이동 시 상담구분코드와 상담결과코드에서 -->
+	<!-- 특정 상담결과명으로된 모든 리스트 가지고 오기 -->
+	<select id="listCounselKind" parameterType="String" resultType="map">
+		select
+			 ct.counsel_type_no				AS counselTypeNo
+			,ct.counsel_type_name			AS counselTypeName
+			,cr.counsel_result_no			AS counselResultNo
+			,cr.counsel_result_name			AS counselResultName
+		from
+			 counsel_type					AS ct
+			,counsel_result					AS cr
+		where
+			ct.counsel_type_no = cr.counsel_type_no
+		and
+			cr.counsel_result_name = #{counselResultName}
+	</select>
+	
+	
+	<!-- 관리자 : 해당 상담결과코드로 상담구분코드 리스트 가져오기 -->
+	<select id="counselTypeListByCounselResultName" parameterType="String"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.CounselType">
+		select distinct
+			 ct.counsel_type_no			AS counselTypeNo
+			,ct.counsel_type_name		AS counselTypeName
+		from
+			 counsel_type				AS ct
+			,counsel_result				AS cr
+		where
+			counsel_result_name=#{counselResultName};
+	</select>
+	
+	
+	<!-- 관리자 : 상담결과코드 이름만 리스트로 가져오기 -->
+	<select id="counselResultNameList"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.CounselResult">
+		select distinct
+			counsel_result_name		AS counselResultName
+		from
+			counsel_result
+	</select>
+	
+	
+	<!-- 관리자 : 상담구분코드와 상담결과명으로 상담결과코드를 얻어온다. -->
+	<select id="getCounselResultNo" resultType="String">	
+		select
+			counsel_result_no		AS counselResultNo
+		from
+			 counsel_type			AS ct
+			,counsel_result			AS cr
+		where
+			ct.counsel_type_no = cr.counsel_type_no
+		and
+			ct.counsel_type_no = #{counselTypeNo}
+		and
+			cr.counsel_result_name = #{counselResultName}
+	</select>
+	
+	
+	<!-- 관리자 : 상담예약테이블에서 상담내역코드 중복 확인 -->
+	<select id="counselAppointmentBycounselHistoryNo"
+			parameterType="String" resultType="String">
+		select
+			counsel_history_no
+		from
+			counsel_appointment
+		where
+			counsel_history_no = #{inputCounselHistoryNo}
+	</select>
+	
+	
+	<!-- 관리자 : 상담예약테이블 추가 처리 -->
+	<insert id="addCounselAppointment">
+		insert into counsel_appointment (
+			 counsel_history_no
+			,counsel_result_no
+			,member_id
+			,counsel_appointment_date
+			,counsel_whether
+			,counsel_appointment_whether
+			,counsel_appointment_registered_date
+		) values (
+			 #{counselHistoryNo}
+			,#{counselResultNo}
+			,#{memberId}
+			,#{counselAppointmentDate}
+			,#{counselWhether}
+			,#{counselAppointmentWhether}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자 : 상담테이블에 상담내용 추가 처리 -->
+	<insert id="addCounsel">
+		insert into counsel (
+			 counsel_history_no
+			,counsel_content
+			,counsel_registered_date
+		) values (
+			 #{counselHistoryNo}
+			,#{counselContent}
+			,curdate()
+		)
+	</insert>
 </mapper>

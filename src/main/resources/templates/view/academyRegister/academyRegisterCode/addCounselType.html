@@ -16,7 +16,8 @@
 	
 	<div class="col-sm-7 col-md-offset-3">
 		<form role="form" id="counselTypeJoinFrm"
-			  action="/addCounselStandard" method="post">
+			  action="/addCounselType" method="post">
+			<input type="hidden" value="무" name="counselTypeIsChanged">
 			<div class="form-group">
 				<label for="inputCounselTypeNo">상담구분코드</label>
 				<div class="input-group">
@@ -42,7 +43,7 @@
 						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 					</div>
 					<div class="col-md-6">
-						<button type="button" id="counselStandardJoinFrmBtn"
+						<button type="button" id="counselTypeJoinFrmBtn"
 								class="btn btn-primary btn-sm btn-block">입력</button>
 					</div>
 				</div>
@@ -95,15 +96,13 @@
 		});
 		
 		
-		// 상담기준코드 등록 처리 전 공백 및 중복확인버튼 눌렀는지 유효성 검사
-		$('#counselStandardJoinFrmBtn').on('click', function(e){
+		// 상담구분코드 등록 처리 전 공백 및 중복확인버튼 눌렀는지 유효성 검사
+		$('#counselTypeJoinFrmBtn').on('click', function(e){
 			e.preventDefault();
 			
 			var counselTypeNoOverlapClickChk = $('#counselTypeNoOverlapClickChk').val();
-			var counselResultNoOverlapClickChk = $('#counselResultNoOverlapClickChk').val();
 			
 			console.log(`counselTypeNoOverlapClickChk:${counselTypeNoOverlapClickChk}`);
-			console.log(`counselResultNoOverlapClickChk:${counselResultNoOverlapClickChk}`);
 			console.log('0이면 사용 중, 1이면 사용 가능');
 			
 	        if($("#inputCounselTypeNo").val() ==''){
@@ -121,22 +120,13 @@
 	            return false;
 	        }
 	        
-	        if($("#inputCounselResultNo").val() ==''){
-	            alert('상담결과코드를 입력하세요');
-	            $('#counselResultNoOverlapClickChk').val(0);
-	            // 중복확인 버튼을 눌러줘야하므로 중복확인 버튼을 안누른 값으로 셋팅한다.
-	            // 0:안누름 / 1:누름
-	            $("#inputCounselResultNo").focus();
+	        if($("#inputCounselTypeName").val() ==''){
+	            alert('상담구분명을 입력하세요');
+	            $("#inputCounselTypeName").focus();
 	            return false;
 	        }
 	        
-	        if($("#counselResultNoOverlapClickChk").val() == 0){
-	            alert('상담결과코드 중복확인을 해주세요');
-	            $("#inputCounselResultNo").focus();
-	            return false;
-	        }
-	        
-	        $('#studentJoinFrm').submit();
+	        $('#counselTypeJoinFrm').submit();
 	    });
 	</script>
 </th:block>

@@ -74,4 +74,93 @@
 		where
 			ct.counsel_type_no = cr.counsel_type_no
 	</select>
+	
+	
+	<!-- 관리자 : 상담구분테이블에 레코드가 존재하는지 확인 -->
+	<select id="counselTypeListSize" resultType="int">
+		select
+			count(*)
+		from
+			counsel_type
+	</select>
+	
+	
+	<!-- 관리자 : 상담구분테이블의 기본키인 상담구분코드 중복 확인 -->
+	<select id="counselTypeByCounselTypeNo" parameterType="String" resultType="String">
+		select
+			counsel_type_no
+		from
+			counsel_type
+		where
+			counsel_type_no = #{inputCounselTypeNo}
+	</select>
+	
+	
+	<!-- 관리자 : 상담구분테이블 추가처리 -->
+	<insert id="addCounselType"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.CounselType">
+		insert into counsel_type (
+			 counsel_type_no
+			,counsel_type_name
+			,counsel_type_is_changed
+			,counsel_type_registered_date
+		) values (
+			 #{counselTypeNo}
+			,#{counselTypeName}
+			,#{counselTypeIsChanged}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자 : 상담결과테이블의 기본키인 상담결과코드 중복 확인 -->
+	<select id="counselResultByCounselResultNo" parameterType="String" resultType="String">
+		select
+			counsel_result_no
+		from
+			counsel_result
+		where
+			counsel_result_no = #{inputCounselResultNo}
+	</select>
+	
+	
+	<!-- 관리자 : 상담결과테이블 추가처리 -->
+	<insert id="addCounselResult"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.CounselResult">
+		insert into counsel_result (
+			 counsel_result_no
+			,counsel_type_no
+			,counsel_result_name
+			,counsel_result_is_changed
+			,counsel_result_registered_date
+		) values (
+			 #{counselResultNo}
+			,#{counselTypeNo}
+			,#{counselResultName}
+			,#{counselResultIsChanged}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자 : 상담구분코드 리스트 가져오기 -->
+	<select id="counselTypeList"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.CounselType">
+		select
+			 counsel_type_no			AS counselTypeNo
+			,counsel_type_name			AS counselTypeName
+		from
+			 counsel_type
+	</select>
+	
+	
+	<!-- 관리자 : 상담결과코드 리스트 가져오기 -->
+	<select id="counselResultList"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.CounselResult">
+		select
+			 counsel_result_no			AS counselResultNo
+			,counsel_result_name		AS counselResultName
+		from
+			counsel_result
+	</select>
 </mapper>

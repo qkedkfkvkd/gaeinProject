@@ -16,7 +16,7 @@
 	
 	<div class="col-sm-7 col-md-offset-3">
 		<form role="form" id="subjectCodeJoinFrm"
-			  action="/addSubjectCode" method="post">
+			  action="/addSubject" method="post">
 			<input type="hidden" value="무" name="subjectIsChanged">
 			
 			<div class="form-group">
@@ -55,7 +55,7 @@
 
 <th:block layout:fragment="customScript">
 	<script type="text/javascript">
-		$(function(){
+		//$(function(){
 			
 			// 과목코드 중복 확인
 			$('#subjectNoOverlapBtn').on('click', function(e){
@@ -132,7 +132,7 @@
 		        
 		        $('#subjectCodeJoinFrm').submit();
 		    });
-		});
+		//});
 	</script>
 </th:block>
 

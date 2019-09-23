@@ -15,7 +15,9 @@
 	</div>
 	
 	<div class="col-sm-7 col-md-offset-3">
-		<form role="form" action="/addRoomNo" method="post">
+		<form role="form" id="academyRoomJoinFrm"
+			  action="/addAcademyRoom" method="post">
+		<input type="hidden" value="무" name="roomIsChanged">
 			<div class="form-group">
 				<label for="inputRoomNo">강의실코드</label>
 				<div class="input-group">
@@ -53,7 +55,8 @@
 						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 					</div>
 					<div class="col-md-6">
-						<button type="submit" class="btn btn-primary btn-sm btn-block">입력</button>
+						<button type="button" id="academyRoomJoinBtn"
+								class="btn btn-primary btn-sm btn-block">입력</button>
 					</div>
 				</div>
 			</div>
@@ -62,6 +65,95 @@
 </th:block>
 
 <th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		// 강의실코드 중복 확인
+		$('#roomNoOverlapBtn').on('click', function(e){
+			e.preventDefault();
+			var inputRoomNo = $('#inputRoomNo').val();
+			console.log(`inputRoomNo:${inputRoomNo}`);
+			
+			if($("#inputRoomNo").val() ==''){
+	            alert('강의실코드를 입력하세요');
+	            $("#inputRoomNo").focus();
+	            return false;
+	        }
+			
+			$.ajax({
+	            url: '/academyRoomNoOverlapCheck',
+	            type: 'POST',
+	            data: inputRoomNo,
+	            dataType: 'json',
+	            contentType: "application/json; charset=UTF-8",
+	            success: function (response) {
+	                if(response.result == 1){
+	                	alert('사용 가능한 강의실코드 입니다.')
+	                    $('#roomNoOverlapClickChk').val(1);
+	                } else if(response.result == 0){
+	                	alert('이미 등록된 강의실코드 입니다');
+	                } else {
+	                    alert('검사 중 에러가 발생했습니다');
+	                }
+	            },
+	            error: function(jqXHR, textStatus, errorThrown){
+	                alert("arjax error : " + textStatus + "\n" + errorThrown);
+	            }
+	        });
+		});
+		
+		// 값을 바꿨을 경우 중복확인 버튼을 다시 눌러야함 (중복확인 버튼 눌럿는지 체크하는 값을 0으로 셋팅) 0:안누름 / 1:누름
+		$("#inputRoomNo").on('change', function(e) {
+			e.preventDefault();
+			$('#roomNoOverlapClickChk').val(0);
+		});
+		
+		
+		// 강의실 등록 처리 전 공백 및 중복확인 버튼 눌렀는지 유효성 검사
+		$('#academyRoomJoinBtn').on('click', function(e){
+			e.preventDefault();
+			
+			var roomNoOverlapClickChk = $('#roomNoOverlapClickChk').val();
+			// 강의실코드 중복확인 체크값을 가져온다.
+			
+			console.log(`roomNoOverlapClickChk:${roomNoOverlapClickChk}`);
+			console.log('0이면 사용 중, 1이면 사용 가능');
+			
+	        if($("#inputRoomNo").val() ==''){
+	            alert('강의실 코드를 입력하세요');
+	            $('#roomNoOverlapClickChk').val(0);
+	            // 만약 강의실코드를 입력하고 중복확인 버튼을 눌러서
+	            // 사용 가능한 강의실 코드라고 나오면 중복확인 버튼 체크값이 1로 바뀐다.
+	            // 재입력하고자 값을 지웠을 경우 다시 눌러줘야한다.
+	            $("#inputRoomNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#roomNoOverlapClickChk").val() == 0){
+	            alert('강의실코드 중복확인을 해주세요');
+	            $("#inputRoomNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputRoomNumber").val() ==''){
+	            alert('호실번호를 입력하세요');
+	            $("#inputRoomNumber").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputRoomFloor").val() ==''){
+	            alert('층수를 입력하세요');
+	            $("#inputRoomFloor").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputRoomUsage").val() ==''){
+	            alert('실용도를 입력하세요');
+	            $("#inputRoomUsage").focus();
+	            return false;
+	        }
+	        
+	        $('#academyRoomJoinFrm').submit();
+	    });
+	</script>
 </th:block>
 
 </html>

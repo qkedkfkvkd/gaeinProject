@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.cafe24.smart_academy.academy_manage.member.vo.CounselResult;
+import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
@@ -28,4 +30,26 @@ public interface MemberMapper {
 	
 	public List<Map<String, Object>> listCounselStandard();
 	// 관리자 : 상담기준코드 리스트 가져오기
+	
+	public int counselTypeListSize();
+	// 관리자 : 상담구분테이블에 레코드가 존재하는지 확인
+	
+	public String counselTypeByCounselTypeNo(String inputCounselTypeNo);
+	// 관리자 : 상담구분테이블의 기본키인 상담구분코드 중복 확인
+	
+	public int addCounselType(CounselType counselType);
+	// 관리자 : 상담구분테이블 추가처리
+	
+	public String counselResultByCounselResultNo(String inputCounselResultNo);
+	// 관리자 : 상담결과코드 테이블에서 상담결과코드 중복확인
+	
+	public int addCounselResult(CounselResult counselResult);
+	// 관리자 : 상담결과테이블 추가처리
+	
+	public List<CounselType> counselTypeList();
+	// 관리자 : 상담구분코드 리스트 가져오기
+	
+	public List<CounselResult> counselResultList();
+	// 관리자 : 상담결과코드 리스트 가져오기
+	
 }

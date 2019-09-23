@@ -8,6 +8,8 @@ public class CounselAppointment {
 	private String		counselResultNo;					// 상담결과코드(상담결과코드 테이블 참조 외래키 1:다 대응)
 	private String		memberId;							// 학생 아이디(로그인테이블 참조 외래키 1:다 대응)
 	private String		counselAppointmentDate;				// 상담예약일
+	private String		counselWhether;						// 상담여부
+	private String		counselAppointmentWhether;			// 예약여부
 	private Date		counselAppointmentRegisteredDate;	// 상담예약 등록일
 	
 	public String getCounselHistoryNo() {
@@ -40,6 +42,21 @@ public class CounselAppointment {
 		System.out.println(counselAppointmentDate
 				+ " <- counselAppointmentDate   setCounselAppointmentDate()   Counsel.java");
 		this.counselAppointmentDate = counselAppointmentDate;
+	}
+	public String getCounselWhether() {
+		return counselWhether;
+	}
+	public void setCounselWhether(String counselWhether) {
+		System.out.println(counselWhether + " <- counselWhether   setCounselWhether()   Counsel.java");
+		this.counselWhether = counselWhether;
+	}
+	public String getCounselAppointmentWhether() {
+		return counselAppointmentWhether;
+	}
+	public void setCounselAppointmentWhether(String counselAppointmentWhether) {
+		System.out.println(counselAppointmentWhether
+				+ " <- counselAppointmentWhether   setCounselAppointmentWhether()   Counsel.java");
+		this.counselAppointmentWhether = counselAppointmentWhether;
 	}
 	public Date getCounselAppointmentRegisteredDate() {
 		return counselAppointmentRegisteredDate;

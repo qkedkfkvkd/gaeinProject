@@ -4,7 +4,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
+import com.cafe24.smart_academy.academy_manage.member.vo.Counsel;
+import com.cafe24.smart_academy.academy_manage.member.vo.CounselAppointment;
+import com.cafe24.smart_academy.academy_manage.member.vo.CounselResult;
+import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
+import com.cafe24.smart_academy.academy_manage.member.vo.GetCounselResultNo;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
@@ -48,4 +54,25 @@ public interface StudentInfoMapper {
 	public List<Map<String, Object>> oneStudentCounselAppointmentList(String memberId);
 	// 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담예약현황 리스트
 	
+	public List<Map<String, Object>> listCounselKind(String counselResultName);
+	// 관리자 : 학생 상담관련 폼 이동 시 상담구분코드와 상담결과코드에서
+	// 특정 상담결과명으로된 모든 리스트 가지고 오기
+	
+	public List<CounselType> counselTypeListByCounselResultName(String counselResultName);
+	// 관리자 : 해당 상담결과코드로 상담구분코드 리스트 가져오기
+	
+	public List<CounselResult> counselResultNameList();
+	// 관리자 : 상담결과코드 이름만 리스트로 가져오기
+	
+	public String getCounselResultNo(GetCounselResultNo getCounselResultNo);
+	// 관리자 : 상담구분코드와 상담결과명으로 상담결과코드를 얻어온다.
+	
+	public int addCounselAppointment(CounselAppointment appointment);
+	// 관리자 : 상담예약테이블 추가 처리
+	
+	public int addCounsel(Counsel counsel);
+	// 관리자 : 상담테이블에 상담내용 추가 처리
+	
+	public String counselAppointmentBycounselHistoryNo(String inputCounselHistoryNo);
+	// 관리자 : 상담예약테이블에서 상담내역코드 중복 확인
 }

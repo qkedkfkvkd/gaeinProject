@@ -19,15 +19,16 @@
 	<div class="col-sm-10 col-md-offset-3">
 		<form class="form-inline mx-auto" action="/searchStudentInfo" method="post">
 			<input type="hidden" th:value="${memberId}" name="memberId">
+			
 			<div class="form-group">
-				<label class="sr-only" for="viewCounselTypeNameList">상담구분명</label>
+				<label class="sr-only" for="counselTypeList">상담구분명</label>
 				<!-- <div class="input-group"> -->
-				<select id="viewCounselTypeNameList" name="counselHistoryNo"
-						class="form-control"><!-- th:each="counselType : ${counselTypeList}" -->
-					<option  value="전화상담구분코드">전화상담</option>
-					<!-- th:value="${counselType.counselTypeNo}" -->
-					<!-- th:text="${counselType.counselTypeName}" -->
-					<option value="방문상담구분코드">방문상담</option>
+				<select id="counselTypeList" name="counselTypeNo"
+						class="form-control">
+					<option value="">상담구분명</option>
+					<option th:each="counselType : ${counselTypeList}"
+							th:value="${counselType.counselTypeNo}"
+							th:text="${counselType.counselTypeName}"></option>
 				</select>
 				<!-- </div> -->
 			</div>
@@ -36,11 +37,11 @@
 				<label class="sr-only" for="viewCounselResultNameList">상담결과명</label>
 				<!-- <div class="input-group"> -->
 				<select id="viewCounselResultNameList" name="counselResultNo"
-						class="form-control"><!-- th:each="counselType : ${counselResultList}" -->
-					<option value="입학상담구분코드">입학상담</option>
-					<!-- th:value="${counselType.counselTypeNo}" -->
-					<!-- th:text="${counselType.counselTypeName}" -->
-					<option value="일반상담구분코드">일반상담</option>
+						class="form-control">
+					<option value="">상담결과명</option>
+					<option th:each="counselResult : ${counselResultList}"
+							th:value="${counselResult.counselResultNo}"
+							th:text="${counselResult.counselResultName}"></option>
 				</select>
 				<!-- </div> -->
 			</div>
@@ -58,7 +59,9 @@
 						<tr>
 							<td>
 								<button type="button" class="btn btn-primary btn-sm btn-block"
-										onclick="">입학상담</button>
+										th:onclick="'window.location.href = \'' + @{/addCounselHistory(memberId=${studentInfo.memberId})} + '\''">
+									입학상담
+								</button>
 							</td>
 						</tr>
 					</tbody>
@@ -107,6 +110,7 @@
 							<th>신청일</th>
 							<th>예약여부</th>
 							<th>예약</th>
+							<th>내용작성</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -120,6 +124,16 @@
 								<button type="button" class="btn btn-primary btn-sm btn-block"
 										onclick="">예약하기</button>
 							</td>
+							<td>
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										onclick="">내용작성</button>
+							</td>
+							<!-- 내용작성버튼을 눌러서 상담내용작성 폼으로 이동하여 -->
+							<!-- 내용을 작성하면 더이상 신청현황에는 보이지 않아야 한다. -->
+							<!-- 컨트롤러에서 상담 테이블에 해당 상담내역코드로된 레코드가 -->
+							<!-- 존재하지 않으면 상담내용이 없는 것이고, 존재하면 상담내용이 있는 것이다. -->
+							<!-- 즉, 상담테이블에 해당 상담내역코드로된 레코드의 존재 여부를 판단하여 -->
+							<!-- 현황에 보일 것인지, 말 것인지 결정한다. -->
 						</tr>
 						
 						<tr th:unless="${counselAppointmentList != null}">

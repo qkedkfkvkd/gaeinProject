@@ -20,12 +20,13 @@
 				<label class="sr-only" for="searchGradingCriteriaRating">등급</label>
 				<!-- <div class="input-group"> -->
 				<select id="searchGradingCriteriaRating" name="gradingCriteriaRating"
-						class="form-control"><!-- th:each="course : ${courseList}" -->
-				<!-- 보통 검색을 할때는 '이름'으로 검색하므로 디비에서 샐렉트시 %강좌명%으로 검색하면 좋을 것이다. -->
-					<option value="국어">국어</option>
-					<!-- th:value="${course.courseName}" -->
-					<!-- th:text="${course.courseName}" -->
-					<option value="영어">영어</option>
+						class="form-control">
+				<!-- 보통 검색을 할때는 '이름'으로 검색하므로 디비에서 샐렉트시 -->
+				<!-- %강좌명%으로 검색하면 좋을 것이다. -->
+					<option value="">등급</option>
+					<option th:each="grade : ${gradingCriteriaList}"
+							th:value="${grade.gradingCriteriaRating}"
+							th:text="${grade.gradingCriteriaRating}"></option>
 				</select>
 				<!-- </div> -->
 			</div>
@@ -39,7 +40,7 @@
 						<tr>
 							<td>
 								<button type="button" class="btn btn-primary btn-sm btn-block"
-										onclick="location.href='/addGradingCriteriaCode'">
+										onclick="location.href='/addGradingCriteria'">
 									성적기준등록
 								</button>
 							</td>

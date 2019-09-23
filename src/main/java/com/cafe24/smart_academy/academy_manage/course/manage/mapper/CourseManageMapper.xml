@@ -6,6 +6,19 @@
 
 <mapper namespace="com.cafe24.smart_academy.academy_manage.course.manage.mapper.CourseManageMapper">
 	
+	<!-- 관리자 : 과목코드 리스트 가져오기 -->
+	<select id="listSubject"
+			resultType="com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject">
+		select
+			 subject_no						AS subjectNo
+			,subject_name					AS subjectName
+			,subject_is_changed				AS subjectIsChanged
+			,subject_registered_date		AS subjectRegisteredDate
+		from
+			subject
+	</select>
+	
+	
 	<!-- 관리자 : 과목테이블에서 해당 과목코드가 이미 존재하는지 확인 -->
 	<select id="subjectBySubjectNo" parameterType="String" resultType="String">
 		select
@@ -18,7 +31,7 @@
 	
 	
 	<!-- 관리자 : 과목테이블에 과목 추가 처리 -->
-	<insert id="addSubjectCode"
+	<insert id="addSubject"
 			parameterType="com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject">
 		insert into subject (
 			 subject_no
@@ -33,18 +46,6 @@
 		)
 	</insert>
 	
-	
-	<!-- 관리자 : 과목코드 리스트 가져오기 -->
-	<select id="listSubjectCode"
-			resultType="com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject">
-		select
-			 subject_no						AS subjectNo
-			,subject_name					AS subjectName
-			,subject_is_changed				AS subjectIsChanged
-			,subject_registered_date		AS subjectRegisteredDate
-		from
-			subject
-	</select>
 	
 	
 	<!-- 관리자 : 강의실 리스트 가져오기 -->
@@ -63,15 +64,37 @@
 	
 	
 	<!-- 관리자 : 강의실 코드 중복 확인 -->
-	<select id="academyRoomNoByacademyRoomNo"
+	<select id="academyRoomByRoomNo"
 			parameterType="String" resultType="String">
 		select
 			room_no
 		from
 			academy_room
 		where
-		room_no = ${roomNo}
+		room_no = #{roomNo}
 	</select>
+	
+	
+	<!-- 관리자 : 강의실 테이블에 해당 강의실 추가 -->
+	<insert id="addAcademyRoom"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.manage.vo.AcademyRoom">
+		insert into academy_room (
+			 room_no
+			,room_number
+			,room_floor
+			,room_usage
+			,room_is_changed
+			,room_registered_date
+		) values (
+			 #{roomNo}
+			,#{roomNumber}
+			,#{roomFloor}
+			,#{roomUsage}
+			,#{roomIsChanged}
+			,curdate()
+		)
+	</insert>
+	
 	
 	
 	<!-- 관리자 : 성적기준 리스트 가져오기 -->
@@ -100,5 +123,21 @@
 	</select>
 	
 	
-	
+	<!-- 관리자 : 성적기준 테이블에 해당 성적기준 추가 -->
+	<insert id="addGradingCriteria"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.manage.vo.GradingCriteria">
+		insert into grading_criteria (
+			 grading_criteria_rating
+			,grading_criteria_start_of_section
+			,grading_criteria_end_of_section
+			,grading_criteria
+			,grading_criteria_registered_date
+		) values (
+			 #{gradingCriteriaRating}
+			,#{gradingCriteriaStartOfSection}
+			,#{gradingCriteriaEndOfSection}
+			,#{gradingCriteria}
+			,curdate()
+		)
+	</insert>
 </mapper>

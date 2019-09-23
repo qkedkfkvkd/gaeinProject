@@ -8,6 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cafe24.smart_academy.academy_manage.member.mapper.StudentInfoMapper;
+import com.cafe24.smart_academy.academy_manage.member.vo.Counsel;
+import com.cafe24.smart_academy.academy_manage.member.vo.CounselAppointment;
+import com.cafe24.smart_academy.academy_manage.member.vo.CounselResult;
+import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
+import com.cafe24.smart_academy.academy_manage.member.vo.GetCounselResultNo;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
@@ -139,5 +144,62 @@ public class StudentInfoService {
 	// 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담예약현황 리스트
 	public List<Map<String, Object>> oneStudentCounselAppointmentList(String memberId) {
 		return studentInfoMapper.oneStudentCounselAppointmentList(memberId);
+	}
+	
+	
+	// 관리자 : 학생 상담관련 폼 이동 시 상담구분코드와 상담결과코드에서
+	// 특정 상담결과명으로된 모든 리스트 가지고 오기
+	public List<Map<String, Object>> listCounselKind(String counselResultName) {
+		return studentInfoMapper.listCounselKind(counselResultName);
+	}
+	
+	// 관리자 : 해당 상담결과코드로 상담구분코드 리스트 가져오기
+	public List<CounselType> counselTypeListByCounselResultName(String counselResultName) {
+		return studentInfoMapper.counselTypeListByCounselResultName(counselResultName);
+	}
+	
+	// 관리자 : 상담결과코드에서 이름만 리스트로 가져오기
+	public List<CounselResult> counselResultNameList(){
+		return studentInfoMapper.counselResultNameList();
+	}
+	
+	// 관리자 : 상담구분코드와 상담결과명으로 상담결과코드를 얻어온다.
+	public String getCounselResultNo(GetCounselResultNo getCounselResultNo) {
+		return studentInfoMapper.getCounselResultNo(getCounselResultNo);
+	}
+	
+
+	// 관리자 : 상담예약테이블에서 상담내역코드 중복 확인
+	public String counselAppointmentBycounselHistoryNo(String inputCounselHistoryNo) {
+		return studentInfoMapper.counselAppointmentBycounselHistoryNo(inputCounselHistoryNo);
+	}
+	
+	
+	// 관리자 : 상담예약테이블에 추가처리
+	public String addCounselAppointment(CounselAppointment appointment) {
+		String existChk = counselAppointmentBycounselHistoryNo(
+									appointment.getCounselHistoryNo());
+		// 상담예약 테이블의 기본키인 상담내역코드로 추가하려는 상담내역코드가
+		// 중복되는지 확인한다.
+		
+		String resultMessage = "usedCounselHistoryNo";
+		
+		if(existChk == null) { // 존재하지않는 상담내역코드(사용 가능한 상담내역코드)
+			int result = studentInfoMapper.addCounselAppointment(appointment);
+			// 상담예약 테이블 추가 처리
+			
+			if(result == 1) { // 상담예약 등록에 성공했다면
+				resultMessage = null;
+				// 리턴 메세지에 널값을 준다.
+			}
+		}
+		
+		return resultMessage;
+	}
+	
+	// 관리자 : 상담테이블에 상담 내용 추가 처리
+	public int addCounsel(Counsel counsel) {
+		return studentInfoMapper.addCounsel(counsel);
+		// 상담 테이블 추가 처리
 	}
 }

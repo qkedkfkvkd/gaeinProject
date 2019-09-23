@@ -16,29 +16,17 @@
 	
 	<div class="col-sm-11 col-md-offset-3">
 		<form class="form-inline" action="/searchStudentInfo" method="post">
-			<div class="form-group">
-				<label class="sr-only" for="searchCourseName">호실번호</label>
-				<!-- <div class="input-group"> -->
-				<select id="searchCourseName" name="courseName"
-						class="form-control"><!-- th:each="course : ${courseList}" -->
-				<!-- 보통 검색을 할때는 '이름'으로 검색하므로 디비에서 샐렉트시 %강좌명%으로 검색하면 좋을 것이다. -->
-					<option value="국어">국어</option>
-					<!-- th:value="${course.courseName}" -->
-					<!-- th:text="${course.courseName}" -->
-					<option value="영어">영어</option>
-				</select>
-				<!-- </div> -->
-			</div>
-			
+			<!-- 보통 검색을 할때는 '이름'으로 검색하므로 디비에서 샐렉트시 -->
+			<!-- %강좌명%으로 검색하면 좋을 것이다. -->
 			<div class="form-group">
 				<label class="sr-only" for="searchRoomFloor">층</label>
 				<!-- <div class="input-group"> -->
 				<select id="searchRoomFloor" name="roomFloor"
-						class="form-control"><!-- th:each="subject : ${subjectList}" -->
-					<option value="국어">국어</option>
-					<!-- th:value="${subject.subjectName}" -->
-					<!-- th:text="${subject.subjectName}" -->
-					<option value="영어">영어</option>
+						class="form-control">
+					<option value="">층수</option>
+					<option th:each="roomFloor : ${roomFloorList}"
+							th:value="${roomFloor}"
+							th:text="${roomFloor + '층'}"></option>
 				</select>
 				<!-- </div> -->
 			</div>
@@ -47,8 +35,9 @@
 				<label class="sr-only" for="searchRoomUsage">실용도</label>
 				<!-- <div class="input-group"> -->
 				<select id="searchRoomUsage" name="roomUsage"
-						class="form-control"><!-- th:each="subject : ${subjectList}" -->
-					<option value="국어반">국어반</option>
+						class="form-control">
+					<option value="">실용도</option>
+					<!-- th:each="subject : ${subjectList}" -->
 					<!-- th:value="${subject.subjectName}" -->
 					<!-- th:text="${subject.subjectName}" -->
 					<option value="영어반">영어반</option>
@@ -65,13 +54,13 @@
 						<tr>
 							<td>
 								<button type="button" class="btn btn-primary btn-sm btn-block"
-										onclick="location.href='/addAcademyRoomCode'">
+										onclick="location.href='/addAcademyRoom'">
 									강의실등록
 								</button>
 							</td>
 							<td>
 								<button type="button" class="btn btn-primary btn-sm btn-block"
-										onclick="location.href='/updateAcademyRoomCode'">
+										onclick="location.href='/updateAcademyRoom'">
 									변경된 강의실
 								</button>
 							</td>
