@@ -61,18 +61,50 @@
 	
 	
 	<!-- 관리자 : 상담기준코드 리스트 가져오기 -->
-	<select id="listCounselStandard" resultType="map">
+	<!-- 관리자 : 선택한 상담구분코드와 상담결과코드로 상담기준리스트 검색결과 가져오기 -->
+	<select id="listCounselStandard"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.CounselResult"
+			resultType="map">
 		select
 			 ct.counsel_type_no					AS counselTypeNo
 			,cr.counsel_result_no				AS counselResultNo
 			,ct.counsel_type_name				AS counselTypeName
 			,cr.counsel_result_name				AS counselResultName
+			,ct.counsel_type_is_changed			AS counselTypeIsChanged
+			,cr.counsel_result_is_changed		AS counselResultIsChanged
 			,cr.counsel_result_registered_date	AS counselResultRegisteredDate
 		from
 			 counsel_type			AS ct
 			,counsel_result			AS cr
 		where
 			ct.counsel_type_no = cr.counsel_type_no
+		<if test="counselTypeNo != null and counselTypeNo neq ''.toString() and counselTypeNo neq 'not'">
+		and
+			ct.counsel_type_no = #{counselTypeNo}
+			<if test="counselResultNo != null and counselResultNo neq ''.toString()">
+		and
+			cr.counsel_result_no = #{counselResultNo}
+			</if>
+		</if>
+	</select>
+	
+	
+	<!-- 관리자 : 상담기준코드 리스트에서 상담구분코드 선택시 -->
+	<!-- 		  선택값에 따른 상담결과코드 보이기 -->
+	<select id="counselResultListBycounselTypeNo"
+			parameterType="String" resultType="map">
+		select
+			 ct.counsel_type_no					AS counselTypeNo
+			,ct.counsel_type_name				AS counselTypeName
+			,cr.counsel_result_no				AS counselResultNo
+			,cr.counsel_result_name				AS counselResultName
+		from
+			 counsel_type			AS ct
+			,counsel_result			AS cr
+		where
+			ct.counsel_type_no = cr.counsel_type_no		
+		and
+			cr.counsel_type_no = #{counselTypeNo}
 	</select>
 	
 	
@@ -96,6 +128,17 @@
 	</select>
 	
 	
+	<!-- 관리자 : 상담구분코드 리스트 가져오기 -->
+	<select id="counselTypeList"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.CounselType">
+		select
+			 counsel_type_no			AS counselTypeNo
+			,counsel_type_name			AS counselTypeName
+		from
+			 counsel_type
+	</select>
+	
+	
 	<!-- 관리자 : 상담구분테이블 추가처리 -->
 	<insert id="addCounselType"
 			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.CounselType">
@@ -111,6 +154,22 @@
 			,curdate()
 		)
 	</insert>
+	
+	
+	<!-- 관리자 : 상담구분코드 테이블 상세보기 -->
+	<select id="detailCounselTypeByCounselTypeNo" parameterType="String"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.CounselType">
+		select
+			 counsel_type_no					AS counselTypeNo
+			,counsel_type_name					AS counselTypeName
+			,counsel_type_reason_for_change		AS counselTypeReasonForChange
+			,counsel_type_changed_date			AS counselTypeChangedDate
+			,counsel_type_registered_date		AS counselTypeRegisteredDate
+		from
+			counsel_type
+		where
+			counsel_type_no = #{counselTypeNo}
+	</select>
 	
 	
 	<!-- 관리자 : 상담결과테이블의 기본키인 상담결과코드 중복 확인 -->
@@ -143,17 +202,6 @@
 	</insert>
 	
 	
-	<!-- 관리자 : 상담구분코드 리스트 가져오기 -->
-	<select id="counselTypeList"
-			resultType="com.cafe24.smart_academy.academy_manage.member.vo.CounselType">
-		select
-			 counsel_type_no			AS counselTypeNo
-			,counsel_type_name			AS counselTypeName
-		from
-			 counsel_type
-	</select>
-	
-	
 	<!-- 관리자 : 상담결과코드 리스트 가져오기 -->
 	<select id="counselResultList"
 			resultType="com.cafe24.smart_academy.academy_manage.member.vo.CounselResult">
@@ -162,5 +210,29 @@
 			,counsel_result_name		AS counselResultName
 		from
 			counsel_result
+	</select>
+	
+	
+	<!-- 관리자 : 상담결과코드 테이블 상세보기 -->
+	<select id="" parameterType="String" resultType="map">
+		select
+			 counsel_result_no		AS counselResultNo
+			,(select
+				ct.counsel_type_name 
+			  from
+			  	 counsel_type		AS ct
+			  	,counsel_result		AS cr
+			  where
+			  	ct.counsel_type_no		= cr.counsel_type_no
+			  and
+			  	cr.counsel_result_no	= #{counselResultNo}) AS counselTypeName
+			,counsel_result_name					AS counselResultName
+			,counsel_result_reason_for_change		AS counselResultReasonForChange
+			,counsel_result_changed_date			AS counselResultChangeDate
+			,counsel_result_registered_date			AS counselResultRegisteredDate
+		from
+			counsel_result
+		where
+			counsel_result_no = #{counselResultNo}
 	</select>
 </mapper>

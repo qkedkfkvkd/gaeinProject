@@ -25,10 +25,12 @@ public class StudentInfoService {
 	@Autowired
 	StudentInfoMapper studentInfoMapper;
 	
+	
 	// 관리자가 학생 등록시 학부모 테이블에서 유니크값인 폰번호 중복 체크
 	public String parentByPhone(String inputParentPhone) {
 		return studentInfoMapper.parentByPhone(inputParentPhone);
 	}
+	
 	
 	// 관리자가 회원 등록할 때 회원 등록 처리
 	public String addStudent(MemberLogin loginInfo, Member memberInfo, Parent parent) {
@@ -97,9 +99,18 @@ public class StudentInfoService {
 	}
 	
 	
-	// 관리자 학생 목록 페이지 목록 가져오기
+	// 관리자 : 디비에서 권한이 학생인 사람들만 목록을 가져오기
+	// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
 	public List<Map<String, Object>> listStudentInfo() {
 		return studentInfoMapper.listStudentInfo();
+	}
+	
+	
+	// 관리자 : 입력한 학생명과 가입기간으로 디비에서 권한이
+	//			학생인 사람들만 목록을 가져온다.
+	// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
+	public List<Map<String, Object>> listStudentInfo(Member member) {
+		return studentInfoMapper.listStudentInfo(member);
 	}
 	
 	
@@ -153,15 +164,18 @@ public class StudentInfoService {
 		return studentInfoMapper.listCounselKind(counselResultName);
 	}
 	
+	
 	// 관리자 : 해당 상담결과코드로 상담구분코드 리스트 가져오기
 	public List<CounselType> counselTypeListByCounselResultName(String counselResultName) {
 		return studentInfoMapper.counselTypeListByCounselResultName(counselResultName);
 	}
 	
+	
 	// 관리자 : 상담결과코드에서 이름만 리스트로 가져오기
 	public List<CounselResult> counselResultNameList(){
 		return studentInfoMapper.counselResultNameList();
 	}
+	
 	
 	// 관리자 : 상담구분코드와 상담결과명으로 상담결과코드를 얻어온다.
 	public String getCounselResultNo(GetCounselResultNo getCounselResultNo) {
@@ -197,9 +211,23 @@ public class StudentInfoService {
 		return resultMessage;
 	}
 	
+	
 	// 관리자 : 상담테이블에 상담 내용 추가 처리
 	public int addCounsel(Counsel counsel) {
 		return studentInfoMapper.addCounsel(counsel);
 		// 상담 테이블 추가 처리
+	}
+	
+	
+	// 관리자 : 예약 현황 리스트 가져오기
+	public List<Map<String, Object>> counselReservationStateList() {
+		return studentInfoMapper.counselReservationStateList();
+	}
+	
+	
+	// 관리자 : 상담예약현황 리스트에서 선택한 상담코드로 검색
+	public List<Map<String, Object>> counselReservationStateList(
+						CounselResult counselResult) {
+		return studentInfoMapper.counselReservationStateList(counselResult);
 	}
 }

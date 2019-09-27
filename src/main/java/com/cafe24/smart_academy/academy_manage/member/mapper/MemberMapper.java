@@ -28,8 +28,22 @@ public interface MemberMapper {
 	public String memberByEmail(String memberEmail);
 	// 관리자가 학생 혹은 강사를 등록할 때 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인
 	
+	
+	
 	public List<Map<String, Object>> listCounselStandard();
 	// 관리자 : 상담기준코드 리스트 가져오기
+	
+	public List<Map<String, Object>> listCounselStandard(CounselResult counselResult);
+	// 관리자 : 선택한 상담구분코드와 상담결과코드로 상담기준리스트 검색결과 가져오기
+	
+	public List<Map<String, Object>> counselResultListBycounselTypeNo(String counselTypeNo);
+	// 관리자 : 상담기준코드 리스트에서 상담구분코드 선택시
+	//			선택값에 따른 상담결과코드 보이기
+	
+	
+	
+	public List<CounselType> counselTypeList();
+	// 관리자 : 상담구분코드 리스트 가져오기
 	
 	public int counselTypeListSize();
 	// 관리자 : 상담구분테이블에 레코드가 존재하는지 확인
@@ -40,16 +54,17 @@ public interface MemberMapper {
 	public int addCounselType(CounselType counselType);
 	// 관리자 : 상담구분테이블 추가처리
 	
+	public CounselType detailCounselTypeByCounselTypeNo(String counselTypeNo);
+	// 관리자 : 상담구분테이블 상세보기
+	
+	
+	
 	public String counselResultByCounselResultNo(String inputCounselResultNo);
 	// 관리자 : 상담결과코드 테이블에서 상담결과코드 중복확인
 	
 	public int addCounselResult(CounselResult counselResult);
 	// 관리자 : 상담결과테이블 추가처리
 	
-	public List<CounselType> counselTypeList();
-	// 관리자 : 상담구분코드 리스트 가져오기
-	
 	public List<CounselResult> counselResultList();
 	// 관리자 : 상담결과코드 리스트 가져오기
-	
 }

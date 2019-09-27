@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cafe24.smart_academy.academy_manage.course.mapper.CourseMapper">
+	
+	<!-- 관리자 : 강좌테이블에서 해당 강좌코드 존재 확인 -->
+	<select id="courseByCourseNo" parameterType="String" resultType="String">
+		select
+			course_no
+		from
+			course
+		where
+			course_no = #{inputCourseNo}
+	</select>
+	
+	
+	<!-- 관리자 : 강좌강의실배정 테이블에서 해당 배정코드 존재 확인 -->
+	<select id="CourseRoomAssignmentBycourseAssignmentNo"
+			parameterType="String" resultType="String">
+		select
+			course_assignment_no
+		from
+			course_room_assignment
+		where
+			course_assignment_no = #{courseAssignmentNo}
+	</select>
+	
+	
+	<!-- 관리자 : 강좌 추가 처리 -->
+	<insert id="addCourse"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.vo.Course">
+		insert into course (
+			 course_no
+			,subject_no
+			,course_name
+			,course_is_changed
+			,course_registered_date
+		) values (
+			 #{courseNo}
+			,#{subjectNo}
+			,#{courseName}
+			,#{courseIsChanged}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자 : 강좌강의실배정 추가처리 -->
+	<insert id="addCourseRoomAssignment"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomAssignment">
+		insert into course_room_assignment (
+			 course_assignment_no
+			,room_no
+			,course_no
+			,course_assignment_is_changed
+			,course_assignment_registered_date
+		) values (
+			 #{courseAssignmentNo}
+			,#{roomNo}
+			,#{courseNo}
+			,#{courseAssignmentIsChanged}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자 : 강좌배정목록 가져오기 -->
+	<!-- 관리자 : 선택한 과목코드 혹은 과목코드와 강좌코드로 강좌 리스트 검색 -->
+	<select id="courseAssignmentList"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO"
+			resultType="map">
+		select
+			 co.course_no				AS courseNo
+			,co.course_name				AS courseName
+			,co.course_registered_date	AS courseRegisteredDate
+			,sub.subject_no				AS subjectNo
+			,sub.subject_name			AS subjectName
+			,cra.course_assignment_no	AS courseAssignmentNo
+			,ro.room_no					AS roomNo
+			,ro.room_number				AS roomNumber
+			,ro.room_floor				AS foomFloor
+			,tea.teacher_id				AS teacherId
+			,mem.member_name			AS memberName
+		from
+			 course						AS co
+			,subject					AS sub
+			,academy_room				AS ro
+			,course_room_assignment		AS cra
+			,teacher					AS tea
+			,member						AS mem
+		where
+			co.subject_no = sub.subject_no
+		and
+			cra.room_no = ro.room_no
+		and
+			cra.course_no = co.course_no
+		and
+			co.course_no = tea.course_no
+		and
+			tea.teacher_id = mem.member_id
+		<!-- 과목을 선택했을 때 -->
+		<if test="subjectNo != null and subjectNo neq ''.toString() and subjectNo neq 'not'">
+		and
+			co.subject_no = #{subjectNo}
+			<!-- ajax 처리로 과목을 선택해야 강좌가 나오므로 과목 안쪽에 조건문을 두었다. -->
+			<!-- 과목을 선택하고 강좌를 선택하지 않으면 밑의 조건문은 실행되지 않는다. -->
+			<!-- 과목을 선택하고 강좌를 선택했을 경우 -->
+			<if test="courseNo != null and courseNo neq ''.toString()">
+		and
+			co.course_no = #{courseNo}
+			</if>
+		</if>
+		<if test="roomNo != null and roomNo neq ''.toString()">
+		and
+			ro.room_no = #{roomNo}
+		</if>
+	</select>
+	
+	
+	<!-- 관리자 : 강좌목록 가져오기 -->
+	<select id="courseList" resultType="map">
+		select
+			 co.course_no				AS courseNo
+			,co.course_name				AS courseName
+			,co.course_registered_date	AS courseRegisteredDate
+			,sub.subject_no				AS subjectNo
+			,sub.subject_name			AS subjectName
+		from
+			 course						AS co
+			,subject					AS sub
+		where
+			co.subject_no = sub.subject_no
+	</select>
+	
+	
+	<!-- 관리자 : 과목 리스트에서 과목코드 선택시 자동으로 -->
+	<!-- 		  해당 과목코드에 맞는 강좌 나오게 하기 -->
+	<select id="courseListBySubjectNo" parameterType="String"
+			resultType="map">
+		select
+			 co.course_no				AS courseNo
+			,co.course_name				AS courseName
+			,sub.subject_name			AS subjectName
+			,co.course_registered_date	AS courseRegisteredDate
+		from
+			 course						AS co
+			,subject					AS sub
+		where
+			co.subject_no = sub.subject_no
+		and
+			co.subject_no = #{subjectNo}
+	</select>
+	
+	
+	<!-- 강의실에 배정하지않은 강좌 리스트 -->
+	<select id="courseNotAssignmentRoom" resultType="map">
+		select
+			 co.course_no					AS courseNo
+			,(select
+				subject_name
+			  from
+			  	subject
+			  where
+			  	subject_no
+			  in
+			  	(co.subject_no))			AS subjectName
+			,co.course_name					AS courseName
+			,co.course_registered_date		AS courseRegisteredDate
+		from
+			course							AS co
+		left join
+			course_room_assignment			AS cra
+		on
+			co.course_no = cra.course_no
+		where
+			cra.course_no is null
+	</select>
+	
+	
+	<!-- 강사와 매칭되지 않은 강좌 리스트 -->
+	<select id="courseNotAssignmentTeacher" resultType="map">
+		select
+			 co.course_no					AS courseNo
+			,(select
+				subject_name
+			  from
+			  	subject
+			  where
+			  	subject_no
+			  in
+			  	(co.subject_no))			AS subjectName
+			,co.course_name					AS courseName
+			,co.course_registered_date		AS courseRegisteredDate
+		from
+			course							AS co
+		left join
+			teacher							AS tea
+		on
+			co.course_no = tea.course_no
+		where
+			tea.course_no is null
+	</select>
+</mapper>

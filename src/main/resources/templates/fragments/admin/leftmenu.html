@@ -50,7 +50,7 @@
 						</li>
 						
 						<li class="nav-item">
-							<a class="nav-link" href="/addPayment">미납현황</a>
+							<a class="nav-link" th:href="@{/notPaymentState}">미납현황</a>
 						</li>
 					</ul>
 				</div>
@@ -72,15 +72,21 @@
 						
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/goodsList}">수업계획관리</a>
+							<!-- 클릭시 강좌별로 강의계획서 리스트를 조회할 수 있게 한다. -->
 						</li>
 						
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/goodsList}">전체시간표</a>
+							<!-- 시간표 오름차순으로 강좌별 시간표를 조회한다. -->
+							<!-- 강사권한의 시간표 작성할 때 참고하면서 작성한다. -->
 						</li>
 						
-						<li class="nav-item"> <!--  -->
+						<!-- 만약 강좌별 금액 테이블을 생성할 것이라면 이 메뉴는 필요하다.
+							 하지만 모든 강좌를 동일한 금액으로 통일할 것이라면 필요없다.
+						<li class="nav-item"> 
 							<a class="nav-link" th:href="@{/goodsList}">강좌별수납관리</a>
 						</li>
+						-->
 					</ul>
 				</div>
 			</li>
@@ -100,9 +106,6 @@
 						</li>
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/goodsList}">교사수업현황</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">교사 3개월 수업현황</a>
 						</li>
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/goodsList}">교사 3개월 수업현황</a>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>강의실 상세</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>강의실 상세</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-11 col-md-offset-3">
+		<div class="row">
+			<div class="col-md-4">
+				<form role="form" id="academyRoomUpdateFrm"
+					  action="/updateAcademyRoom" method="post">
+					<input type="hidden" value="유" name="roomIsChanged">
+					<div class="form-group">
+						<label for="inputRoomNo">강의실코드</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="inputRoomNo"
+								   name="roomNo" th:value="${room.roomNo}"
+								   readonly="readonly">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputRoomNumber">호실번호</label>
+						<input type="number" class="form-control" id="inputRoomNumber"
+							   name="roomNumber" th:value="${room.roomNumber}">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputRoomFloor">층</label>
+						<input type="number" class="form-control" id="inputRoomFloor"
+							   name="roomFloor" th:value="${room.roomFloor}">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputRoomUsage">실용도</label>
+						<input type="text" class="form-control" id="inputRoomUsage"
+							   name="roomUsage" th:value="${room.roomUsage}">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputRoomReasonForChange">코드변경사유</label>
+						<textarea class="form-control" rows="5" id="inputRoomReasonForChange"
+								  name="roomReasonForChange"
+								  th:text="${room.roomReasonForChange}"></textarea>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputRoomChangedDate">변경일</label>
+						<input type="text" class="form-control" id="inputRoomChangedDate"
+							   th:value="${#calendars.format(room.roomChangedDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputRoomRegisteredDate">등록일</label>
+						<input type="text" class="form-control" id="inputRoomRegisteredDate"
+							   th:value="${#calendars.format(room.roomRegisteredDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<div class="row"> <!-- style="vertical-align: bottom;" -->
+							<div class="col-md-4">
+								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+							</div>
+							<div class="col-md-4">
+								<button type="button" id="academyRoomUpdateFrmBtn"
+										class="btn btn-primary btn-sm btn-block">수정</button>
+							</div>
+							<div class="col-md-4">
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/deleteAcademyRoom(roomNo=${room.roomNo})} + '\''">
+									삭제
+								</button>
+								<!-- 과목을 삭제하려면 과목코드를 참조하는 강좌를
+								변경처리한 다음에 삭제하거나 같이 삭제해야하므로
+								과목 삭제시 해당 과목코드를 참조하는 강좌도 같이 보여줘야 한다. -->
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-8">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>강좌</th>
+							<th>과목</th>
+							<th>강의실</th>
+							<th>층</th>
+							<th>강사</th>
+							<th>수정</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="course, lists : ${courseAssignmentList}"
+							th:if="${courseAssignmentListSize != 0}">
+							<td th:text="${lists.count}"></td>
+							<td th:text="${course.courseName}"></td>
+							<td th:text="${course.subjectName}"></td>
+							<td th:text="${course.roomNumber + '호'}"></td>
+							<td th:text="${course.foomFloor + '층'}"></td>
+							<td th:text="${course.memberName}"></td>
+							<td>
+								<button type="button" class="btn btn-success btn-sm"
+										th:onclick="'window.location.href = \'' + @{/updateCourse(courseAssignmentNo=${course.courseAssignmentNo})} + '\''">
+									수정
+								</button>
+							</td>
+						</tr>
+						
+						<tr th:unless="${courseAssignmentListSize != 0}">
+							<td colspan="5">해당 강의실로 등록된 강좌배정목록이 없습니다.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		// 강의실 등록 처리 전 공백 및 중복확인 버튼 눌렀는지 유효성 검사
+		$('#academyRoomUpdateFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+	        if($("#inputRoomNumber").val() ==''){
+	            alert('호실번호를 입력하세요');
+	            $("#inputRoomNumber").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputRoomFloor").val() ==''){
+	            alert('층수를 입력하세요');
+	            $("#inputRoomFloor").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputRoomUsage").val() ==''){
+	            alert('실용도를 입력하세요');
+	            $("#inputRoomUsage").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputRoomReasonForChange").val() ==''){
+	            alert('코드변경사유를 입력하세요');
+	            $("#inputRoomReasonForChange").focus();
+	            return false;
+	        }
+	        
+	        $('#academyRoomUpdateFrm').submit();
+	    });
+	</script>
+</th:block>
+
+</html>

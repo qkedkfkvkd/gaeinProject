@@ -13,6 +13,13 @@ public class Member {
 	private String	memberAddress;				// 주소
 	private Date	memberRegisteredDate;		// 등록일(가입일)
 	
+	
+	////////////////////////////////////////////////////
+	// 검색 전용 변수들
+	private String startJoinDate;				// 가입기간 검색 (시작 날짜)
+	private String endJoinDate;					// 가입기간 검색 (마지막 날짜)
+	
+	
 	public String getMemberId() {
 		return memberId;
 	}
@@ -69,5 +76,23 @@ public class Member {
 		System.out.println(memberRegisteredDate
 				+ " <- memberRegisteredDate   setMemberRegisteredDate()   Member.java");
 		this.memberRegisteredDate = memberRegisteredDate;
+	}
+	
+	
+	//////////////////////////////////////////////////////
+	// 검색 전용 셋터 겟터
+	public String getStartJoinDate() {
+		return startJoinDate;
+	}
+	public void setStartJoinDate(String startJoinDate) {
+		System.out.println(startJoinDate + " <- startJoinDate   setStartJoinDate()   Member.java");
+		this.startJoinDate = startJoinDate;
+	}
+	public String getEndJoinDate() {
+		return endJoinDate;
+	}
+	public void setEndJoinDate(String endJoinDate) {
+		System.out.println(endJoinDate + " <- endJoinDate   setEndJoinDate()   Member.java");
+		this.endJoinDate = endJoinDate;
 	}
 }

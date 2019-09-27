@@ -15,15 +15,13 @@
 	</div>
 	
 	<div class="col-sm-11 col-md-offset-3">
-		<form class="form-inline" action="/searchStudentInfo" method="post">
-			<!-- 보통 검색을 할때는 '이름'으로 검색하므로 디비에서 샐렉트시 -->
-			<!-- %강좌명%으로 검색하면 좋을 것이다. -->
+		<form class="form-inline" action="/searchAcademyRoom" method="post">
 			<div class="form-group">
 				<label class="sr-only" for="searchRoomFloor">층</label>
 				<!-- <div class="input-group"> -->
 				<select id="searchRoomFloor" name="roomFloor"
-						class="form-control">
-					<option value="">층수</option>
+						onchange="roomUsageSelect(this.value)" class="form-control">
+					<option value="0">층수</option>
 					<option th:each="roomFloor : ${roomFloorList}"
 							th:value="${roomFloor}"
 							th:text="${roomFloor + '층'}"></option>
@@ -31,20 +29,16 @@
 				<!-- </div> -->
 			</div>
 			
-			<div class="form-group">
+			<div class="form-group"><!-- 층수를 선택하면 ajax로 층수에 해당하는 실용도가 뜨게 한다. -->
 				<label class="sr-only" for="searchRoomUsage">실용도</label>
 				<!-- <div class="input-group"> -->
 				<select id="searchRoomUsage" name="roomUsage"
 						class="form-control">
 					<option value="">실용도</option>
-					<!-- th:each="subject : ${subjectList}" -->
-					<!-- th:value="${subject.subjectName}" -->
-					<!-- th:text="${subject.subjectName}" -->
-					<option value="영어반">영어반</option>
 				</select>
 				<!-- </div> -->
 			</div>
-			<button type="submit" class="btn btn-default">검색</button>
+			<button type="submit" class="btn btn-success">검색</button>
 		</form>
 		
 		<div class="row">
@@ -80,6 +74,7 @@
 					<th>실용도</th>
 					<th>코드변경</th>
 					<th>등록일</th>
+					<th>상세</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -91,7 +86,13 @@
 					<td th:text="${room.roomFloor}"></td>
 					<td th:text="${room.roomUsage}"></td>
 					<td th:text="${room.roomIsChanged}"></td>
-					<td th:text="${room.roomRegisteredDate}"></td>
+					<td th:text="${#calendars.format(room.roomRegisteredDate,'yyyy-MM-dd')}"></td>
+					<td>
+						<button type="button" class="btn btn-success btn-sm"
+								th:onclick="'window.location.href = \'' + @{/updateAcademyRoom(roomNo=${room.roomNo})} + '\''">
+							상세
+						</button>
+					</td>
 				</tr>
 				
 				<tr th:unless="${roomListSize != 0}">
@@ -103,6 +104,32 @@
 </th:block>
 
 <th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		function roomUsageSelect(roomFloor) {
+			console.log(`roomFloor:${roomFloor}`);
+			
+			$.ajax({
+				 type: "POST"
+				,url: "/roomUsageSelect"
+				,dataType:"json"
+				,data: roomFloor
+				,contentType: "application/json; charset=UTF-8"
+				,success: function(result){
+					//SELECT BOX 초기화           
+					$("#searchRoomUsage").find("option").remove().end().append("<option value=''>실용도</option>");
+					
+					//배열 개수 만큼 option 추가
+					$.each(result, function(i){
+						console.log(`넘어온 실용도:${result}`);
+						$("#searchRoomUsage").append("<option value='"+result[i].roomUsage+"'>"+result[i].roomUsage+"</option>");
+					});    
+				}
+				,error: function (jqXHR, textStatus, errorThrown) {
+					alert("오류가 발생하였습니다.");
+				}
+			});
+		}
+	</script>
 </th:block>
 
 </html>

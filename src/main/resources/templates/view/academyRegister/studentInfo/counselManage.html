@@ -51,7 +51,7 @@
 		
 		<!-- ${#strings.containsIgnoreCase(counselHistoryList.counselResultName,'입학상담')}
 			 상담 기록 중 입학상담이라는 명칭이 없다면 -->
-		<div class="row" th:if="${counselHistoryList eq null}">
+		<div class="row" th:if="${counselHistoryListSize == 0}">
 		<!-- 상담 기록이 없다면 - 어차피 학원 등록할때 처음 상담테이블에 입력하는 상담이 입학상담이다. -->
 			<div class="col-md-3" >
 				<table class="table">
@@ -85,7 +85,7 @@
 					</thead>
 					<tbody>
 						<tr th:each="counsel, lists : ${counselHistoryList}"
-							th:if="${counselHistoryList != null}">
+							th:if="${counselHistoryListSize != 0}">
 							<td th:text="${lists.count}"></td>
 							<td th:text="${counsel.counselTypeName}"></td>
 							<td th:text="${counsel.counselResultName}"></td>
@@ -93,7 +93,7 @@
 							<td th:text="${counsel.counselAppointmentDate}"></td>
 						</tr>
 						
-						<tr th:unless="${counselHistoryList != null}">
+						<tr th:unless="${counselHistoryListSize != 0}">
 							<td colspan="5">등록된 상담 내역이 없습니다.</td>
 						</tr>
 					</tbody>
@@ -114,7 +114,8 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:each="counsel, lists : ${counselAppointmentList}" th:if="${counselAppointmentList != null}">
+						<tr th:each="counsel, lists : ${counselAppointmentList}"
+							th:if="${counselAppointmentListSize != 0}">
 							<td th:text="${lists.count}"></td>
 							<td th:text="${counsel.counselTypeName}"></td>
 							<td th:text="${counsel.counselResultName}"></td>
@@ -136,7 +137,7 @@
 							<!-- 현황에 보일 것인지, 말 것인지 결정한다. -->
 						</tr>
 						
-						<tr th:unless="${counselAppointmentList != null}">
+						<tr th:unless="${counselAppointmentListSize != 0}">
 							<td colspan="5">신청받은 상담예약현황이 없습니다.</td>
 						</tr>
 					</tbody>

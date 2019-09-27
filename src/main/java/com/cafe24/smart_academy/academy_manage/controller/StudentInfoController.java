@@ -1,11 +1,8 @@
 package com.cafe24.smart_academy.academy_manage.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -118,6 +115,20 @@ public class StudentInfoController {
 	}
 	
 	
+	// 관리자 : 학생을 이름 혹은 가입기간으로 검색
+	@PostMapping("/searchStudentInfo")
+	public String searchStudentInfo(Member member, Model model) {
+		List<Map<String, Object>> studentList =
+				studentInfoService.listStudentInfo(member);
+		// 입력한 학생명과 가입기간으로 디비에서 권한이 학생인 사람들만 목록을 가져온다.
+		// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
+		
+		model.addAttribute("studentList", studentList);
+		
+		return "/view/academyRegister/studentInfo/listStudentInfo";
+	}
+	
+	
 	// 관리자 전용 학생관리 페이지 이동
 //	@GetMapping("/studentManage")
 //	public String studentManage() {
@@ -169,12 +180,6 @@ public class StudentInfoController {
 	}
 	
 	
-	// 관리자 전용 예약 현황 리스트 이동
-	@GetMapping("/listCurrentReservationState")
-	public String listCurrentReservationState() {
-		return "/view/academyRegister/studentInfo/listCurrentReservationState";
-	}
-	
 	
 	// 관리자가 학생 목록에서 특정 학생의 상담 관리 페이지로 이동
 	@GetMapping("/counselManage")
@@ -199,9 +204,9 @@ public class StudentInfoController {
 		System.out.println("상담내역리스트 크기 : " + counselHistoryList.size());
 		
 		
-		if(counselHistoryList.size() == 0) { // 해당 학생의 상담 내역이 존재하지 않는다면
-			counselHistoryList = null; // 객체참조변수에 할당된 주소값을 날려버린다.
-		}
+//		if(counselHistoryList.size() == 0) { // 해당 학생의 상담 내역이 존재하지 않는다면
+//			counselHistoryList = null; // 객체참조변수에 할당된 주소값을 날려버린다.
+//		}
 		
 		
 		System.out.println(counselHistoryList
@@ -211,6 +216,8 @@ public class StudentInfoController {
 		model.addAttribute("counselHistoryList", counselHistoryList);
 		// 화면에 보여줄 해당 학생 상담내역 리스트
 		
+		model.addAttribute("counselHistoryListSize", counselHistoryList.size());
+		// 상담 내역을 뿌려줄 것인지, 상담내역이 없다는 메세지를 뿌려줄 것인지 판단용
 		
 		List<Map<String, Object>> counselAppointmentList = 
 				studentInfoService.oneStudentCounselAppointmentList(memberId);
@@ -223,9 +230,9 @@ public class StudentInfoController {
 		System.out.println("상담예약현황리스트 크기 : " + counselAppointmentList.size());
 		
 		
-		if(counselAppointmentList.size() == 0) { // 해당 학생의 상담예약현황이 존재하지 않는다면
-			counselAppointmentList = null; // 객체참조변수에 할당된 주소값을 날려버린다.
-		}
+//		if(counselAppointmentList.size() == 0) { // 해당 학생의 상담예약현황이 존재하지 않는다면
+//			counselAppointmentList = null; // 객체참조변수에 할당된 주소값을 날려버린다.
+//		}
 		
 		
 		System.out.println(counselAppointmentList
@@ -234,6 +241,9 @@ public class StudentInfoController {
 		
 		model.addAttribute("counselAppointmentList", counselAppointmentList);
 		// 화면에 보여줄 해당 학생 상담예약현황 리스트
+		
+		model.addAttribute("counselAppointmentListSize", counselAppointmentList.size());
+		// 상담예약현황을 뿌려줄 것인지, 상담예약현황이 없다는 메세지를 뿌려줄 것인지 판단용
 		
 		return "/view/academyRegister/studentInfo/counselManage";
 	}
@@ -354,5 +364,70 @@ public class StudentInfoController {
 		}
 		
 		return path;
+	}
+	
+	
+	
+	// 관리자 : 상담예약현황 리스트 이동
+	@GetMapping("/listCurrentReservationState")
+	public String listCurrentReservationState(Model model) {
+		
+		List<Map<String, Object>> counselReservationStateList =
+				studentInfoService.counselReservationStateList();
+		// 상담구분 테이블에서 상담구분코드(기본키)와 상담구분명(전화상담, 방문상담 등),
+		// 상담결과 테이블에서 상담결과코드(기본키)와 상담결과명(입학상담, 성적상담 등),
+		// 상담예약 테이블에서 상담내역코드(기본키)와 상담예약일(상담일),
+		// 회원 로그인 테이블에서 회원 아이디,
+		// 회원신상정보 테이블에서 회원명과 생년월일을 가져온다.
+		// 여러 개의 테이블을 조인해서 데이터를 가져오므로 맵 형태의 리스트로 가져온다.
+		
+		
+		List<CounselType> counselTypeList = memberService.counselTypeList();
+		// 상담구분코드 테이블에서 전체 상담구분코드 리스트 가져오기
+		// (기본키 - 상담구분코드)와 상담구분명만 가져온다.
+		
+		
+		model.addAttribute("counselReservationStateList", counselReservationStateList);
+		model.addAttribute("counselReservationStateListSize",
+							counselReservationStateList.size());
+		// 상담예약현황 리스트의 사이즈를 전달하여 사이즈가 0일 경우와 0이 아닐 경우를 판단한다.
+		// 사이즈가 0이면 리스트 대신 '예약된 상담예약현황이 없습니다.' 메세지를 보여준다.
+		
+		model.addAttribute("counselTypeList", counselTypeList);
+		
+		return "/view/academyRegister/studentInfo/listCurrentReservationState";
+	}
+	
+	
+	// 관리자 : 상담예약현황 리스트에서 선택한 상담코드로 검색
+	@PostMapping("/searchCounselReservationStateList")
+	public String searchCounselReservationStateList(
+					CounselResult counselResult ,Model model) {
+		
+		List<Map<String, Object>> counselReservationStateList = 
+				studentInfoService.counselReservationStateList(counselResult);
+		// 선택한 상담구분코드 혹은 상담구분코드와 상담결과코드로
+		// 상담구분 테이블에서 상담구분코드(기본키)와 상담구분명(전화상담, 방문상담 등),
+		// 상담결과 테이블에서 상담결과코드(기본키)와 상담결과명(입학상담, 성적상담 등),
+		// 상담예약 테이블에서 상담내역코드(기본키)와 상담예약일(상담일),
+		// 회원 로그인 테이블에서 회원 아이디,
+		// 회원신상정보 테이블에서 회원명과 생년월일을 가져온다.
+		// 여러 개의 테이블을 조인해서 데이터를 가져오므로 맵 형태의 리스트로 가져온다.
+		
+		
+		List<CounselType> counselTypeList = memberService.counselTypeList();
+		// 상담구분코드 테이블에서 전체 상담구분코드 리스트 가져오기
+		// (기본키 - 상담구분코드)와 상담구분명만 가져온다.
+		
+		
+		model.addAttribute("counselReservationStateList", counselReservationStateList);
+		model.addAttribute("counselReservationStateListSize",
+							counselReservationStateList.size());
+		// 상담예약현황 리스트의 사이즈를 전달하여 사이즈가 0일 경우와 0이 아닐 경우를 판단한다.
+		// 사이즈가 0이면 리스트 대신 '예약된 상담예약현황이 없습니다.' 메세지를 보여준다.
+		
+		model.addAttribute("counselTypeList", counselTypeList);
+		
+		return "/view/academyRegister/studentInfo/listCurrentReservationState";
 	}
 }

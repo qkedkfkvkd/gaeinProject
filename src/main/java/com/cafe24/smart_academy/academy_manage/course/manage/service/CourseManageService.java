@@ -54,10 +54,46 @@ public class CourseManageService {
 	}
 	
 	
+	// 관리자 : 과목 수정을 위해 해당 과목코드의 모든 데이터 가져오기
+	public Subject detailSubjectBySubjectNo(String subjectNo) {
+		return courseManageMapper.detailSubjectBySubjectNo(subjectNo);
+	}
+	
+	
+	// 관리자 : 과목 수정 처리
+	public String updateSubject(Subject subject) {
+		String resultMessage = "updateSubjectFail";
+		// 만약 과목 수정처리에 실패했다면 이 메세지가 리턴될 것이다.
+		
+		int result = courseManageMapper.updateSubject(subject);
+		// 과목 수정 처리
+		
+		if(result == 1) {  // 과목 수정에 성공했다면
+			resultMessage = null;
+			// 리턴 메세지에 널값을 준다
+		}
+		
+		return resultMessage;
+	}
+	
+	
 	
 	// 관리자 : 강의실 리스트 가져오기
 	public List<AcademyRoom> listAcademyRoom() {
 		return courseManageMapper.listAcademyRoom();
+	}
+	
+	
+	// 관리자 : 강의실 리스트에서 층수 선택시 자동으로
+	//			해당 층수에 맞는 실용도 나오게 하기
+	public List<AcademyRoom> roomUsageListByRoomFloor(String roomFloor) {
+		return courseManageMapper.roomUsageListByRoomFloor(roomFloor);
+	}
+	
+	
+	// 관리자 : 강의실 목록에서 강의실 검색
+	public List<AcademyRoom> listAcademyRoom(AcademyRoom room) {
+		return courseManageMapper.listAcademyRoom(room);
 	}
 	
 	
@@ -89,10 +125,39 @@ public class CourseManageService {
 	}
 	
 	
+	// 관리자 : 강의실 상세 보기
+	public AcademyRoom detailRoomByRoomNo(String roomNo) {
+		return courseManageMapper.detailRoomByRoomNo(roomNo);
+	}
+	
+	
+	// 관리자 : 강의실 수정 처리
+	public String updateAcademyRoom(AcademyRoom room) {
+		String resultMessage = "updateAcademyRoomFail";
+		// 만약 강의실 수정처리에 실패했다면 이 메세지가 리턴될 것이다.
+		
+		int result = courseManageMapper.updateAcademyRoom(room);
+		// 강의실 수정 처리
+		
+		if(result == 1) {  // 강의실 수정에 성공했다면
+			resultMessage = null;
+			// 리턴 메세지에 널값을 준다
+		}
+		
+		return resultMessage;
+	}
+	
+	
 	
 	// 관리자 : 성적기준 리스트 가져오기
 	public List<GradingCriteria> listGradingCriteria() {
 		return courseManageMapper.listGradingCriteria();
+	}
+	
+	
+	// 관리자 : 성적기준을 선택하여 검색하기
+	public List<GradingCriteria> listGradingCriteria(String gradingCriteriaRating) {
+		return courseManageMapper.listGradingCriteria(gradingCriteriaRating);
 	}
 	
 	
@@ -123,7 +188,4 @@ public class CourseManageService {
 		
 		return resultMessage;
 	}
-	
-	
-	
 }

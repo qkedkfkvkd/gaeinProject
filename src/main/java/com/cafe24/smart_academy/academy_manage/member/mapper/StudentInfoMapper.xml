@@ -95,8 +95,13 @@
 	</insert>
 	
 	
-	<!-- 관리자가 학생목록페이지로 이동하고자 할때 가져올 리스트 -->
-	<select id="listStudentInfo" resultType="map">
+	<!-- 관리자 : 학생목록페이지로 이동하고자 할때 가져올 리스트 -->
+	<!-- 관리자 : 입력한 학생명과 가입기간으로 디비에서 권한이 -->
+	<!-- 		  학생인 사람들만 목록을 가져온다. -->
+	<!-- 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인 -->
+	<select id="listStudentInfo"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member"
+			resultType="map">
 		select
 			 m.member_id					AS memberId
 			,m.member_level					AS memberLevel
@@ -104,14 +109,38 @@
 			,me.member_birth				AS memberBirth
 			,me.member_registered_date		AS memberRegisteredDate
 		from
-			member_login m
-		inner join
-			member me
+			 member_login					AS m
+			,member							AS me
 		on
 			m.member_id = me.member_id
 		where
 			m.member_level = '학생'
+		
+		<!-- 학생명을 입력했을 경우 -->
+		<if test="memberName != null and memberName neq ''.toString()">
+		and
+			me.member_name = #{memberName}
+		</if>
+		
+		<!-- 시작 가입기간만 입력했을 경우 -->
+		<if test="startJoinDate != null and startJoinDate neq ''.toString() and
+				  (endJoinDate == null or endJoinDate eq ''.toString())">
+		and
+			me.member_registered_date >= #{startJoinDate}
+		</if>
+		
+		<!-- 시작 가입기간부터 마지막 가입기간까지 입력했을 경우 -->
+		<if test="startJoinDate != null and startJoinDate neq ''.toString() and
+				  endJoinDate != null and endJoinDate neq ''.toString()">
+		and
+			me.member_registered_date
+		between
+			#{startJoinDate}
+		and
+			#{endJoinDate}
+		</if>
 	</select>
+	
 	
 	
 	<!-- 관리자가 특정 학생의 결제정보를 가지고 오고자 할때 사용 -->
@@ -347,4 +376,55 @@
 			,curdate()
 		)
 	</insert>
+	
+	
+	<!-- 로그인 테이블은 학생 권한만 가져오기 위함이다. -->
+	<!-- 관리자 : 상담예약현황 리스트 가져오기 -->
+	<!-- 관리자 : 상담예약현황 리스트에서 선택한 상담코드로 검색 -->
+	<select id="counselReservationStateList"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.CounselResult"
+			resultType="map">
+		select
+			 ct.counsel_type_no				AS counselTypeNo
+			,ct.counsel_type_name			AS counselTypeName
+			,cr.counsel_result_no			AS counselResultNo
+			,cr.counsel_result_name			AS counselResultName
+			,ca.counsel_history_no			AS counselHistoryNo
+			,ca.counsel_appointment_date	AS counselAppointmentDate
+			,login.member_id				AS memberId
+			,mem.member_name				AS memberName
+			,mem.member_email				AS memberEmail
+		from
+			 counsel_type					AS ct
+			,counsel_result					AS cr
+			,counsel_appointment			AS ca
+			,member_login					AS login
+			,member							AS mem
+		where
+			ct.counsel_type_no = cr.counsel_type_no
+		and
+			ca.counsel_result_no = cr.counsel_result_no
+		and
+			ca.member_id = login.member_id
+		and
+			ca.counsel_whether = 'N'
+		and
+			ca.counsel_appointment_whether = 'N'
+		and
+			login.member_id = mem.member_id
+		and
+			login.member_level = '학생'
+		<!-- 상담구분을 선택했을 때 -->
+		<if test="counselTypeNo != null and counselTypeNo neq ''.toString() and counselTypeNo neq 'not'">
+		and
+			ct.counsel_type_no = #{counselTypeNo}
+			<!-- ajax 처리로 상담구분을 선택해야 상담결과가 나오므로 상담구분 안쪽에 조건문을 두었다. -->
+			<!-- 상담구분을 선택하고 상담결과를 선택하지 않으면 밑의 조건문은 실행되지 않는다. -->
+			<!-- 상담구분을 선택하고 상담결과를 선택했을 경우 -->
+			<if test="counselResultNo != null and counselResultNo neq ''.toString()">
+		and
+			cr.counsel_result_no = #{counselResultNo}
+			</if>
+		</if>
+	</select>
 </mapper>

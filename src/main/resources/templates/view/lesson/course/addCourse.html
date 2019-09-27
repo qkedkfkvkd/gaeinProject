@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>강좌등록</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>강좌등록</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-8 col-md-offset-3">
+		<form role="form" id="courseJoinFrm" action="/addCourse" method="post">
+			<input type="hidden" value="무" name="courseIsChanged">
+			<input type="hidden" value="무" name="courseAssignmentIsChanged">
+			<div class="form-group">
+				<label for="inputCourseNo">강좌코드</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="inputCourseNo"
+						   name="courseNo">
+					<span class="input-group-btn">
+						<button type="button" class="btn btn-primary btn-sm"
+								id="courseNoOverlapBtn">중복확인</button>
+						<input type="hidden" id="courseNoOverlapClickChk" value="0">
+					</span>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label for="inputCourseAssignNo">강좌배정코드</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="inputCourseAssignNo"
+						   name="courseAssignmentNo">
+					<span class="input-group-btn">
+						<button type="button" class="btn btn-primary btn-sm"
+								id="courseAssignNoOverlapBtn">중복확인</button>
+						<input type="hidden" id="courseAssignNoOverlapClickChk" value="0">
+					</span>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label for="subjectList">과목명</label>
+				<!-- <div class="input-group"> -->
+				<select id="subjectList" name="subjectNo"
+						class="form-control">
+					<option value="">선택</option>
+					<option th:each="subject : ${subjectList}"
+							th:value="${subject.subjectNo}"
+							th:text="${subject.subjectName}"></option>
+				</select>
+				<!-- </div> -->
+			</div>
+			
+			<div class="form-group">
+				<label for="inputCourseName">강좌명</label>
+				<input type="text" class="form-control" id="inputCourseName"
+					   name="courseName">
+			</div>
+			
+			<div class="form-group">
+				<label for="academyRoomList">강의실</label>
+				<!-- <div class="input-group"> -->
+				<select id="academyRoomList" name="roomNo"
+						class="form-control">
+					<option value="">선택</option>
+					<option th:each="room : ${roomList}"
+							th:value="${room.roomNo}"
+							th:text="${room.roomNumber + '호, ' + room.roomFloor + '층, ' + room.roomUsage}"></option>
+				</select>
+				<!-- </div> -->
+			</div>
+			
+			<div class="form-group">
+				<div class="row"> <!-- style="vertical-align: bottom;" -->
+					<div class="col-md-6">
+						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+					</div>
+					<div class="col-md-6">
+						<button type="button" id="courseJoinFrmBtn"
+								class="btn btn-primary btn-sm btn-block">입력</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		
+		// 강좌코드 중복 확인
+		$('#courseNoOverlapBtn').on('click', function(e){
+			e.preventDefault();
+			var inputCourseNo = $('#inputCourseNo').val();
+			console.log(`inputCourseNo:${inputCourseNo}`);
+			
+			if($("#inputCourseNo").val() ==''){
+	            alert('강좌코드를 입력하세요');
+	            $("#inputCourseNo").focus();
+	            return false;
+	        }
+			
+			$.ajax({
+	            url: '/courseNoOverlapChk',
+	            type: 'POST',
+	            data: inputCourseNo,
+	            dataType: 'json',
+	            contentType: "application/json; charset=UTF-8",
+	            success: function (response) {
+	                if(response.result == 1){
+	                	alert('사용 가능한 코드 입니다.')
+	                    $('#courseNoOverlapClickChk').val(1);
+	                } else if(response.result == 0){
+	                	alert('이미 등록된 코드 입니다');
+	                } else {
+	                    alert('검사 중 에러가 발생했습니다');
+	                }
+	            },
+	            error: function(jqXHR, textStatus, errorThrown){
+	                alert("arjax error : " + textStatus + "\n" + errorThrown);
+	            }
+	        });
+		});
+		
+		// 값을 바꿨을 경우 중복확인 버튼을 다시 눌러야함 (중복확인 버튼 눌럿는지 체크하는 값을 0으로 셋팅) 0:안누름 / 1:누름
+		$("#inputCourseNo").on('change', function(e) {
+			e.preventDefault();
+			$('#courseNoOverlapClickChk').val(0);
+		});
+		
+		
+		
+		// 강좌강의실배정코드 중복 확인
+		$('#courseAssignNoOverlapBtn').on('click', function(e){
+			e.preventDefault();
+			var inputCourseAssignNo = $('#inputCourseAssignNo').val();
+			console.log(`inputCourseAssignNo:${inputCourseAssignNo}`);
+			
+			if($("#inputCourseAssignNo").val() ==''){
+	            alert('강좌강의실배정코드를 입력하세요');
+	            $("#inputCourseAssignNo").focus();
+	            return false;
+	        }
+			
+			$.ajax({
+	            url: '/courseAssignmentNoOverlapChk',
+	            type: 'POST',
+	            data: inputCourseAssignNo,
+	            dataType: 'json',
+	            contentType: "application/json; charset=UTF-8",
+	            success: function (response) {
+	                if(response.result == 1){
+	                	alert('사용 가능한 코드 입니다.')
+	                    $('#courseAssignNoOverlapClickChk').val(1);
+	                } else if(response.result == 0){
+	                	alert('이미 등록된 코드 입니다');
+	                } else {
+	                    alert('검사 중 에러가 발생했습니다');
+	                }
+	            },
+	            error: function(jqXHR, textStatus, errorThrown){
+	                alert("arjax error : " + textStatus + "\n" + errorThrown);
+	            }
+	        });
+		});
+		
+		// 값을 바꿨을 경우 중복확인 버튼을 다시 눌러야함 (중복확인 버튼 눌럿는지 체크하는 값을 0으로 셋팅) 0:안누름 / 1:누름
+		$("#inputCourseAssignNo").on('change', function(e) {
+			e.preventDefault();
+			$('#courseAssignNoOverlapClickChk').val(0);
+		});
+		
+		
+		
+		// 강좌 및 강좌강의실배정 등록 처리 전 공백 및 중복확인버튼 눌렀는지 유효성 검사
+		$('#courseJoinFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+			var courseNoOverlapClickChk = $('#courseNoOverlapClickChk').val();
+			var courseNoOverlapClickChk = $('#courseNoOverlapClickChk').val();
+			
+			console.log(`courseNoOverlapClickChk:${courseNoOverlapClickChk}`);
+			console.log(`courseNoOverlapClickChk:${courseNoOverlapClickChk}`);
+			console.log('0이면 사용 중, 1이면 사용 가능');
+			
+	        if($("#inputCourseNo").val() ==''){
+	            alert('강좌코드를 입력하세요');
+	            $('#courseNoOverlapClickChk').val(0);
+	            // 만약 강좌코드를 입력하고 중복확인 버튼을 눌러서 사용가능한 코드라고 나오면 중복확인 버튼 체크값이 1로 바뀐다.
+	            // 재입력하고자 값을 지웠을 경우 다시 눌러줘야한다.
+	            $("#inputCourseNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#courseNoOverlapClickChk").val() == 0){
+	            alert('강좌코드 중복확인을 해주세요');
+	            $("#inputCourseNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputCourseAssignNo").val() ==''){
+	            alert('강좌강의실배정코드를 입력하세요');
+	            $('#courseAssignNoOverlapClickChk').val(0);
+	            // 만약 배정코드를 입력하고 중복확인 버튼을 눌러서 사용가능한 코드라고 나오면 중복확인 버튼 체크값이 1로 바뀐다.
+	            // 재입력하고자 값을 지웠을 경우 다시 눌러줘야한다.
+	            $("#inputCourseAssignNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#courseAssignNoOverlapClickChk").val() == 0){
+	            alert('강좌강의실배정코드 중복확인을 해주세요');
+	            $("#inputCourseAssignNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#subjectList").val() ==''){
+	            alert('과목명을 선택하세요');
+	            $("#subjectList").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputCourseName").val() ==''){
+	            alert('강좌명을 입력하세요');
+	            $("#inputCourseName").focus();
+	            return false;
+	        }
+	        
+	        if($("#academyRoomList").val() ==''){
+	            alert('강의실을 선택하세요');
+	            $("#academyRoomList").focus();
+	            return false;
+	        }
+	        
+	        $('#courseJoinFrm').submit();
+	    });
+	</script>
+</th:block>
+
+</html>

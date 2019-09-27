@@ -149,24 +149,75 @@ public class MemberController {
 				memberService.listCounselStandard();
 		// 관리자 : 상담기준코드 리스트 가져오기
 		
+		
 		int counselTypeListSize = memberService.counselTypeListSize();
 		// 관리자 : 상담기준코드 리스트에서 상담결과코드를 추가할려고 할 때
 		// 참조하는 테이블인 상담구분코드에 레코드가 존재하는지 리스트 사이즈 숫자 리턴
 		// --> 0: 존재하지 않음
 		
+		
 		List<CounselType> counselTypeList = memberService.counselTypeList();
 		// 상담구분코드 테이블에서 전체 상담구분코드 리스트 가져오기
 		// (기본키 - 상담구분코드)와 상담구분명만 가져온다.
 		
-		List<CounselResult> counselResultList = memberService.counselResultList();
+		
+		//List<CounselResult> counselResultList = memberService.counselResultList();
 		// 상담결과코드 테이블에서 전체 상담결과코드 리스트 가져오기
 		// (기본키 - 상담결과코드)와 상담결과명만 가져온다.
+		
 		
 		model.addAttribute("counselStandardList", counselStandardList);
 		model.addAttribute("counselStandardListSize", counselStandardList.size());
 		model.addAttribute("counselTypeListSize", counselTypeListSize);
 		model.addAttribute("counselTypeList", counselTypeList);
-		model.addAttribute("counselResultList", counselResultList);
+		//model.addAttribute("counselResultList", counselResultList);
+		return "/view/academyRegister/academyRegisterCode/listCounselStandard";
+	}
+	
+	
+	// 관리자 : 상담기준코드 리스트에서 상담구분코드 선택시
+	//			선택값에 따른 상담결과코드 보이기
+	@PostMapping("/counselResultSelect")
+	@ResponseBody
+	public List<Map<String, Object>> counselResultSelect(@RequestBody String counselTypeNo) {
+		System.out.println(counselTypeNo
+				+ "<- counselTypeNo   counselResultSelect()   MemberController.java");
+		
+		//Map<Object, Object> map = new HashMap<Object, Object>();
+		
+		List<Map<String, Object>> counselResultList =
+				memberService.counselResultListBycounselTypeNo(counselTypeNo);
+		// 해당 강의실 층수로 강의실 실용도 리스트 가져오기
+		
+		return counselResultList;
+	}
+	
+	
+	// 관리자 : 선택한 상담구분코드와 상담결과코드로 상담기준리스트 검색결과 가져오기
+	@PostMapping("/searchCounselStandard")
+	public String searchCounselStandard(CounselResult counselResult, Model model) {
+		
+		List<Map<String, Object>> searchCounselStandardList =
+				memberService.listCounselStandard(counselResult);
+		// 선택한 상담구분코드와 상담결과코드로 상담기준리스트 검색결과 가져오기
+		
+		
+		int counselTypeListSize = memberService.counselTypeListSize();
+		// 관리자 : 상담기준코드 리스트에서 상담결과코드를 추가할려고 할 때
+		// 참조하는 테이블인 상담구분코드에 레코드가 존재하는지 리스트 사이즈 숫자 리턴
+		// --> 0: 존재하지 않음
+		
+		
+		List<CounselType> counselTypeList = memberService.counselTypeList();
+		// 상담구분코드 테이블에서 전체 상담구분코드 리스트 가져오기
+		// (기본키 - 상담구분코드)와 상담구분명만 가져온다.
+		
+		
+		model.addAttribute("counselStandardList", searchCounselStandardList);
+		model.addAttribute("counselStandardListSize", searchCounselStandardList.size());
+		model.addAttribute("counselTypeListSize", counselTypeListSize);
+		model.addAttribute("counselTypeList", counselTypeList);
+		
 		return "/view/academyRegister/academyRegisterCode/listCounselStandard";
 	}
 	
@@ -225,6 +276,28 @@ public class MemberController {
 	}
 	
 	
+	// 관리자 : 상담구분코드 상세 보기
+	@GetMapping("/updateCounselType")
+	public String updateCounselType(@RequestParam("counselTypeNo") String counselTypeNo
+				, Model model) {
+		CounselType counselType =
+				memberService.detailCounselTypeByCounselTypeNo(counselTypeNo);
+		// 해당 상담구분코드를 가진 상담구분 전체 내용 가져오기
+		
+		List<Map<String, Object>> counselResultList =
+				memberService.counselResultListBycounselTypeNo(counselTypeNo);
+		// 해당 상담구분코드를 참조하는 상담결과목록 가져오기
+		
+		model.addAttribute("counselType", counselType);
+		model.addAttribute("counselResultList", counselResultList);
+		model.addAttribute("counselResultListSize", counselResultList.size());
+		// 상담 리스트의 사이즈를 보고 상담구분-결과목록를 뿌려줄 것인지,
+		// '해당 항목으로 등록된 상담결과목록이 없습니다.'메세지를 뿌려줄 것인지 판단한다.
+		
+		return "/view/academyRegister/academyRegisterCode/detailCounselType";
+	}
+	
+	
 	// 관리자 : 상담결과코드 추가폼 이동
 	@GetMapping("/addCounselResult")
 	public String addCounselResult(Model model) {
@@ -278,4 +351,8 @@ public class MemberController {
 		
 		return path;
 	}
+	
+	
+	
+	
 }

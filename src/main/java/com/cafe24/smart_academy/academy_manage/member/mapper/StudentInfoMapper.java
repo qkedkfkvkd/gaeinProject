@@ -36,14 +36,25 @@ public interface StudentInfoMapper {
 	public int addParent(Parent parent);
 	// 관리자가 학생 등록할 때 학부모 등록 처리
 	
+	
+	
 	public List<Map<String, Object>> listStudentInfo();
 	// 관리자가 학생 목록 페이지로 이동할 때 가져올 목록
+	
+	public List<Map<String, Object>> listStudentInfo(Member member);
+	// 관리자 : 입력한 학생명과 가입기간으로 디비에서 권한이
+	//			학생인 사람들만 목록을 가져온다.
+	// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
+	
+	
 	
 	public PaymentInfo paymentInfoById(String memberId);
 	// 관리자 전용 특정 학생의 결제정보 가져오기
 	
 	public int addPaymentInfo(PaymentInfo paymentInfo);
 	// 관리자 전용 특정 학생 결제정보 입력 처리
+	
+	
 	
 	public Member studentInfoIdNameBirthById(String memberId);
 	// 관리자 상담관리 페이지에 보여줄 특정 학생의 이름과 생년월일 가져오기
@@ -75,4 +86,13 @@ public interface StudentInfoMapper {
 	
 	public String counselAppointmentBycounselHistoryNo(String inputCounselHistoryNo);
 	// 관리자 : 상담예약테이블에서 상담내역코드 중복 확인
+	
+	
+	
+	public List<Map<String, Object>> counselReservationStateList();
+	// 관리자 : 예약 현황 리스트 가져오기
+	
+	public List<Map<String, Object>> counselReservationStateList(
+						CounselResult counselResult);
+	// 관리자 : 상담예약현황 리스트에서 선택한 상담코드로 검색
 }

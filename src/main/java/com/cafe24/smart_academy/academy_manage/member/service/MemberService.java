@@ -70,11 +70,24 @@ public class MemberService {
 	}
 	
 	
+	// 관리자 : 선택한 상담구분코드와 상담결과코드로 상담기준리스트 검색결과 가져오기
+	public List<Map<String, Object>> listCounselStandard(CounselResult counselResult) {
+		return memberMapper.listCounselStandard(counselResult);
+	}
+	
+	
 	// 관리자 : 상담기준코드 리스트에서 상담결과코드를 추가할려고 할 때
 	// 참조하는 테이블인 상담구분코드에 레코드가 존재하는지 리스트 사이즈 숫자 리턴
 	// --> 0: 존재하지 않음
 	public int counselTypeListSize() {
 		return memberMapper.counselTypeListSize();
+	}
+	
+	
+	// 관리자 : 상담기준코드 리스트에서 상담구분코드 선택시
+	//			선택값에 따른 상담결과코드 보이기
+	public List<Map<String, Object>> counselResultListBycounselTypeNo(String counselTypeNo) {
+		return memberMapper.counselResultListBycounselTypeNo(counselTypeNo);
 	}
 	
 	
@@ -107,10 +120,15 @@ public class MemberService {
 	}
 	
 	
-	
 	// 관리자 : 상담구분코드 리스트 가져오기
 	public List<CounselType> counselTypeList() {
 		return memberMapper.counselTypeList();
+	}
+	
+	
+	// 관리자 : 상담구분코드 상세보기
+	public CounselType detailCounselTypeByCounselTypeNo(String counselTypeNo) {
+		return memberMapper.detailCounselTypeByCounselTypeNo(counselTypeNo);
 	}
 	
 	
@@ -147,6 +165,7 @@ public class MemberService {
 	public List<CounselResult> counselResultList() {
 		return memberMapper.counselResultList();
 	}
+	
 	
 	
 }

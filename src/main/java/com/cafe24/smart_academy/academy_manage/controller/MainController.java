@@ -14,7 +14,7 @@ public class MainController {
 		String path = "/view/index";
 		// 권한이 학생이거나 로그인 전일 경우의 메인페이지로 초기화
 		
-		if(session.getAttribute("memberLevel") != null) {  // 로그인을 하지 않았다면
+		if(session.getAttribute("memberLevel") != null) {  // 로그인을 한 경우라면
 			String memberLevel = (String)session.getAttribute("memberLevel");
 			
 			if(memberLevel.equals("관리자")) {

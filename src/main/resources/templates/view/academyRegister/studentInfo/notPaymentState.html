@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>미납현황</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-10 col-md-offset-3">
+			<h3>미납현황</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-10 col-md-offset-3">
+		<form class="form-inline" id="studentNotPaymentInfoFrm"
+			  action="/searchStudentNotPaymentInfo" method="post">
+			<div class="form-group">
+				<label class="sr-only" for="searchMemberName">학생명</label>
+				<input type="text" class="form-control" id="searchMemberName"
+						   name="memberName" placeholder="학생 이름을 입력하세요.">
+			</div>
+			
+			<div class="form-group" style="margin-left: 6px;">
+				<label for="inputJoinDate">가입기간</label>
+				<div class="input-group">
+					<input type="date" class="form-control" id="inputJoinDate"
+						   name="startJoinDate" placeholder="시작 가입일을 선택하세요."> ~ 
+					<input type="date" class="form-control" id="inputEndJoinDate"
+						   name="endJoinDate" placeholder="마지막 가입일을 선택하세요.">
+					<!-- 가운데 물결표시는 부트스트랩으로 처리할 수 있으면 부트스트랩으로 처리하기 -->  
+				</div>
+			</div>
+			<button type="button" id="studentNotPaymentInfoFrmBtn"
+					class="btn btn-default">검색</button>
+		</form>
+		
+		
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>아이디</th>
+					<th>권한</th>
+					<th>학생명</th>
+					<th>실납부금액</th>
+					<th>납부예정금액</th>
+					<th>회원등록일</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="student, lists : ${studentList}"
+					th:if="${studentList != null}">
+					<td th:text="${lists.count}"></td>
+					<td th:text="${student.memberId}"></td>
+					<td th:text="${student.memberLevel}"></td>
+					<td th:text="${student.memberName}"></td>
+					<td th:text="${student.actualityPaymentMoney}"></td>
+					<td th:text="${student.paymentScheduleMoney}"></td>
+					<td th:text="${student.memberRegisteredDate}"></td>
+				</tr>
+				
+				<tr th:unless="${studentList != null}">
+					<td colspan="7">등록된 학생이 없습니다.</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		
+		<form action="/addPaymentInfo" id="paymentInfoJoinFrm" method="post">
+			
+		</form>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		// 특정 학생의 결제정보 등록 처리 전 선택체크 및 공백 유효성 검사
+		$('#studentNotPaymentInfoFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+	        if($("#searchMemberName").val() =='' ||
+	           $("#inputJoinDate").val() =='') {
+	            alert('학생명이나 가입기간 중 하나라도 입력하셔야 합니다.');
+	            $("#searchMemberName").focus();
+	            return false;
+	        }
+	        
+	        $('#studentNotPaymentInfoFrm').submit();
+	    });
+	</script>
+</th:block>
+
+</html>

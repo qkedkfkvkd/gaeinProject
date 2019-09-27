@@ -21,8 +21,6 @@
 				<!-- <div class="input-group"> -->
 				<select id="searchGradingCriteriaRating" name="gradingCriteriaRating"
 						class="form-control">
-				<!-- 보통 검색을 할때는 '이름'으로 검색하므로 디비에서 샐렉트시 -->
-				<!-- %강좌명%으로 검색하면 좋을 것이다. -->
 					<option value="">등급</option>
 					<option th:each="grade : ${gradingCriteriaList}"
 							th:value="${grade.gradingCriteriaRating}"

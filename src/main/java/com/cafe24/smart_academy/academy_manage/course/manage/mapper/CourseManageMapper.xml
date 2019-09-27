@@ -47,9 +47,47 @@
 	</insert>
 	
 	
+	<!-- 관리자: 과목 수정을 위해 해당 과목코드의 모든 데이터 가져오기 -->
+	<select id="detailSubjectBySubjectNo" parameterType="String"
+			resultType="com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject">
+		select
+			 subject_no					AS subjectNo
+			,subject_name				AS subjectName
+			,subject_reason_for_change	AS subjectReasonForChange
+			,subject_changed_date		AS subjectChangedDate
+			,subject_registered_date	AS subjectRegisteredDate
+		from
+			subject
+		where
+			subject_no = #{subjectNo}
+	</select>
+	
+	
+	<!-- 관리자 : 과목 수정 처리 -->
+	<update id="updateSubject"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject">
+		update
+			subject
+		<trim prefix="set" prefixOverrides=",">
+			<if test="subjectName != null and subjectName neq ''.toString()">
+				 subject_name				= #{subjectName}
+			</if>
+			<if test="subjectReasonForChange != null and subjectReasonForChange neq ''.toString()">
+				,subject_reason_for_change	= #{subjectReasonForChange}
+			</if>
+				,subject_is_changed			= #{subjectIsChanged}
+				,subject_changed_date		= curdate()
+		</trim>
+		where
+			subject_no = #{subjectNo}
+	</update>
+	
+	
 	
 	<!-- 관리자 : 강의실 리스트 가져오기 -->
+	<!-- 관리자 : 강의실 목록에서 강의실 검색 -->
 	<select id="listAcademyRoom"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.manage.vo.AcademyRoom"
 			resultType="com.cafe24.smart_academy.academy_manage.course.manage.vo.AcademyRoom">
 		select
 			 room_no				AS roomNo
@@ -60,6 +98,28 @@
 			,room_registered_date	AS roomRegisteredDate
 		from
 			academy_room
+		<trim prefix="WHERE" prefixOverrides="and|or">
+			<if test="roomFloor != null and roomFloor neq ''.toString() and roomFloor neq '0'">
+					room_floor = #{roomFloor}
+				<if test="roomUsage != null and roomUsage neq ''.toString()">
+				and
+					room_usage = #{roomUsage}
+				</if>
+			</if>
+		</trim>
+	</select>
+	
+	
+	<!-- 관리자 : 강의실 리스트에서 층수 선택시 자동으로 -->
+	<!-- 해당 층수에 맞는 실용도 나오게 하기 -->
+	<select id="roomUsageListByRoomFloor" parameterType="String"
+			resultType="com.cafe24.smart_academy.academy_manage.course.manage.vo.AcademyRoom">
+		select
+			room_usage		AS roomUsage
+		from
+			academy_room
+		where
+			room_floor = #{roomFloor}
 	</select>
 	
 	
@@ -96,9 +156,55 @@
 	</insert>
 	
 	
+	<!-- 관리자 : 강의실 상세 보기 -->
+	<select id="detailRoomByRoomNo" parameterType="String"
+			resultType="com.cafe24.smart_academy.academy_manage.course.manage.vo.AcademyRoom">
+		select
+			 room_no					AS roomNo
+			,room_number				AS roomNumber
+			,room_floor					AS roomFloor
+			,room_usage					AS roomUsage
+			,room_is_changed			AS roomIsChanged
+			,room_reason_for_change		AS roomReasonForChange
+			,room_changed_date			AS roomChangedDate
+			,room_registered_date		AS roomRegisteredDate
+		from
+			academy_room
+		where
+			room_no = #{roomNo}
+	</select>
+	
+	
+	<!-- 관리자 : 강의실 수정 처리 -->
+	<update id="updateAcademyRoom"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.manage.vo.AcademyRoom">
+		update
+			academy_room
+		<trim prefix="set" prefixOverrides=",">
+			<if test="roomNumber != null and roomNumber neq ''.toString()">
+				 room_number				= #{roomNumber}
+			</if>
+			<if test="roomFloor != null and roomFloor neq ''.toString()">
+				,room_floor					= #{roomFloor}
+			</if>
+			<if test="roomUsage != null and roomUsage neq ''.toString()">
+				,room_usage					= #{roomUsage}
+			</if>
+			<if test="roomReasonForChange != null and roomReasonForChange neq ''.toString()">
+				,room_reason_for_change		= #{roomReasonForChange}
+			</if>
+				,room_is_changed			= #{roomIsChanged}
+				,room_changed_date			= curdate()
+		</trim>
+		where
+			room_no = #{roomNo}
+	</update>
+	
+	
 	
 	<!-- 관리자 : 성적기준 리스트 가져오기 -->
-	<select id="listGradingCriteria"
+	<!-- 관리자 : 성적기준을 선택하여 검색하기 -->
+	<select id="listGradingCriteria" parameterType="String"
 			resultType="com.cafe24.smart_academy.academy_manage.course.manage.vo.GradingCriteria">
 		select
 			 grading_criteria_rating				AS gradingCriteriaRating
@@ -108,6 +214,11 @@
 			,grading_criteria_registered_date		AS gradingCriteriaRegisteredDate
 		from
 			grading_criteria
+		<trim prefix="where">
+			<if test="gradingCriteriaRating != null and gradingCriteriaRating neq ''.toString()">
+				grading_criteria_rating = #{gradingCriteriaRating}
+			</if>
+		</trim>
 	</select>
 	
 	

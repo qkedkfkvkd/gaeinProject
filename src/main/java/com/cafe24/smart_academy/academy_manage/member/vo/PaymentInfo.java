@@ -15,6 +15,13 @@ public class PaymentInfo {
 	private String		paymentReference;			// 결제 참고사항
 	private Date		paymentRegisteredDate;		// 결제정보 등록일
 	
+	// 모든 강좌를 동일한 금액으로 통일시키든지,
+	// 강좌별 금액 테이블을 하나 더 생성해서 만들든지 해야한다.
+	// 테이블 생성시 강좌코드(기본키이자 강좌테이블 강좌코드 참조 외래키 1:1 대응),
+	// 금액, 등록일로 속성 3개만 넣는다.
+	// 일단은 모든 강좌를 동일한 금액으로 통일시켜서 진행하는 방향으로 결정한다.
+	// 한 강좌당 한달에 얼마 내고 다니는 방식으로 한다.
+	
 	public String getMemberId() {
 		return memberId;
 	}
