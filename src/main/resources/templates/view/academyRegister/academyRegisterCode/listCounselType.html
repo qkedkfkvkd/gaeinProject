@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>상담구분코드 목록</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>상담구분코드 목록</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-11 col-md-offset-3">
+		<form class="form-inline" action="/searchCounselType" method="post">
+			<div class="form-group">
+				<label class="sr-only" for="counselTypeList">상담구분명</label>
+				<!-- <div class="input-group"> -->
+				<select id="counselTypeList" name="counselTypeNo"
+						class="form-control">
+					<option value="not">상담구분명</option>
+					<option th:each="counselType : ${counselTypeList}"
+							th:value="${counselType.counselTypeNo}"
+							th:text="${counselType.counselTypeName}"></option>
+				</select>
+				<!-- </div> -->
+			</div>
+			<button type="submit" class="btn btn-success">검색</button>
+		</form>
+		
+		<div class="row">
+			<div class="col-md-3" >
+				<table class="table">
+					<tbody>
+						<tr>
+							<td>
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										onclick="location.href='/addCounselType'">
+									상담구분코드등록
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	
+		
+		<table class="table table-striped" style="text-align: center;">
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>항목코드</th>
+					<th>항목명</th>
+					<th>항목변경</th>
+					<th>등록일</th>
+					<th>상세</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="counselType, lists : ${counselTypeList}"
+					th:if="${counselTypeListSize != 0}">
+					<td th:text="${lists.count}"></td>
+					<td th:text="${counselType.counselTypeNo}"></td>
+					<td th:text="${counselType.counselTypeName}"></td>
+					<td th:text="${counselType.counselTypeIsChanged}"></td>
+					<td th:text="${#calendars.format(counselType.counselTypeRegisteredDate,'yyyy-MM-dd')}"></td>
+					<td>
+						<button type="button" class="btn btn-success btn-sm"
+								th:onclick="'window.location.href = \'' + @{/updateCounselType(counselTypeNo=${counselType.counselTypeNo})} + '\''">
+							상세
+						</button>
+					</td>
+				</tr>
+				
+				<tr th:unless="${counselTypeListSize != 0}">
+					<td colspan="8">등록된 상담구분이 없습니다.</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+</th:block>
+
+</html>

@@ -57,6 +57,7 @@
 					<th>끝점수</th>
 					<th>평점</th>
 					<th>등록일</th>
+					<th>상세</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -67,7 +68,13 @@
 					<td th:text="${grade.gradingCriteriaStartOfSection}"></td>
 					<td th:text="${grade.gradingCriteriaEndOfSection}"></td>
 					<td th:text="${grade.gradingCriteria}"></td>
-					<td th:text="${grade.gradingCriteriaRegisteredDate}"></td>
+					<td th:text="${#calendars.format(grade.gradingCriteriaRegisteredDate,'yyyy-MM-dd')}"></td>
+					<td>
+						<button type="button" class="btn btn-success btn-sm"
+								th:onclick="'window.location.href = \'' + @{/updateGradingCriteria(gradingCriteriaRating=${grade.gradingCriteriaRating})} + '\''">
+							상세
+						</button>
+					</td>
 				</tr>
 				
 				<tr th:unless="${gradingCriteriaListSize != 0}">

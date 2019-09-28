@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>상담결과코드 상세</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>상담결과코드 상세</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-11 col-md-offset-3">
+		<div class="row">
+			<div class="col-md-4">
+				<form role="form" id="counselResultUpdateFrm"
+					  action="/updateCounselResult" method="post">
+					<input type="hidden" value="유" name="counselResultIsChanged">
+					<div class="form-group">
+						<label for="inputCounselResultNo">상담결과코드</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="inputCounselResultNo"
+								   name="counselResultNo" th:value="${counselResult.counselResultNo}"
+								   readonly="readonly">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCounselTypeNo">상담구분명</label>
+						<!-- <label for="counselTypeList">상담구분명</label> -->
+						<!-- <div class="input-group"> -->
+						<!-- <select id="counselTypeList" name="counselTypeNo"
+								class="form-control">
+							<option value="">상담구분명</option>
+							<option ></option>
+							th:each="counselType : ${counselTypeList}"
+									th:value="${counselType.counselTypeNo}"
+									th:text="${counselType.counselTypeName}"
+						</select> -->
+						<input type="text" class="form-control" id="inputCounselTypeNo"
+							   name="counselTypeNo" th:value="${counselResult.counselTypeNo}">
+						<!-- </div> -->
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCounselResultName">상담결과명</label>
+						<input type="text" class="form-control" id="inputCounselResultName"
+							   name="counselResultName" th:value="${counselResult.counselResultName}">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCounselResultReasonForChange">코드변경사유</label>
+						<textarea class="form-control" rows="5" id="inputCounselResultReasonForChange"
+								  name="counselResultReasonForChange"
+								  th:text="${counselResult.counselResultReasonForChange}"></textarea>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCounselResultChangeDate">변경일</label>
+						<input type="text" class="form-control" id="inputCounselResultChangeDate"
+							   th:value="${#calendars.format(counselResult.counselResultChangeDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCounselResultRegisteredDate">등록일</label>
+						<input type="text" class="form-control" id="inputCounselResultRegisteredDate"
+							   th:value="${#calendars.format(counselResult.counselResultRegisteredDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<div class="row"> <!-- style="vertical-align: bottom;" -->
+							<!-- 상담예약테이블이 상담결과코드를 참조하므로 참조하는게 없는 상담결과코드만 삭제 가능하도록 한다. -->
+							<!-- 해당 상담결과코드를 참조하는 상담예약테이블이 없다 → 삭제가능한 상담결과이다. -->
+							<div class="col-md-4" th:if="${counselAppointmentListSize == 0}">
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/deleteCounselResult(counselResultNo=${counselResult.counselResultNo})} + '\''">
+									삭제
+								</button>
+								<!-- 상담결과를 삭제하려면 해당 상담결과코드를 참조하는 상담예약 목록을
+								변경처리한 다음에 삭제하거나 같이 삭제해야하므로
+								상담결과 삭제시 해당 상담결과를 참조하는 상담예약 목록도 같이 보여줘야 한다. -->
+							</div>
+							<div class="col-md-4">
+								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+							</div>
+							<div class="col-md-4">
+								<button type="button" id="counselResultUpdateFrmBtn"
+										class="btn btn-primary btn-sm btn-block">수정</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-8">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>내역코드</th>
+							<th>결과코드</th>
+							<th>결과</th>
+							<th>아이디</th>
+							<th>예약일</th>
+							<th>수정</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="counsel, lists : ${counselAppointmentList}"
+							th:if="${counselAppointmentListSize != 0}">
+							<td th:text="${lists.count}"></td>
+							<td th:text="${counsel.counselHistoryNo}"></td>
+							<td th:text="${counsel.counselResultNo}"></td>
+							<td th:text="${counsel.counselResultName}"></td>
+							<td th:text="${counsel.memberId}"></td>
+							<td th:text="${counsel.counselAppointmentDate}"></td>
+							<td>
+								<button type="button" class="btn btn-success btn-sm"
+										th:onclick="'window.location.href = \'' + @{/updateCounselAppointment(counselHistoryNo=${counsel.counselHistoryNo})} + '\''">
+									수정
+								</button>
+							</td>
+						</tr>
+						
+						<tr th:unless="${counselAppointmentListSize != 0}">
+							<td colspan="5">해당 결과로 등록된 상담예약목록이 없습니다.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		
+		// 상담결과코드 수정 처리 전 공백 유효성 검사
+		$('#counselResultUpdateFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+	        if($("#counselTypeList").val() ==''){
+	            alert('상담구분명을 선택하세요');
+	            $("#counselTypeList").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputCounselResultName").val() ==''){
+	            alert('상담결과명을 입력하세요');
+	            $("#inputCounselResultName").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputCounselResultReasonForChange").val() ==''){
+	            alert('코드변경사유를 입력하세요');
+	            $("#inputCounselResultReasonForChange").focus();
+	            return false;
+	        }
+	        
+	        $('#counselResultUpdateFrm').submit();
+	    });
+	</script>
+</th:block>
+
+</html>

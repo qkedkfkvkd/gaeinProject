@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>성적기준 상세</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>성적기준 상세</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-12 col-md-offset-3">
+		<div class="row">
+			<div class="col-md-3">
+				<form role="form" id="gradingCriteriaUpdateFrm"
+					  action="/updateGradingCriteria" method="post">
+					<div class="form-group">
+						<label for="inputGradingCriteriaRating">등급</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="inputGradingCriteriaRating"
+								   name="gradingCriteriaRating"
+								   th:value="${gradingCriteria.gradingCriteriaRating}"
+								   readonly="readonly">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputGradingCriteriaStartOfSection">시작점수</label>
+						<input type="number" class="form-control" id="inputGradingCriteriaStartOfSection"
+							   name="gradingCriteriaStartOfSection"
+							   th:value="${gradingCriteria.gradingCriteriaStartOfSection}">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputGradingCriteriaEndOfSection">끝점수</label>
+						<input type="number" class="form-control" id="inputGradingCriteriaEndOfSection"
+							   name="gradingCriteriaEndOfSection"
+							   th:value="${gradingCriteria.gradingCriteriaEndOfSection}">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputGradingCriteria">평점</label>
+						<input type="number" step="0.5" class="form-control" id="inputGradingCriteria"
+							   name="gradingCriteria"
+							   th:value="${gradingCriteria.gradingCriteria}">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputGradingCriteriaRegisteredDate">등록일</label>
+						<input type="text" class="form-control" id="inputGradingCriteriaRegisteredDate"
+							   th:value="${#calendars.format(gradingCriteria.gradingCriteriaRegisteredDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputGradingCriteriaModificationDate">최종수정일</label>
+						<input type="text" class="form-control" id="inputGradingCriteriaModificationDate"
+							   th:value="${#calendars.format(gradingCriteria.gradingCriteriaModificationDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<div class="row"> <!-- style="vertical-align: bottom;" -->
+							<!-- 성적입력 테이블이 성적기준테이블의 기본키인 등급을 참조하므로 -->
+							<!-- 참조하는게 없는 등급만 삭제 가능하도록 한다. -->
+							<!-- 해당 등급을 참조하는 성적입력 테이블이 없다 → 삭제가능한 등급이다. -->
+							<div class="col-md-4" th:if="${gradeReferenceInputScoreListSize == 0}">
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/deleteGradingCriteria(gradingCriteriaRating=${gradingCriteria.gradingCriteriaRating})} + '\''">
+									삭제
+								</button>
+								<!-- 등급을 삭제하려면 등급를 참조하는 성적입력 리스트에서 등급을
+								변경처리한 다음에 삭제하거나 같이 삭제해야하므로
+								등급 삭제시 해당 등급을 참조하는 성적입력 목록도 같이 보여줘야 한다. -->
+							</div>
+							<div class="col-md-4">
+								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+							</div>
+							<div class="col-md-4">
+								<button type="button" id="gradingCriteriaUpdateFrmBtn"
+										class="btn btn-primary btn-sm btn-block">수정</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-9">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>강좌</th>
+							<th>강의실</th>
+							<th>층</th>
+							<th>강사</th>
+							<th>학생</th>
+							<th>점수</th>
+							<th>등급</th>
+							<th>수정</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="grade, lists : ${gradeReferenceInputScoreList}"
+							th:if="${gradeReferenceInputScoreListSize != 0}">
+							<td th:text="${lists.count}"></td>
+							<td th:text="${grade.courseName}"></td>
+							<td th:text="${grade.roomNumber + '호'}"></td>
+							<td th:text="${grade.foomFloor + '층'}"></td>
+							<td th:text="${grade.teacherName}"></td>
+							<td th:text="${grade.studentName}"></td>
+							<td th:text="${grade.scoreInputTestScore}"></td>
+							<td th:text="${grade.gradingCriteriaRating}"></td>
+							<td>
+								<button type="button" class="btn btn-success btn-sm"
+										th:onclick="'window.location.href = \'' + @{/updateInputScore(scoreInputNo=${grade.scoreInputNo})} + '\''">
+									점수수정
+								</button>
+							</td>
+						</tr>
+						
+						<tr th:unless="${gradeReferenceInputScoreListSize != 0}">
+							<td colspan="5">해당 등급으로 등록된 성적목록이 없습니다.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		
+		// 성적기준 수정 처리 전 공백 유효성 검사
+		$('#gradingCriteriaUpdateFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+	        if($("#inputGradingCriteriaStartOfSection").val() ==''){
+	            alert('시작점수를 입력하세요');
+	            $("#inputGradingCriteriaStartOfSection").focus();
+	            return false;
+	        }
+	
+	        if($("#inputGradingCriteriaEndOfSection").val() ==''){
+	            alert('끝점수를 입력하세요');
+	            $("#inputGradingCriteriaEndOfSection").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputGradingCriteria").val() ==''){
+	            alert('평점을 입력하세요');
+	            $("#inputGradingCriteria").focus();
+	            return false;
+	        }
+	        
+	        $('#gradingCriteriaUpdateFrm').submit();
+	    });
+	</script>
+</th:block>
+
+</html>

@@ -24,6 +24,7 @@ import com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject;
 import com.cafe24.smart_academy.academy_manage.course.service.CourseService;
 import com.cafe24.smart_academy.academy_manage.course.vo.Course;
 import com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO;
+import com.cafe24.smart_academy.academy_manage.courseandscore.service.CourseAndScoreService;
 
 @Controller
 public class CourseManageController {
@@ -33,10 +34,13 @@ public class CourseManageController {
 	private CourseManageService courseManageService;
 	// 강의실, 성적기준, 과목, 교재 관리 서비스 객체
 	
-	
 	@Autowired
 	private CourseService courseService;
 	// 강좌, 휴보강, 강의계획서, 강의평가, 강좌강의실배정, 강좌시간표 관리 서비스 객체
+	
+	@Autowired
+	private CourseAndScoreService courseAndScoreService;
+	// 수강신청 및 성적 결과 관리 서비스 객체
 	
 	
 	// 관리자 : 과목 리스트로 이동
@@ -142,13 +146,26 @@ public class CourseManageController {
 			System.out.println("과목 수정 실패!!!!!!!!!!!!");
 			
 			redirectAttributes.addAttribute("subjectNo", subject.getSubjectNo());
-			// 과목 수정 페이지로 리다이렉트하면서 과목코드를 넘겨준다.
+			// 과목 상세 페이지로 리다이렉트하면서 과목코드를 넘겨준다.
 			
 			path = "redirect:/updateSubject";
-			// 과목 수정 페이지로 이동
+			// 과목 상세 페이지로 이동
 		}
 		
 		return path;
+	}
+	
+	
+	// 관리자 : 과목 삭제 처리
+	@GetMapping("/deleteSubject")
+	public String deleteSubject(@RequestParam(value = "subjectNo")String subjectNo) {
+		System.out.println(subjectNo + " <- subjectNo   deleteSubject()   CourseManageController.java");
+		String message = courseManageService.deleteSubject(subjectNo);
+		// 해당 과목 삭제 쿼리 실행 후 메세지 반환
+		
+		System.out.println(message + " <- message   deleteSubject()   CourseManageController.java");
+		
+		return "redirect:/listSubject";
 	}
 	
 	
@@ -339,7 +356,7 @@ public class CourseManageController {
 		String message = courseManageService.updateAcademyRoom(room);
 		
 		String path = "redirect:/listAcademyRoom";
-		// 강의실 수정에 성공했을 경우 과목리스트로 이동하게 초기화한다.
+		// 강의실 수정에 성공했을 경우 강의실 리스트로 이동하게 초기화한다.
 		
 		if(message != null) {
 			// 리턴받은 메세지가 널이 아니라면 강의실 수정에 실패했다는 뜻이다.
@@ -347,13 +364,26 @@ public class CourseManageController {
 			System.out.println("강의실 수정 실패!!!!!!!!!!!!");
 			
 			redirectAttributes.addAttribute("roomNo", room.getRoomNo());
-			// 강의실 수정 페이지로 리다이렉트하면서 강의실코드를 넘겨준다.
+			// 강의실 상세 페이지로 리다이렉트하면서 강의실코드를 넘겨준다.
 			
 			path = "redirect:/updateAcademyRoom";
-			// 과목 수정 페이지로 이동
+			// 과목 상세 페이지로 이동
 		}
 		
 		return path;
+	}
+	
+	
+	// 관리자 : 강의실 삭제 처리
+	@GetMapping("/deleteAcademyRoom")
+	public String deleteAcademyRoom(@RequestParam(value = "roomNo") String roomNo) {
+		System.out.println(roomNo + " <- roomNo   deleteAcademyRoom()   CourseManageController.java");
+		String message = courseManageService.deleteAcademyRoom(roomNo);
+		// 해당 강의실 삭제 처리 후 메세지 반환
+		
+		System.out.println(message + " <- message   deleteAcademyRoom()   CourseManageController.java");
+		
+		return "redirect:/listAcademyRoom";
 	}
 	
 	
@@ -419,7 +449,7 @@ public class CourseManageController {
 	}
 	
 	
-	// 관리자 : 성적기준 테이블에 성적기준 추가
+	// 관리자 : 성적기준 테이블에 성적기준 추가 처리
 	@PostMapping("/addGradingCriteria")
 	public String addGradingCriteria(Model model, GradingCriteria criteria) {
 		String message = courseManageService.addGradingCriteria(criteria);
@@ -435,5 +465,83 @@ public class CourseManageController {
 		}
 		
 		return path;
+	}
+	
+	
+	// 관리자 : 성적기준 테이블 상세 보기
+	@GetMapping("/updateGradingCriteria")
+	public String updateGradingCriteria(
+			 @RequestParam(value = "gradingCriteriaRating") String gradingCriteriaRating
+			,Model model) {
+		System.out.println(gradingCriteriaRating
+				+ " <- gradingCriteriaRating   updateGradingCriteria()   CourseManageController.java");
+		
+		GradingCriteria gradingCriteria =
+				courseManageService.detailGradingCriteriaByGradingCriteriaRating(gradingCriteriaRating);
+		// 성적기준의 상세화면을 보고 수정하기 위해 성적기준 테이블의 기본키가 되는 등급으로
+		// 해당 성적 기준의 모든 정보를 가지고 온다.
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		// totalGradeResultList() 메소드의 매개변수가 Map 이므로 검색내용을 저장하기 위한 맵 객체 선언
+		
+		map.put("gradingCriteriaRating", gradingCriteriaRating);
+		// 검색 내용 저장
+		
+		List<Map<String, Object>> gradeReferenceInputScoreList =
+				courseAndScoreService.totalGradeResultList(map);
+		// 해당 등급을 참조하는 모든 성적 리스트 가져오기
+		
+		model.addAttribute("gradingCriteria", gradingCriteria);
+		model.addAttribute("gradeReferenceInputScoreList", gradeReferenceInputScoreList);
+		model.addAttribute("gradeReferenceInputScoreListSize", gradeReferenceInputScoreList.size());
+		
+		return "/view/lesson/courseCode/detailGradingCriteria";
+	}
+	
+	
+	// 관리자 : 성적기준 수정 처리
+	@PostMapping("/updateGradingCriteria")
+	public String updateGradingCriteria(GradingCriteria gradingCriteria,
+			Model model, RedirectAttributes redirectAttributes) {
+		
+		String message = courseManageService.updateGradingCriteria(gradingCriteria);
+		// 성적기준 수정 처리 후 메세지 반환
+		
+		System.out.println(message + " <- message   updateGradingCriteria()   CourseManageController.java");
+		
+		String path = "redirect:/listGradingCriteria";
+		// 성적기준 수정에 성공했을 경우 성적기준 리스트로 이동하게 초기화한다.
+		
+		if(message != null) {
+			// 리턴받은 메세지가 널이 아니라면 성적기준 수정에 실패했다는 뜻이다.
+			
+			System.out.println("성적기준 수정 실패!!!!!!!!!!!!");
+			
+			redirectAttributes.addAttribute("gradingCriteriaRating",
+					gradingCriteria.getGradingCriteriaRating());
+			// 성적기준 상세 페이지로 리다이렉트하면서 성적기준테이블의 기본키인 등급을 넘겨준다.
+			
+			path = "redirect:/updateGradingCriteria";
+			// 성적기준 상세 페이지로 이동
+		}
+		
+		return path;
+	}
+	
+	
+	// 관리자 : 성적기준 삭제 처리
+	@GetMapping("/deleteGradingCriteria")
+	public String deleteGradingCriteria(
+			@RequestParam(value = "gradingCriteriaRating") String gradingCriteriaRating) {
+		System.out.println(gradingCriteriaRating
+				+ " <- gradingCriteriaRating   deleteGradingCriteria()   CourseManageController.java");
+		
+		String message = courseManageService.deleteGradingCriteria(gradingCriteriaRating);
+		// 해당 성적기준 삭제 처리 후 메세지 반환
+		
+		System.out.println(message + " <- message   deleteGradingCriteria()   CourseManageController.java");
+		
+		return "redirect:/listGradingCriteria";
+		// 성적기준 삭제 처리 후 성적기준 리스트 이동
 	}
 }

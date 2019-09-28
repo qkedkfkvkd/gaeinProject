@@ -27,6 +27,9 @@ public interface CourseManageMapper {
 	public int updateSubject(Subject subject);
 	// 관리자 : 과목 수정 처리
 	
+	public int deleteSubject(String subjectNo);
+	// 관리자 : 과목 삭제 처리
+	
 	
 	
 	public List<AcademyRoom> listAcademyRoom();
@@ -51,6 +54,9 @@ public interface CourseManageMapper {
 	public int updateAcademyRoom(AcademyRoom room);
 	// 관리자 : 강의실 수정 처리
 	
+	public int deleteAcademyRoom(String roomNo);
+	// 관리자 : 강의실 삭제 처리
+	
 	
 	
 	public List<GradingCriteria> listGradingCriteria();
@@ -64,4 +70,13 @@ public interface CourseManageMapper {
 	
 	public int addGradingCriteria(GradingCriteria criteria);
 	// 관리자 : 성적기준 테이블에 해당 성적기준 추가
+	
+	public GradingCriteria detailGradingCriteriaByGradingCriteriaRating(String gradingCriteriaRating);
+	// 관리자 : 성적기준 상세보기(수정화면 이동)
+	
+	public int updateGradingCriteria(GradingCriteria gradingCriteria);
+	// 관리자 : 성적기준 수정처리
+	
+	public int deleteGradingCriteria(String gradingCriteriaRating);
+	// 관리자 : 성적기준 삭제처리
 }

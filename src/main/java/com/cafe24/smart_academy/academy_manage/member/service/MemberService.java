@@ -126,10 +126,51 @@ public class MemberService {
 	}
 	
 	
-	// 관리자 : 상담구분코드 상세보기
+	// 관리자 : 상담구분코드 상세 보기
 	public CounselType detailCounselTypeByCounselTypeNo(String counselTypeNo) {
 		return memberMapper.detailCounselTypeByCounselTypeNo(counselTypeNo);
 	}
+	
+	
+	// 관리자 : 상담구분코드 수정 처리
+	public String updateCounselType(CounselType counselType) {
+		String resultMessage = "updateCounselTypeFail";
+		// 만약 상담구분 수정처리에 실패했다면 이 메세지가 리턴될 것이다.
+		
+		int result = memberMapper.updateCounselType(counselType);
+		// 상담구분 수정 처리
+		
+		if(result == 1) {  // 상담구분 수정에 성공했다면
+			resultMessage = null;
+			// 리턴 메세지에 널값을 준다
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	// 관리자 : 상담구분코드 삭제 처리
+	public String deleteCounselType(String counselTypeNo) {
+		String existChk = counselTypeByCounselTypeNo(counselTypeNo);
+		// 삭제하기 전 해당 상담구분코드로된 상담구분이 존재하는지 확인
+		
+		String resultMessage = "deleteCounselTypeFail";
+		// 상담구분삭제 실패로 초기화
+		
+		if(existChk != null) { // 해당 상담구분코드 존재(삭제 가능)
+			int result = memberMapper.deleteCounselType(counselTypeNo);
+			// 해당 상담구분 삭제 처리
+			
+			if(result == 1) { // 해당 상담구분 삭제 성공
+				resultMessage = "deleteCounselTypeSuccess";
+				// 상담구분 삭제 성공 메세지
+			}
+		}
+		
+		return resultMessage;
+	}
+	
+	
 	
 	
 	// 관리자 : 상담결과코드 테이블에서 상담결과코드 중복확인
@@ -167,5 +208,53 @@ public class MemberService {
 	}
 	
 	
+	// 관리자 : 해당 상담결과코드를 가진 상담결과 전체 내용 가져오기
+	public CounselResult detailCounselResultByCounselResultNo(String counselResultNo) {
+		return memberMapper.detailCounselResultByCounselResultNo(counselResultNo);
+	}
 	
+	
+	// 관리자 : 해당 상담결과코드를 참조하는 상담예약목록 가져오기
+	public List<Map<String, Object>> counselAppointmentListBycounselResultNo(String counselResultNo) {
+		return memberMapper.counselAppointmentListBycounselResultNo(counselResultNo);
+	}
+	
+	
+	// 관리자 : 상담결과코드 수정처리
+	public String updateCounselResult(CounselResult counselResult) {
+		String resultMessage = "updateCounselResultFail";
+		// 만약 상담결과 수정처리에 실패했다면 이 메세지가 리턴될 것이다.
+		
+		int result = memberMapper.updateCounselResult(counselResult);
+		// 상담결과 수정 처리
+		
+		if(result == 1) {  // 상담결과 수정에 성공했다면
+			resultMessage = null;
+			// 리턴 메세지에 널값을 준다
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	// 관리자 : 상담결과코드 삭제 처리
+	public String deleteCounselResult(String counselResultNo) {
+		String existChk = counselResultByCounselResultNo(counselResultNo);
+		// 삭제하기 전 해당 상담결과코드로된 상담결과가 존재하는지 확인
+		
+		String resultMessage = "deleteCounselResultFail";
+		// 상담결과삭제 실패로 초기화
+		
+		if(existChk != null) { // 해당 상담결과코드 존재(삭제 가능)
+			int result = memberMapper.deleteCounselResult(counselResultNo);
+			// 해당 상담결과 삭제 처리
+			
+			if(result == 1) { // 해당 상담결과 삭제 성공
+				resultMessage = "deleteCounselResultSuccess";
+				// 상담결과 삭제 성공 메세지
+			}
+		}
+		
+		return resultMessage;
+	}
 }

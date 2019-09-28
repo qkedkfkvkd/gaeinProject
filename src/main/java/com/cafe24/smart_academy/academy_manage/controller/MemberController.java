@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cafe24.smart_academy.academy_manage.member.service.MemberService;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselResult;
@@ -222,6 +223,23 @@ public class MemberController {
 	}
 	
 	
+	// 관리자 : 상담구분코드 리스트 이동
+	@GetMapping("/listCounselType")
+	public String listCounselType(Model model) {
+		
+		List<CounselType> counselTypeList = memberService.counselTypeList();
+		// 상담구분코드 리스트 가져오기
+		
+		model.addAttribute("counselTypeList", counselTypeList);
+		// 화면에 보여줄 상담구분코드 리스트
+		
+		model.addAttribute("counselTypeListSize", counselTypeList.size());
+		// 화면에 리스트의 존재 여부를 알려줄 리스트 사이즈
+		
+		return "/view/academyRegister/academyRegisterCode/listCounselType";
+	}
+	
+	
 	// 관리자 : 상담구분코드 추가폼 이동
 	@GetMapping("/addCounselType")
 	public String addCounselType() {
@@ -265,8 +283,8 @@ public class MemberController {
 		
 		if(message == null) {
 			// 리턴받은 메세지가 널이라면 상담구분코드 추가에 성공했다는 뜻이다.
-			path = "redirect:/addCounselResult";
-			// 상담결과코드 추가 폼으로 이동한다.
+			path = "redirect:/listCounselType";
+			// 상담구분코드 리스트로 이동한다.
 			
 			//path = "redirect:/listCounselStandard";
 			// 상담기준코드 리스트로 이동한다.
@@ -296,6 +314,50 @@ public class MemberController {
 		
 		return "/view/academyRegister/academyRegisterCode/detailCounselType";
 	}
+	
+	
+	// 관리자 : 상담구분코드 수정 처리
+	@PostMapping("/updateCounselType")
+	public String updateCounselType(CounselType counselType, Model model,
+			RedirectAttributes redirectAttributes) {
+		String message = memberService.updateCounselType(counselType);
+		// 해당 상담구분코드 수정 처리 후 메세지 반환
+		
+		String path = "redirect:/listCounselStandard";
+		// 상담구분 수정에 성공했을 경우 상담기준코드 리스트로 이동하게 초기화한다.
+		
+		if(message != null) {
+			// 리턴받은 메세지가 널이 아니라면 상담구분 수정에 실패했다는 뜻이다.
+			
+			System.out.println("상담구분 수정 실패!!!!!!!!!!!!");
+			
+			redirectAttributes.addAttribute("counselTypeNo", counselType.getCounselTypeNo());
+			// 상담구분 상세 페이지로 리다이렉트하면서 상담구분코드를 넘겨준다.
+			
+			path = "redirect:/updateCounselType";
+			// 상담구분 상세 페이지로 이동
+		}
+		
+		return path;
+	}
+	
+	
+	// 관리자 : 상담구분코드 삭제처리
+	@GetMapping("/deleteCounselType")
+	public String deleteCounselType(
+					@RequestParam(value = "counselTypeNo")String counselTypeNo) {
+		
+		System.out.println(counselTypeNo
+				+ " <- counselTypeNo   deleteCounselType()   MemberController.java");
+		String message = memberService.deleteCounselType(counselTypeNo);
+		// 해당 상담구분 삭제 쿼리 실행 후 메세지 반환
+		
+		System.out.println(message + " <- message   deleteCounselType()   MemberController.java");
+		
+		return "redirect:/listCounselType";
+		// 삭제 완료 후 상담구분코드 리스트로 이동한다.
+	}
+	
 	
 	
 	// 관리자 : 상담결과코드 추가폼 이동
@@ -353,6 +415,67 @@ public class MemberController {
 	}
 	
 	
+	// 관리자 : 상담결과코드 상세보기
+	@GetMapping("/updateCounselResult")
+	public String updateCounselResult(@RequestParam("counselResultNo") String counselResultNo
+			, Model model) {
+		CounselResult counselResult =
+				memberService.detailCounselResultByCounselResultNo(counselResultNo);
+		// 해당 상담결과코드를 가진 상담결과 전체 내용 가져오기
+		
+		List<Map<String, Object>> counselAppointmentList =
+				memberService.counselAppointmentListBycounselResultNo(counselResultNo);
+		// 해당 상담결과코드를 참조하는 상담예약목록 가져오기
+		
+		model.addAttribute("counselResult", counselResult);
+		model.addAttribute("counselAppointmentList", counselAppointmentList);
+		model.addAttribute("counselAppointmentListSize", counselAppointmentList.size());
+		// 상담 리스트의 사이즈를 보고 상담구분-결과목록를 뿌려줄 것인지,
+		// '해당 항목으로 등록된 상담결과목록이 없습니다.'메세지를 뿌려줄 것인지 판단한다.
+		
+		return "/view/academyRegister/academyRegisterCode/detailCounselResult";
+	}
 	
 	
+	// 관리자 : 상담결과코드 수정 처리
+	@PostMapping("/updateCounselResult")
+	public String updateCounselResult(CounselResult counselResult, Model model,
+			RedirectAttributes redirectAttributes) {
+		String message = memberService.updateCounselResult(counselResult);
+		// 해당 상담결과코드 수정 처리 후 메세지 반환
+		
+		String path = "redirect:/listCounselStandard";
+		// 상담결과 수정에 성공했을 경우 상담기준코드 리스트로 이동하게 초기화한다.
+		
+		if(message != null) {
+			// 리턴받은 메세지가 널이 아니라면 상담결과 수정에 실패했다는 뜻이다.
+			
+			System.out.println("상담구분 수정 실패!!!!!!!!!!!!");
+			
+			redirectAttributes.addAttribute("counselResultNo",
+						counselResult.getCounselResultNo());
+			// 상담결과 상세 페이지로 리다이렉트하면서 상담결과코드를 넘겨준다.
+			
+			path = "redirect:/updateCounselResult";
+			// 상담결과 상세 페이지로 이동
+		}
+		
+		return path;
+	}
+	
+	
+	// 관리자 : 상담결과코드 삭제 처리
+	@GetMapping("/deleteCounselResult")
+	public String deleteCounselResult(
+					@RequestParam(value = "counselResultNo")String counselResultNo) {
+		System.out.println(counselResultNo
+				+ " <- counselResultNo   deleteCounselResult()   MemberController.java");
+		String message = memberService.deleteCounselResult(counselResultNo);
+		// 해당 상담결과 삭제 쿼리 실행 후 메세지 반환
+		
+		System.out.println(message + " <- message   deleteCounselResult()   MemberController.java");
+		
+		return "redirect:/listCounselStandard";
+		// 삭제 완료 후 상담기준코드 리스트로 이동한다.
+	}
 }

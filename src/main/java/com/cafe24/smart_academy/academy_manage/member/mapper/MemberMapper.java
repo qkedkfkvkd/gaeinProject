@@ -57,6 +57,12 @@ public interface MemberMapper {
 	public CounselType detailCounselTypeByCounselTypeNo(String counselTypeNo);
 	// 관리자 : 상담구분테이블 상세보기
 	
+	public int updateCounselType(CounselType counselType);
+	// 관리자 : 상담구분 수정 처리
+	
+	public int deleteCounselType(String counselTypeNo);
+	// 관리자 : 상담구분 삭제 처리
+	
 	
 	
 	public String counselResultByCounselResultNo(String inputCounselResultNo);
@@ -67,4 +73,16 @@ public interface MemberMapper {
 	
 	public List<CounselResult> counselResultList();
 	// 관리자 : 상담결과코드 리스트 가져오기
+	
+	public CounselResult detailCounselResultByCounselResultNo(String counselResultNo);
+	// 관리자 : 해당 상담결과코드를 가진 상담결과 전체 내용 가져오기
+	
+	public List<Map<String, Object>> counselAppointmentListBycounselResultNo(String counselResultNo);
+	// 관리자 : 해당 상담결과코드를 참조하는 상담예약목록 가져오기
+	
+	public int updateCounselResult(CounselResult counselResult);
+	// 관리자 : 상담결과코드 수정 처리
+	
+	public int deleteCounselResult(String counselResultNo);
+	// 관리자 : 상담결과코드 삭제 처리
 }

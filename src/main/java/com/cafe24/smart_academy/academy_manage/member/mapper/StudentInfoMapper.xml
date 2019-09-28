@@ -111,9 +111,9 @@
 		from
 			 member_login					AS m
 			,member							AS me
-		on
-			m.member_id = me.member_id
 		where
+			m.member_id = me.member_id
+		and
 			m.member_level = '학생'
 		
 		<!-- 학생명을 입력했을 경우 -->

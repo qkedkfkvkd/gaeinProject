@@ -132,8 +132,10 @@
 	<select id="counselTypeList"
 			resultType="com.cafe24.smart_academy.academy_manage.member.vo.CounselType">
 		select
-			 counsel_type_no			AS counselTypeNo
-			,counsel_type_name			AS counselTypeName
+			 counsel_type_no				AS counselTypeNo
+			,counsel_type_name				AS counselTypeName
+			,counsel_type_is_changed		AS counselTypeIsChanged
+			,counsel_type_registered_date	AS counselTypeRegisteredDate
 		from
 			 counsel_type
 	</select>
@@ -170,6 +172,36 @@
 		where
 			counsel_type_no = #{counselTypeNo}
 	</select>
+	
+	
+	<!-- 관리자 : 상담구분 수정처리 -->
+	<update id="updateCounselType"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.CounselType">
+		update
+			counsel_type
+		<trim prefix="set" prefixOverrides=",">
+			<if test="counselTypeName != null and counselTypeName neq ''.toString()">
+				 counsel_type_name				= #{counselTypeName}
+			</if>
+			<if test="counselTypeReasonForChange != null and counselTypeReasonForChange neq ''.toString()">
+				,counsel_type_reason_for_change	= #{counselTypeReasonForChange}
+			</if>
+				,counsel_type_is_changed		= #{counselTypeIsChanged}
+				,counsel_type_changed_date		= curdate()
+		</trim>
+		where
+			counsel_type_no = #{counselTypeNo}
+	</update>
+	
+	
+	<!-- 관리자 : 상담구분 삭제 처리 -->
+	<delete id="deleteCounselType" parameterType="String">
+		delete from
+			counsel_type
+		where
+			counsel_type_no = #{counselTypeNo}
+	</delete>
+	
 	
 	
 	<!-- 관리자 : 상담결과테이블의 기본키인 상담결과코드 중복 확인 -->
@@ -214,18 +246,19 @@
 	
 	
 	<!-- 관리자 : 상담결과코드 테이블 상세보기 -->
-	<select id="" parameterType="String" resultType="map">
+	<select id="detailCounselResultByCounselResultNo" parameterType="String"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.CounselResult">
 		select
 			 counsel_result_no		AS counselResultNo
 			,(select
-				ct.counsel_type_name 
+				ct.counsel_type_no 
 			  from
 			  	 counsel_type		AS ct
 			  	,counsel_result		AS cr
 			  where
 			  	ct.counsel_type_no		= cr.counsel_type_no
 			  and
-			  	cr.counsel_result_no	= #{counselResultNo}) AS counselTypeName
+			  	cr.counsel_result_no	= #{counselResultNo}) AS counselTypeNo
 			,counsel_result_name					AS counselResultName
 			,counsel_result_reason_for_change		AS counselResultReasonForChange
 			,counsel_result_changed_date			AS counselResultChangeDate
@@ -235,4 +268,65 @@
 		where
 			counsel_result_no = #{counselResultNo}
 	</select>
+	
+	
+	<!-- 관리자 : 해당 상담결과코드를 참조하는 상담예약목록 가져오기 -->
+	<select id="counselAppointmentListBycounselResultNo"
+			parameterType="String" resultType="map">
+		select
+			 ct.counsel_type_no				AS counselTypeNo
+			,ct.counsel_type_name			AS counselTypeName
+			,cr.counsel_result_no			AS counselResultNo
+			,cr.counsel_result_name			AS counselResultName
+			,ca.counsel_history_no			AS counselHistoryNo
+			,ca.counsel_appointment_date	AS counselAppointmentDate
+			,login.member_id				AS memberId
+		from
+			 counsel_type					AS ct
+			,counsel_result					AS cr
+			,counsel_appointment			AS ca
+			,member_login					AS login
+		where
+			ct.counsel_type_no = cr.counsel_type_no
+		and
+			ca.counsel_result_no = cr.counsel_result_no
+		and
+			ca.member_id = login.member_id
+		and
+			login.member_level = '학생'
+		and
+			cr.counsel_result_no = #{counselResultNo}
+	</select>
+	
+	
+	<!-- 관리자 : 상담결과코드 수정 처리 -->
+	<update id="updateCounselResult"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.CounselResult">
+		update
+			counsel_result
+		<trim prefix="set" prefixOverrides=",">
+			<if test="counselTypeNo != null and counselTypeNo neq ''.toString()">
+				 counsel_type_no					= #{counselTypeNo}
+			</if>
+			<if test="counselResultName != null and counselResultName neq ''.toString()">
+				 counsel_result_name				= #{counselResultName}
+			</if>
+			<if test="counselResultReasonForChange != null and counselResultReasonForChange neq ''.toString()">
+				,counsel_result_reason_for_change	= #{counselResultReasonForChange}
+			</if>
+				,counsel_result_is_changed			= #{counselResultIsChanged}
+				,counsel_result_changed_date		= curdate()
+		</trim>
+		where
+			counsel_result_no = #{counselResultNo}
+	</update>
+	
+	
+	<!-- 관리자 : 상담결과코드 삭제 처리 -->
+	<delete id="deleteCounselResult" parameterType="String">
+		delete from
+			counsel_result
+		where
+			counsel_result_no = #{counselResultNo}
+	</delete>
 </mapper>

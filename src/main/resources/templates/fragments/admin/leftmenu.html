@@ -7,7 +7,7 @@
 			<li class="nav-item">
 				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-commonCode" aria-expanded="false" aria-controls="ui-commonCode">
 					<i class="mdi mdi-account-multiple menu-icon"></i> 
-					<span class="menu-title">학원관리</span> <i class="menu-arrow"></i>
+					<span class="menu-title">기본코드관리</span> <i class="menu-arrow"></i>
 				</a>
 				<div class="collapse" id="ui-commonCode">
 					<ul class="nav flex-column sub-menu" style="">
@@ -47,6 +47,10 @@
 						
 						<li class="nav-item">
 							<a class="nav-link" href="/listCurrentReservationState">상담예약현황</a>
+						</li>
+						
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/goodsList}">출결관리</a>
 						</li>
 						
 						<li class="nav-item">
@@ -104,41 +108,6 @@
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/addGoods}">강사목록</a>
 						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">교사수업현황</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">교사 3개월 수업현황</a>
-						</li>
-					</ul>
-				</div>
-			</li>
-			
-			<li class="nav-item">
-				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-course" aria-expanded="false" aria-controls="ui-course">
-					<i class="mdi mdi-package-variant menu-icon"></i> 
-					<span class="menu-title">수업관리</span> <i class="menu-arrow"></i>
-				</a>
-				<div class="collapse" id="ui-course">
-					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/addGoods}">수업목록</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">수업결과 학생명단</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">출결현황</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">출결관리</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">성적분석</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">시험관리</a>
-						</li>
 					</ul>
 				</div>
 			</li>
@@ -156,9 +125,6 @@
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/goodsList}">신입생상담</a>
 						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">상담결과목록</a>
-						</li>
 					</ul>
 				</div>
 			</li>
@@ -172,15 +138,6 @@
 					<ul class="nav flex-column sub-menu">
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/addGoods}">수납현황</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">수납일일현황</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">수납목록</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">기타수납현황</a>
 						</li>
 					</ul>
 				</div>
@@ -196,9 +153,6 @@
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/addGoods}">교재목록</a>
 						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">교재현황</a>
-						</li>
 					</ul>
 				</div>
 			</li>
@@ -212,12 +166,6 @@
 					<ul class="nav flex-column sub-menu">
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/addGoods}">공지사항</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">원장소개</a>
-						</li>
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">오시는길</a>
 						</li>
 					</ul>
 				</div>

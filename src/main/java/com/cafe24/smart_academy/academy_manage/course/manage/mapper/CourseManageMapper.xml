@@ -83,6 +83,15 @@
 	</update>
 	
 	
+	<!-- 관리자 : 과목 삭제 처리 -->
+	<delete id="deleteSubject" parameterType="String">
+		delete from
+			subject
+		where
+			subject_no = #{subjectNo}
+	</delete>
+	
+	
 	
 	<!-- 관리자 : 강의실 리스트 가져오기 -->
 	<!-- 관리자 : 강의실 목록에서 강의실 검색 -->
@@ -201,6 +210,15 @@
 	</update>
 	
 	
+	<!-- 관리자 : 강의실 삭제 처리 -->
+	<delete id="deleteAcademyRoom" parameterType="String">
+		delete from
+			academy_room
+		where
+			room_no = #{roomNo}
+	</delete>
+	
+	
 	
 	<!-- 관리자 : 성적기준 리스트 가져오기 -->
 	<!-- 관리자 : 성적기준을 선택하여 검색하기 -->
@@ -243,12 +261,62 @@
 			,grading_criteria_end_of_section
 			,grading_criteria
 			,grading_criteria_registered_date
+			,grading_criteria_modification_date
 		) values (
 			 #{gradingCriteriaRating}
 			,#{gradingCriteriaStartOfSection}
 			,#{gradingCriteriaEndOfSection}
 			,#{gradingCriteria}
 			,curdate()
+			,curdate()
 		)
 	</insert>
+	
+	
+	<!-- 관리자 : 성적기준 상세보기 -->
+	<select id="detailGradingCriteriaByGradingCriteriaRating" parameterType="String"
+			resultType="com.cafe24.smart_academy.academy_manage.course.manage.vo.GradingCriteria">
+		select
+			 grading_criteria_rating				AS gradingCriteriaRating
+			,grading_criteria_start_of_section		AS gradingCriteriaStartOfSection
+			,grading_criteria_end_of_section		AS gradingCriteriaEndOfSection
+			,grading_criteria						AS gradingCriteria
+			,grading_criteria_registered_date		AS gradingCriteriaRegisteredDate
+			,grading_criteria_modification_date		AS gradingCriteriaModificationDate
+		from
+			grading_criteria
+		where
+			grading_criteria_rating = #{gradingCriteriaRating}
+	</select>
+	
+	
+	<!-- 관리자 : 성적기준 수정 처리 -->
+	<update id="updateGradingCriteria"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.manage.vo.GradingCriteria">
+		update
+			grading_criteria
+		<trim prefix="set" prefixOverrides=",">
+			<if test="gradingCriteriaStartOfSection != null and gradingCriteriaStartOfSection neq ''.toString()">
+				 grading_criteria_start_of_section		= #{gradingCriteriaStartOfSection}
+			</if>
+			<if test="gradingCriteriaEndOfSection != null and gradingCriteriaEndOfSection neq ''.toString()">
+				,grading_criteria_end_of_section		= #{gradingCriteriaEndOfSection}
+			</if>
+			<if test="gradingCriteria != null and gradingCriteria neq ''.toString()">
+				,grading_criteria						= #{gradingCriteria}
+			</if>
+				,grading_criteria_modification_date		= curdate()
+		</trim>
+		where
+			grading_criteria_rating = #{gradingCriteriaRating}
+	</update>
+	
+	
+	<!-- 관리자 : 성적기준 삭제 처리 -->
+	<delete id="deleteGradingCriteria" parameterType="String">
+		delete from
+			grading_criteria
+		where
+			grading_criteria_rating = #{gradingCriteriaRating}
+	</delete>
 </mapper>
