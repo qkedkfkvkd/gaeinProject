@@ -56,7 +56,8 @@
 	
 	
 	<!-- 관리자가 회원등록할 시 회원신상정보 테이블 등록 -->
-	<insert id="addMember" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member">
+	<insert id="addStudent"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member">
 		insert into member (
 			 member_id
 			,member_name
@@ -80,7 +81,8 @@
 	
 	
 	<!-- 학생 등록시 같이 입력된 학부모 정보를 학부모 테이블에 저장한다. -->
-	<insert id="addParent" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Parent">
+	<insert id="addParent"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Parent">
 		insert into parent (
 			 member_id
 			,parent_name
@@ -99,7 +101,7 @@
 	<!-- 관리자 : 입력한 학생명과 가입기간으로 디비에서 권한이 -->
 	<!-- 		  학생인 사람들만 목록을 가져온다. -->
 	<!-- 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인 -->
-	<select id="listStudentInfo"
+	<select id="studentInfoList"
 			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member"
 			resultType="map">
 		select
@@ -142,29 +144,134 @@
 	</select>
 	
 	
-	
-	<!-- 관리자가 특정 학생의 결제정보를 가지고 오고자 할때 사용 -->
-	<select id="paymentInfoById" parameterType="String"
-			resultType="com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo">
+	<!-- 관리자 : 특정 학생 상세 페이지 이동 -->
+	<select id="detailStudentInfoByMemberId"
+			parameterType="String" resultType="map">
 		select
-			 member_id					AS memberId
-			,payment_day				AS paymentDay
-			,payment_way				AS paymentWay
-			,payment_content			AS paymentContent
-			,payment_schedule_money		AS paymentScheduleMoney
-			,actuality_payment_money	AS actualityPaymentMoney
-			,start_course_day			AS startCourseDay
-			,end_course_day				AS endCourseDay
-			,payment_reference			AS paymentReference
-			,payment_registered_date	AS paymentRegisteredDate
+			 login.member_id				AS memberId
+			,login.member_level				AS memberLevel
+			,mem.member_name				AS memberName
+			,mem.member_birth				AS memberBirth
+			,mem.member_email				AS memberEmail
+			,mem.member_tel					AS memberTel
+			,mem.member_phone				AS memberPhone
+			,mem.member_address				AS memberAddress
+			,mem.member_registered_date		AS memberRegisteredDate
+			,par.parent_name				AS parentName
+			,par.parent_phone				AS parentPhone
 		from
-			payment_info
+			 member_login		AS login
+			,member				AS mem
+			,parent				AS par
 		where
-			member_id = #{memberId}
+			login.member_id	= mem.member_id
+		and
+			login.member_id = par.member_id
+		and
+			login.member_level = '학생'
+		and
+			login.member_id = #{memberId}
 	</select>
 	
 	
-	<!-- 관리자 특정 학생의 결제정보 입력 처리 -->
+	<!-- 관리자 : 특정 학생정보 수정 처리 -->
+	<update id="updateStudentInfo"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member">
+		update
+			member
+		<trim prefix="set" prefixOverrides=",">
+			<if test="memberName != null and memberName neq ''.toString()">
+				 member_name		= #{memberName}
+			</if>
+			<if test="memberBirth != null and memberBirth neq ''.toString()">
+				,member_birth		= #{memberBirth}
+			</if>
+			<if test="memberEmail != null and memberEmail neq ''.toString()">
+				,member_email		= #{memberEmail}
+			</if>
+			<if test="memberPhone != null and memberPhone neq ''.toString()">
+				,member_phone		= #{memberPhone}
+			</if>
+			<if test="memberTel != null and memberTel neq ''.toString()">
+				,member_tel			= #{memberTel}
+			</if>
+			<if test="memberAddress != null and memberAddress neq ''.toString()">
+				,member_address		= #{memberAddress}
+			</if>
+		</trim>
+		where
+			member_id = #{memberId}
+	</update>
+	
+	
+	<!-- 관리자 : 학부모 정보 수정 처리 -->
+	<!-- 학생정보를 수정하면서 학부모 정보도 같이 수정된다. -->
+	<update id="updateParent"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Parent">
+		update
+			parent
+		<trim prefix="set" prefixOverrides=",">
+			<if test="parentName != null and parentName neq ''.toString()">
+				 parent_name		= #{parentName}
+			</if>
+			<if test="parentPhone != null and parentPhone neq ''.toString()">
+				,parent_phone		= #{parentPhone}
+			</if>
+		</trim>
+		where
+			member_id = #{memberId}
+	</update>
+	
+	
+	
+	
+	<!-- 관리자 : 결제정보가 없는 학생일 경우 -->
+	<!-- 제목 상단에 아이디, 이름, 생년월일을 나타내기 위함 -->
+	<select id="memberSimpleInfo" parameterType="String"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.Member">
+		select
+			 mem.member_id			AS memberId
+			,mem.member_name		AS memberName
+			,mem.member_birth		AS memberBirth
+		from
+			 member_login		AS login
+			,member				AS mem
+		where
+			login.member_id = mem.member_id
+		and
+			mem.member_id = #{memberId}
+	</select>
+	
+	
+	<!-- 관리자가 특정 학생의 결제정보를 가지고 오고자 할때 사용 -->
+	<select id="paymentInfoById" parameterType="String" resultType="map">
+		select
+			 login.member_id				AS memberId
+			,mem.member_name				AS memberName
+			,mem.member_birth				AS memberBirth
+			,pay.payment_day				AS paymentDay
+			,pay.payment_way				AS paymentWay
+			,pay.payment_content			AS paymentContent
+			,pay.payment_schedule_money		AS paymentScheduleMoney
+			,pay.actuality_payment_money	AS actualityPaymentMoney
+			,pay.start_course_day			AS startCourseDay
+			,pay.end_course_day				AS endCourseDay
+			,pay.payment_reference			AS paymentReference
+			,pay.payment_registered_date	AS paymentRegisteredDate
+		from
+			 payment_info				AS pay
+			,member_login				AS login
+			,member						AS mem
+		where
+			login.member_id = mem.member_id
+		and
+			login.member_id = pay.member_id
+		and
+			login.member_id = #{memberId}
+	</select>
+	
+	
+	<!-- 관리자 : 특정 학생의 결제정보 입력 처리 -->
 	<insert id="addPaymentInfo" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo">
 		insert into payment_info (
 			 member_id
@@ -190,6 +297,72 @@
 			,curdate()
 		)
 	</insert>
+	
+	
+	<!-- 관리자 : 특정학생 결제정보 수정 처리 -->
+	<update id="updatePaymentInfo"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo">
+		update
+			payment_info
+		<trim prefix="set" prefixOverrides=",">
+			<if test="paymentWay != null and paymentWay neq ''.toString()">
+				 payment_way				= #{paymentWay}
+			</if>
+			<if test="paymentContent != null and paymentContent neq ''.toString()">
+				,payment_content			= #{paymentContent}
+			</if>
+			<if test="paymentDay != null and paymentDay neq ''.toString()">
+				,payment_day				= #{paymentDay}
+			</if>
+			<if test="paymentScheduleMoney != null and paymentScheduleMoney neq ''.toString()">
+				,payment_schedule_money		= #{paymentScheduleMoney}
+			</if>
+			<if test="actualityPaymentMoney != null and actualityPaymentMoney neq ''.toString()">
+				,actuality_payment_money	= #{actualityPaymentMoney}
+			</if>
+			<if test="startCourseDay != null and startCourseDay neq ''.toString()">
+				,start_course_day			= #{startCourseDay}
+			</if>
+			<if test="endCourseDay != null and endCourseDay neq ''.toString()">
+				,end_course_day				= #{endCourseDay}
+			</if>
+			<if test="paymentReference != null and paymentReference neq ''.toString()">
+				,payment_reference			= #{paymentReference}
+			</if>
+		</trim>
+		where
+			member_id = #{memberId}
+	</update>
+	
+	
+	<!-- 관리자 : 미납현황 리스트(결제 테이블에서 납부예정금액이 0보다 큰 리스트) -->
+	<select id="notPaymentStateList" resultType="map">
+		select
+			 login.member_id				AS memberId
+			,login.member_level				AS memberLevel
+			,mem.member_name				AS memberName
+			,pay.payment_day				AS paymentDay
+			,pay.payment_way				AS paymentWay
+			,pay.payment_content			AS paymentContent
+			,pay.payment_schedule_money		AS paymentScheduleMoney
+			,pay.actuality_payment_money	AS actualityPaymentMoney
+			,pay.start_course_day			AS startCourseDay
+			,pay.end_course_day				AS endCourseDay
+			,pay.payment_registered_date	AS paymentRegisteredDate
+			,pay.payment_modification_date	AS paymentModificationDate
+		from
+			 member_login				AS login
+			,member						AS mem
+			,payment_info				AS pay
+		where
+			login.member_id = mem.member_id
+		and
+			login.member_id = pay.member_id
+		and
+			payment_schedule_money > 0
+	</select>
+	
+	
 	
 	
 	<!-- 이미 학생 리스트를 가져올 때 권한을 학생만 가져오게 했으므로 굳이 또 권한 학생만 가져오게 조건을 줄 필요가 없다 -->
@@ -242,7 +415,9 @@
 	
 	
 	<!-- 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담예약현황 리스트  -->
-	<select id="oneStudentCounselAppointmentList" parameterType="String" resultType="map">
+	<select id="oneStudentCounselAppointment"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.CounselAppointment"
+			resultType="map">
 		select
 			 ct.counsel_type_no				AS counselTypeNo
 			,ct.counsel_type_name			AS counselTypeName
@@ -267,14 +442,21 @@
 			ca.counsel_whether = 'N'
 		and
 			ca.counsel_appointment_whether = 'N'
+		
+		<if test="counselHistoryNo != null and counselHistoryNo neq ''.toString()">
+		and
+			ca.counsel_history_no = #{counselHistoryNo}
+		</if>
+		<if test="memberId != null and memberId neq ''.toString()">
 		and
 			login.member_id = #{memberId}
+		</if>
 	</select>
 	
 	
 	<!-- 관리자 : 학생 상담관련 폼 이동 시 상담구분코드와 상담결과코드에서 -->
 	<!-- 특정 상담결과명으로된 모든 리스트 가지고 오기 -->
-	<select id="listCounselKind" parameterType="String" resultType="map">
+	<select id="counselKindList" parameterType="String" resultType="map">
 		select
 			 ct.counsel_type_no				AS counselTypeNo
 			,ct.counsel_type_name			AS counselTypeName

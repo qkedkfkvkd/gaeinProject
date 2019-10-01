@@ -12,7 +12,7 @@ import com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject;
 @Mapper
 public interface CourseManageMapper {
 	
-	public List<Subject> listSubject();
+	public List<Subject> subjectList();
 	// 관리자 : 과목코드 리스트 가져오기
 	
 	public String subjectBySubjectNo(String subjectNo);
@@ -32,10 +32,10 @@ public interface CourseManageMapper {
 	
 	
 	
-	public List<AcademyRoom> listAcademyRoom();
+	public List<AcademyRoom> academyRoomList();
 	// 관리자 : 강의실 리스트 가져오기
 	
-	public List<AcademyRoom> listAcademyRoom(AcademyRoom room);
+	public List<AcademyRoom> academyRoomList(AcademyRoom room);
 	// 관리자 : 강의실 목록에서 강의실 검색
 	
 	public List<AcademyRoom> roomUsageListByRoomFloor(String roomFloor);
@@ -59,10 +59,10 @@ public interface CourseManageMapper {
 	
 	
 	
-	public List<GradingCriteria> listGradingCriteria();
+	public List<GradingCriteria> gradingCriteriaList();
 	// 관리자 : 성적기준 리스트 가져오기
 	
-	public List<GradingCriteria> listGradingCriteria(String gradingCriteriaRating);
+	public List<GradingCriteria> gradingCriteriaList(String gradingCriteriaRating);
 	// 관리자 : 성적기준을 선택하여 검색하기
 	
 	public String gradingCriteriaRatingOverlapCheck(String inputGradingCriteriaRating);

@@ -38,21 +38,40 @@ public interface StudentInfoMapper {
 	
 	
 	
-	public List<Map<String, Object>> listStudentInfo();
+	public List<Map<String, Object>> studentInfoList();
 	// 관리자가 학생 목록 페이지로 이동할 때 가져올 목록
 	
-	public List<Map<String, Object>> listStudentInfo(Member member);
+	public List<Map<String, Object>> studentInfoList(Member member);
 	// 관리자 : 입력한 학생명과 가입기간으로 디비에서 권한이
 	//			학생인 사람들만 목록을 가져온다.
 	// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
 	
+	public Map<String, Object> detailStudentInfoByMemberId(String memberId);
+	// 관리자 : 특정 학생 상세 페이지 이동
+	
+	public int updateStudentInfo(Member member);
+	// 관리자 : 특정 학생정보 수정 처리
+	
+	public int updateParent(Parent parent);
+	// 관리자 : 학부모정보 수정 처리
 	
 	
-	public PaymentInfo paymentInfoById(String memberId);
+	
+	public Map<String, Object> paymentInfoById(String memberId);
 	// 관리자 전용 특정 학생의 결제정보 가져오기
+	
+	public Member memberSimpleInfo(String memberId);
+	// 관리자 : 결제정보가 없는 학생일 경우
+	// 제목 상단에 아이디, 이름, 생년월일을 나타내기 위함
 	
 	public int addPaymentInfo(PaymentInfo paymentInfo);
 	// 관리자 전용 특정 학생 결제정보 입력 처리
+	
+	public int updatePaymentInfo(PaymentInfo paymentInfo);
+	// 관리자 : 특정학생 결제정보 수정 처리
+	
+	public List<Map<String, Object>> notPaymentStateList();
+	// 관리자 : 미납현황 리스트(결제 테이블에서 납부예정금액이 0보다 큰 리스트)
 	
 	
 	
@@ -61,11 +80,13 @@ public interface StudentInfoMapper {
 	
 	public List<Map<String, Object>> oneStudentCounselHistoryList(String memberId);
 	// 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담내역 리스트
-
-	public List<Map<String, Object>> oneStudentCounselAppointmentList(String memberId);
-	// 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담예약현황 리스트
 	
-	public List<Map<String, Object>> listCounselKind(String counselResultName);
+	
+	public List<Map<String, Object>> oneStudentCounselAppointment(CounselAppointment counselAppointment);
+	// 관리자 : 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 상담예약현황 리스트
+	// 관리자 : 학생예약신청 상세보기
+	
+	public List<Map<String, Object>> counselKindList(String counselResultName);
 	// 관리자 : 학생 상담관련 폼 이동 시 상담구분코드와 상담결과코드에서
 	// 특정 상담결과명으로된 모든 리스트 가지고 오기
 	
@@ -92,7 +113,6 @@ public interface StudentInfoMapper {
 	public List<Map<String, Object>> counselReservationStateList();
 	// 관리자 : 예약 현황 리스트 가져오기
 	
-	public List<Map<String, Object>> counselReservationStateList(
-						CounselResult counselResult);
+	public List<Map<String, Object>> counselReservationStateList(CounselResult counselResult);
 	// 관리자 : 상담예약현황 리스트에서 선택한 상담코드로 검색
 }

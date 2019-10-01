@@ -21,10 +21,10 @@ import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 @Service
 @Transactional
 public class StudentInfoService {
-
+	
 	@Autowired
 	StudentInfoMapper studentInfoMapper;
-	
+	// 학생 정보 관리 담당 매퍼
 	
 	// 관리자가 학생 등록시 학부모 테이블에서 유니크값인 폰번호 중복 체크
 	public String parentByPhone(String inputParentPhone) {
@@ -99,26 +99,86 @@ public class StudentInfoService {
 	}
 	
 	
+	
 	// 관리자 : 디비에서 권한이 학생인 사람들만 목록을 가져오기
 	// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
-	public List<Map<String, Object>> listStudentInfo() {
-		return studentInfoMapper.listStudentInfo();
+	public List<Map<String, Object>> studentInfoList() {
+		return studentInfoMapper.studentInfoList();
 	}
 	
 	
 	// 관리자 : 입력한 학생명과 가입기간으로 디비에서 권한이
 	//			학생인 사람들만 목록을 가져온다.
 	// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
-	public List<Map<String, Object>> listStudentInfo(Member member) {
-		return studentInfoMapper.listStudentInfo(member);
+	public List<Map<String, Object>> studentInfoList(Member member) {
+		return studentInfoMapper.studentInfoList(member);
 	}
 	
 	
+	// 관리자 : 특정 학생 상세 페이지 이동
+	public Map<String, Object> detailStudentInfoByMemberId(String memberId) {
+		return studentInfoMapper.detailStudentInfoByMemberId(memberId);
+	}
+	
+	
+	// 관리자 : 특정 학생정보 수정 처리
+	public String updateStudentInfo(Member member, Parent parent) {
+		String resultMessage = "updateStudentInfoFail";
+		// 만약 학생정보 수정처리에 실패했다면 이 메세지가 리턴될 것이다.
+		
+		int studentResult = studentInfoMapper.updateStudentInfo(member);
+		// 학생정보 수정 처리
+		
+		int parentResult = studentInfoMapper.updateParent(parent);
+		// 학부모 정보 수정 처리
+		
+		if(studentResult == 1 & parentResult == 1) {
+			// 학생과 학부모 정보 수정에 성공했다면
+			
+			resultMessage = null;
+			// 리턴 메세지에 널값을 준다
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	// 관리자 : 회원 삭제 처리
+/*	public String deleteStudentInfo(String memberId) {
+		String existChk = memberMapper.memberLoginInfoById(memberId);
+		// 삭제하기 전 로그인 테이블에서 해당 아이디로된 회원이 존재하는지 확인
+		
+		String resultMessage = "deleteStudentInfoFail";
+		// 회원 삭제 실패로 초기화
+		
+		if(existChk != null) { // 해당 회원아이디 존재(삭제 가능)
+			int result = studentInfoMapper.deleteStudentInfo(memberId);
+			// 해당 회원 삭제 처리
+			
+			if(result == 1) { // 해당 회원 삭제 성공
+				resultMessage = "deleteStudentInfoSuccess";
+				// 회원 삭제 성공 메세지
+			}
+		}
+		
+		return resultMessage;
+	}*/
+	
+	
+	
+	
 	// 관리자 특정 학생 결제정보 가져오기
-	public PaymentInfo viewPaymentInfo(String memberId) {
-		PaymentInfo paymentInfo = studentInfoMapper.paymentInfoById(memberId);
+	public Map<String, Object> detailPaymentInfoByMemberId(String memberId) {
+		Map<String, Object> paymentInfo = studentInfoMapper.paymentInfoById(memberId);
 		// 학생의 아이디를 가지고 결제정보 테이블에서 객체를 얻어온다.
 		return paymentInfo;
+	}
+	
+	
+	// 관리자 : 결제정보가 없는 학생일 경우
+	// 제목 상단에 아이디, 이름, 생년월일을 나타내기 위함
+	public Member memberSimpleInfo(String memberId) {
+		return studentInfoMapper.memberSimpleInfo(memberId);
 	}
 	
 	
@@ -139,6 +199,32 @@ public class StudentInfoService {
 	}
 	
 	
+	// 관리자 : 특정학생 결제정보 수정 처리
+	public String updatePaymentInfo(PaymentInfo paymentInfo) {
+		String resultMessage = "updatePaymentInfoFail";
+		// 만약 결제정보 수정처리에 실패했다면 이 메세지가 리턴될 것이다.
+		
+		int result = studentInfoMapper.updatePaymentInfo(paymentInfo);
+		// 결제정보 수정 처리
+		
+		if(result == 1) {// 결제 정보 수정에 성공했다면
+			
+			resultMessage = null;
+			// 리턴 메세지에 널값을 준다
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	// 관리자 : 미납현황 리스트(결제 테이블에서 납부예정금액이 0보다 큰 리스트)
+	public List<Map<String, Object>> notPaymentStateList() {
+		return studentInfoMapper.notPaymentStateList();
+	}
+	
+	
+	
+	
 	// 관리자 상담관리 페이지에 보여줄 특정 학생의 이름과 생년월일 가져오기
 	public Member studentInfoIdNameBirthById(String memberId) {
 		return studentInfoMapper.studentInfoIdNameBirthById(memberId);
@@ -152,16 +238,17 @@ public class StudentInfoService {
 	}
 	
 	
-	// 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담예약현황 리스트
-	public List<Map<String, Object>> oneStudentCounselAppointmentList(String memberId) {
-		return studentInfoMapper.oneStudentCounselAppointmentList(memberId);
+	// 관리자 : 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 상담예약현황 리스트
+	// 관리자 : 학생 예약신청 상세보기
+	public List<Map<String, Object>> oneStudentCounselAppointment(CounselAppointment counselAppointment) {
+		return studentInfoMapper.oneStudentCounselAppointment(counselAppointment);
 	}
 	
 	
 	// 관리자 : 학생 상담관련 폼 이동 시 상담구분코드와 상담결과코드에서
 	// 특정 상담결과명으로된 모든 리스트 가지고 오기
-	public List<Map<String, Object>> listCounselKind(String counselResultName) {
-		return studentInfoMapper.listCounselKind(counselResultName);
+	public List<Map<String, Object>> counselKindList(String counselResultName) {
+		return studentInfoMapper.counselKindList(counselResultName);
 	}
 	
 	

@@ -4,107 +4,132 @@
       layout:decorate="~{layout/default}">
 
 <th:block layout:fragment="customTitle">
-	<title>학생 정보 등록</title>
+	<title>학생정보 상세</title>
 </th:block>
 
 <th:block layout:fragment="customContents">
 	<div class="page-header">
 		<div class="col-md-10 col-md-offset-3">
-			<h3>학생 정보 등록</h3>
+			<h3>학생정보 상세</h3>
 		</div>
 	</div>
 	
 	<div class="col-sm-10 col-md-offset-3">
-		<form action="/addStudentInfo" method="post">
+		<form id="studentUpdateFrm" action="/updateStudentInfo" method="post">
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="inputId">아이디</label>
-						<input type="text" class="form-control" id="inputId" name="memberId"
-							   placeholder="아이디를 입력해주세요">
-						<button type="button" id="idOverlapBtn" class="btn btn-info btn-xs"
-								style="margin-top: 3px; font-size: small;">중복확인</button>
-						<input type="hidden" id="idOverlapClickChk" value="0"> <!-- 0값은 중복확인 안함 -->
-						<!-- <span th:if="${idOverlap ne null}" th:text="${idOverlap}"
-							  id="idOverlapMessage"></span> -->
-					</div>
-					
-					<div class="form-group">
-						<label for="inputPassword">비밀번호</label>
-						<input type="password" class="form-control" id="inputPassword" name="memberPw"
-							   placeholder="비밀번호를 입력해주세요">
-					</div>
-					
-					<div class="form-group">
-						<label for="inputPasswordCheck">비밀번호 확인</label>
-						<input type="password" class="form-control" id="inputPasswordCheck"
-							   placeholder="비밀번호 확인을 위해 다시한번 입력 해 주세요">
-					</div>
-					
-					<div class="form-group">
-						<label for="viewName">학생명</label>
-						<input type="text" class="form-control" id="viewName"
-							   name="memberName" > <!-- th:text="${member.memberName}" -->
-					</div>
-					
-					<div class="form-group">
-						<label for="viewBirth">생년월일</label>
-						<input type="text" class="form-control" id="viewBirth"
-							   name="memberBirth" > <!-- th:text="${member.memberBirth}" -->
-					</div>
-					
-					<div class="form-group">
-						<label for="viewEmail">이메일</label>
 						<div class="input-group">
-							<input type="email" class="form-control" id="viewEmail"
-								   name="memberEmail" > <!-- th:text="${member.memberEmail}" -->
+							<input type="text" class="form-control" id="inputId" name="memberId"
+								   th:value="${studentInfo.memberId}" readonly="readonly">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputStudentName">학생명</label>
+						<input type="text" class="form-control" id="inputStudentName"
+							   name="memberName" th:value="${studentInfo.memberName}"
+							   placeholder="학생의 이름을 입력해주세요">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputStudentBirth">생년월일</label>
+						<input type="date" class="form-control" id="inputStudentBirth"
+							   name="memberBirth" th:value="${studentInfo.memberBirth}">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputEmail">이메일</label>
+						<div class="input-group">
+							<input type="email" class="form-control" id="inputEmail"
+								   name="memberEmail" th:value="${studentInfo.memberEmail}"
+								   placeholder="학생의 이메일을 입력해주세요">
 							<span class="input-group-btn">
 								<button type="button" class="btn btn-primary btn-sm"
-										id="studentManageEmailOverlapBtn">중복확인</button>
-								<input type="hidden" id="studentManageEmailOverlapClickChk" value="0">
+										id="emailOverlapBtn">중복확인</button>
+								<input type="hidden" id="emailOverlapClickChk" value="1">
+								<!-- 수정할 때 이메일을 수정하지않고 수정버튼을 누를 수 있다. -->
+								<!-- 0:중복확인 안누름 / 1: 누름 이므로 누름처리 해준다. -->
+								<input type="hidden" id="dbInputEmail" th:value="${studentInfo.memberEmail}">
+								<!-- 이미 디비에 저장되어있던 이메일 -->
 							</span>
 						</div>
 					</div>
 					
 					<div class="form-group">
-						<label for="viewPhone">학생 휴대폰번호</label>
-						<input type="text" class="form-control" id="viewPhone"
-							   name="memberPhone" > <!-- th:text="${member.memberPhone}" -->
+						<label for="inputStudentPhone">학생 휴대폰번호</label>
+						<input type="tel" class="form-control" id="inputStudentPhone"
+							   name="memberPhone" th:value="${studentInfo.memberPhone}"
+							   placeholder="학생의 휴대폰 번호를 입력해주세요">
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
-						<label for="viewParentName">학부모명</label>
-						<input type="text" class="form-control" id="viewParentName"
-							   name="parentName" > <!-- th:text="${parent.parentName}" -->
+						<label for="inputParentName">학부모명</label>
+						<input type="text" class="form-control" id="inputParentName"
+							   name="parentName" th:value="${studentInfo.parentName}"
+							   placeholder="학부모의 이름을 입력해주세요">
 					</div>
 					
 					<div class="form-group">
-						<label for="viewParentPhone">학부모 휴대폰 번호</label>
-						<input type="text" class="form-control" id="viewParentPhone"
-							   name="parentPhone" > <!-- th:text="${parent.parentPhone}" -->
+						<label for="inputParentPhone">학부모 휴대폰 번호</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="inputParentPhone"
+								   name="parentPhone" th:value="${studentInfo.parentPhone}"
+								   placeholder="학부모의 휴대폰 번호을 입력해주세요">
+							<span class="input-group-btn">
+								<button type="button" class="btn btn-primary btn-sm"
+										id="parentPhoneOverlapBtn">중복확인</button>
+								<input type="hidden" id="parentPhoneOverlapClickChk" value="1">
+								<!-- 수정할 때 학부모 휴대폰 번호를 수정하지않고 수정버튼을 누를 수 있다. -->
+								<!-- 0:중복확인 안누름 / 1: 누름 이므로 누름처리 해준다. -->
+								<input type="hidden" id="dbInputParentPhone" th:value="${studentInfo.parentPhone}">
+								<!-- 이미 디비에 저장되어있던 학부모 휴대폰 번호 -->
+							</span>
+						</div>
 					</div>
 					
 					<div class="form-group">
-						<label for="viewTel">집전화</label>
-						<input type="text" class="form-control" id="viewTel"
-							   name="memberTel" > <!-- th:text="${member.memberTel}" -->
+						<label for="inputStudentTel">집전화</label>
+						<input type="text" class="form-control" id="inputStudentTel"
+							   name="memberTel" th:value="${studentInfo.memberTel}"
+							   placeholder="집전화를 입력해주세요(생략가능)">
 					</div>
 					
 					<div class="form-group">
-						<label for="viewAddress">주소</label>
-						<input type="text" class="form-control" id="viewAddress"
-							   name="memberAddress" > <!-- th:text="${member.memberAddress}" -->
+						<label for="inputStudentAddr">주소</label>
+						<input type="text" class="form-control" id="inputStudentAddr"
+							   name="memberAddress" th:value="${studentInfo.memberAddress}"
+							   placeholder="주소를 입력해주세요">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputStudentRegisteredDate">등록일</label>
+						<input type="text" class="form-control"
+							   id="inputStudentRegisteredDate"
+							   th:value="${#calendars.format(studentInfo.memberRegisteredDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
 					</div>
 					
 					<div class="form-group">
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
+							<!-- 결제정보에서 현재 날짜가 해당 아이디의 마지막 수업일이후이면 삭제버튼 나오게 하기. -->
+							<!-- 돈내고 등록했는데 학원에서 실수로 해당 회원을 삭제하면 안되므로. -->
+							<!-- <div class="col-md-4" >th:if="${oneStudentCourseEnrolleeListSize == 0}"
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/deleteStudentInfo(memberId=${studentInfo.memberId})} + '\''">
+									삭제
+								</button>
+								</div> -->
+								<!-- 회원을 삭제하려면 해당 회원 아이디를 참조하는 수강신청 목록을
+								변경처리한 다음에 삭제하거나 같이 삭제하거나 해당 회원 아이디가 있는 수강신청 목록을 삭제한 후에 처리되어야 하므로
+								회원 삭제시 해당 회원 아이디를 참조하는 수강신청 목록도 같이 보여줘야 한다. -->
 							<div class="col-md-6">
-								<button type="button" onclick=""
-										class="btn btn-danger btn-sm btn-block">삭제</button>
+								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
 							<div class="col-md-6">
-								<button type="button" id="updateStudentBtn"
+								<button type="button" id="StudentUpdateFrmBtn"
 										class="btn btn-primary btn-sm btn-block">수정</button>
 							</div>
 						</div>
@@ -116,6 +141,262 @@
 </th:block>
 
 <th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		
+		
+		
+		// 이메일 중복 확인
+		$('#emailOverlapBtn').on('click', function(e){
+			e.preventDefault();
+			var memberEmail = $('#inputEmail').val();
+			console.log(`memberEmail:${memberEmail}`);
+			
+	        if(memberEmail == ''){
+	            alert('이메일을 입력하세요');
+	            $("#inputEmail").focus();
+	            return false;
+	        } else {
+	            var emailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+	            if (!emailRegex.test(memberEmail)) {
+	                alert('이메일 주소가 유효하지 않습니다. ex)abc@gmail.com');
+	                $("#inputEmail").focus();
+	                return false;
+	            }
+	        }
+			
+			$.ajax({
+	            url: '/memberEmailOverlapChk',
+	            type: 'POST',
+	            data: memberEmail,
+	            dataType: 'json',
+	            contentType: "application/json; charset=UTF-8",
+	            success: function (response) {
+	                if(response.result == 1){
+	                	alert('사용 가능한 이메일 입니다.')
+	                    //$('#emailOverlapMessage').text('사용가능한 이메일 입니다.');
+	                    $('#emailOverlapClickChk').val(1);
+	                	// 회원 등록할 때 중복확인 버튼을 눌렀다는 걸 알려줄 값   0:안누름 / 1:누름
+	                } else if(response.result == 0){
+	                	if($('#inputEmail').val() == $('#dbInputEmail').val()) {
+	                		// 입력한 이메일과 디비에 저장된 이메일이 같다. 그냥 중복확인 버튼을 눌러보았다.
+	                		
+	                		$('#emailOverlapClickChk').val(1);
+	                		// 수정버튼을 눌렀을 때 중복확인 버튼을 누르지 않았다는 유효성 검사를 통과하기 위해 1을 넣는다.
+	                		// 0: 안누름 / 1: 누름
+	                		
+	                		alert('디비에 저장된 이메일과 같습니다. 계속 진행하세요.');
+	                		
+	                	} else { // 입력한 이메일과 디비에 저장된 이메일이 같지 않다. 즉, 새로운 이메일을 입력하였다.
+	                		alert('사용 중인 이메일 입니다');
+		                	$("#inputEmail").focus();
+		                	//$('#emailOverlapMessage').text('이미 가입된 이메일 입니다');
+	                	}
+	                } else {
+	                    alert('검사 중 에러가 발생했습니다');
+	                }
+	            },
+	            error: function(jqXHR, textStatus, errorThrown){
+	                alert("arjax error : " + textStatus + "\n" + errorThrown);
+	            }
+	        });
+		});
+		
+		// 값을 바꿨을 경우 중복확인 버튼을 다시 눌러야함 (중복확인 버튼 눌럿는지 체크하는 값을 0으로 셋팅) 0:안누름 / 1:누름
+		$("#inputEmail").on('change', function(e) {
+			e.preventDefault();
+			if($('#inputEmail').val() == $('#dbInputEmail').val()) {
+				// 수정을 했다가 다시 원래 이메일을 썼을 경우 중복확인 버튼을 눌렀다고 처리해준다.
+				$('#emailOverlapClickChk').val(1);
+			} else {
+				$('#emailOverlapClickChk').val(0);
+				// 디비에 입력된 이메일과 다를 경우 중복확인을 눌러야 한다. (0: 안누름 / 1:누름)
+			}
+		});
+		
+		
+		
+		// 학부모 휴대폰 번호 중복 확인
+		$('#parentPhoneOverlapBtn').on('click', function(e){
+			e.preventDefault();
+			var inputParentPhone = $('#inputParentPhone').val();
+			console.log(`inputParentPhone:${inputParentPhone}`);
+			
+			if($("#inputParentPhone").val() ==''){
+	            alert('학부모의 휴대폰 번호를 입력하세요');
+	            $("#inputParentPhone").focus();
+	            return false;
+	        }
+			
+			$.ajax({
+	            url: '/parentPhoneOverlapChk',
+	            type: 'POST',
+	            data: inputParentPhone,
+	            dataType: 'json',
+	            contentType: "application/json; charset=UTF-8",
+	            success: function (response) {
+	                if(response.result == 1){
+	                	alert('사용 가능한 휴대폰 번호 입니다.')
+	                    $('#parentPhoneOverlapClickChk').val(1);
+	                } else if(response.result == 0){
+	                	if($('#inputParentPhone').val() == $('#dbInputParentPhone').val()) {
+	                		// 입력한 번호와 디비에 저장된 번호가 같다. 그냥 중복확인 버튼을 눌러보았다.
+	                		
+	                		$('#parentPhoneOverlapClickChk').val(1);
+	                		// 수정버튼을 눌렀을 때 중복확인 버튼을 누르지 않았다는 유효성 검사를 통과하기 위해 1을 넣는다.
+	                		// 0: 안누름 / 1: 누름
+	                		
+	                		alert('디비에 저장된 번호와 같습니다. 계속 진행하세요.');
+	                		
+	                	} else { // 입력한 번호와 디비에 저장된 번호가 같지 않다. 즉, 새로운 번호를 입력하였다.
+	                		alert('이미 가입된 휴대폰 번호 입니다');
+		                	$("#inputParentPhone").focus();
+	                	}
+	                } else {
+	                    alert('검사 중 에러가 발생했습니다');
+	                }
+	            },
+	            error: function(jqXHR, textStatus, errorThrown){
+	                alert("arjax error : " + textStatus + "\n" + errorThrown);
+	            }
+	        });
+		});
+		
+		// 값을 바꿨을 경우 중복확인 버튼을 다시 눌러야함 (중복확인 버튼 눌럿는지 체크하는 값을 0으로 셋팅) 0:안누름 / 1:누름
+		$("#inputParentPhone").on('change', function(e) {
+			e.preventDefault();
+			
+			if($('#inputParentPhone').val() == $('#dbInputParentPhone').val()) {
+				// 수정을 했다가 다시 원래 학부모 휴대폰번호를 썼을 경우 중복확인 버튼을 눌렀다고 처리해준다.
+				$('#parentPhoneOverlapClickChk').val(1);
+				// 0: 안누름 / 1:누름
+			} else {
+				$('#parentPhoneOverlapClickChk').val(0);
+				// 디비에 입력된 학부모 휴대폰번호와 다를 경우 중복확인을 눌러야 한다. (0: 안누름 / 1:누름)
+			}
+		});
+		
+		
+		
+		// 학생 등록 처리 전 공백  및  이메일 유효성 검사  ex)abc@gmail.com
+		$('#StudentUpdateFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+			var emailOverlapClickChk = $('#emailOverlapClickChk').val();
+			
+			console.log(`emailOverlapClickChk:${emailOverlapClickChk}`);
+			console.log('0이면 사용 중, 1이면 사용 가능');
+			
+	        
+	        if($("#inputStudentName").val() ==''){
+	            alert('이름을 입력하세요');
+	            $("#inputStudentName").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputStudentBirth").val() ==''){
+	            alert('생년월일을 선택하세요');
+	            $("#inputStudentBirth").focus();
+	            return false;
+	        }
+	        
+	        var email = $('#inputEmail').val();
+	        if(email == ''){
+	            alert('이메일을 입력하세요');
+	            $('#emailOverlapClickChk').val(0);
+	            // 중복확인 버튼을 눌러줘야하므로 중복확인 버튼을 안누른 값으로 셋팅한다.
+	            // 0:안누름 / 1:누름
+	            $("#inputEmail").focus();
+	            return false;
+	        } else {
+	            var emailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+	            if (!emailRegex.test(email)) {
+	                alert('이메일 주소가 유효하지 않습니다. ex)abc@gmail.com');
+	                $("#inputEmail").focus();
+	                $('#emailOverlapClickChk').val(0);
+	                // 중복확인 버튼을 눌러줘야하므로 중복확인 버튼을 안누른 값으로 셋팅한다.
+	                // 0:안누름 / 1:누름
+	                return false;
+	            }
+	        }
+	        
+	        if($("#emailOverlapClickChk").val() == 0){
+	            alert('이메일 중복확인을 해주세요');
+	            $("#inputEmail").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputStudentPhone").val() ==''){
+	            alert('휴대폰 번호를 입력하세요');
+	            $("#inputStudentPhone").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputParentName").val() ==''){
+	            alert('학부모의 이름을 입력하세요');
+	            $("#inputParentName").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputParentPhone").val() ==''){
+	            alert('학부모의 휴대폰 번호를 입력하세요');
+	            $('#parentPhoneOverlapClickChk').val(0);
+	            // 중복확인 버튼을 눌러줘야하므로 중복확인 버튼을 안누른 값으로 셋팅한다.
+	            // 0:안누름 / 1:누름
+	            $("#inputParentPhone").focus();
+	            return false;
+	        }
+	        
+	        if($("#parentPhoneOverlapClickChk").val() == 0){
+	            alert('학부모 휴대폰번호 중복확인을 해주세요');
+	            $("#inputParentPhone").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputStudentAddr").val() ==''){
+	            alert('주소를 입력하세요');
+	            $("#inputStudentAddr").focus();
+	            return false;
+	        }
+	        
+	        /*if($("#agree").is(":checked") == false){
+	            alert('약관에 동의하셔야 합니다');
+	            return false;      
+	        }*/
+	        
+	        $('#studentUpdateFrm').submit();
+	        
+	        /*$.ajax({
+	            url: '/addMember',
+	            type: 'POST',
+	            data: {
+	            	member_id:$('#inputId').val(),
+	            	member_pw:$('#inputPassword').val(),
+	                name:$("#inputName").val(),
+	                
+	                email:$('#InputEmail').val(),
+	                
+	                telNO:$("#inputtelNO").val(),
+	                mobileNO:$("#inputMobile").val()
+	            },
+	            dataType: "json",
+	            success: function (response) {
+	                if(response.result == 1){
+	                    alert('가입 완료');
+	                    location.replace('../index.php'); // 화면 갱신
+	                } else if(response.result == 0){
+	                    alert('이미 가입된 아이디입니다');
+	                } else if(response.result == -2){
+	                    alert('입력된 값이 없습니다');
+	                } else {
+	                    alert('등록중에 에러가 발생했습니다');
+	                }
+	            },
+	            error: function(jqXHR, textStatus, errorThrown){
+	                alert("arjax error : " + textStatus + "\n" + errorThrown);
+	            }
+	        });*/
+		});
+	</script>
 </th:block>
 
 </html>

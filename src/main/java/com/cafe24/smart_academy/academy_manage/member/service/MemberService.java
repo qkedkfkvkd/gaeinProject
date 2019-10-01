@@ -65,14 +65,14 @@ public class MemberService {
 	
 	
 	// 관리자 : 상담기준코드 리스트 가져오기
-	public List<Map<String, Object>> listCounselStandard() {
-		return memberMapper.listCounselStandard();
+	public List<Map<String, Object>> counselStandardList() {
+		return memberMapper.counselStandardList();
 	}
 	
 	
 	// 관리자 : 선택한 상담구분코드와 상담결과코드로 상담기준리스트 검색결과 가져오기
-	public List<Map<String, Object>> listCounselStandard(CounselResult counselResult) {
-		return memberMapper.listCounselStandard(counselResult);
+	public List<Map<String, Object>> counselStandardList(CounselResult counselResult) {
+		return memberMapper.counselStandardList(counselResult);
 	}
 	
 	

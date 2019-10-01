@@ -18,13 +18,13 @@
 	
 	<div class="col-sm-10 col-md-offset-3">
 		<form class="form-inline mx-auto" action="/searchStudentInfo" method="post">
-			<input type="hidden" th:value="${memberId}" name="memberId">
+			<input type="hidden" th:value="${studentInfo.memberId}" name="memberId">
 			
 			<div class="form-group">
 				<label class="sr-only" for="counselTypeList">상담구분명</label>
 				<!-- <div class="input-group"> -->
 				<select id="counselTypeList" name="counselTypeNo"
-						class="form-control">
+						onchange="counselResultSelect(this.value)" class="form-control">
 					<option value="">상담구분명</option>
 					<option th:each="counselType : ${counselTypeList}"
 							th:value="${counselType.counselTypeNo}"
@@ -39,9 +39,6 @@
 				<select id="viewCounselResultNameList" name="counselResultNo"
 						class="form-control">
 					<option value="">상담결과명</option>
-					<option th:each="counselResult : ${counselResultList}"
-							th:value="${counselResult.counselResultNo}"
-							th:text="${counselResult.counselResultName}"></option>
 				</select>
 				<!-- </div> -->
 			</div>
@@ -123,11 +120,15 @@
 							<td th:text="${counsel.counselAppointmentWhether}"></td>
 							<td>
 								<button type="button" class="btn btn-primary btn-sm btn-block"
-										onclick="">예약하기</button>
+										th:onclick="'window.location.href = \'' + @{/updateCounselAppointment(counselHistoryNo=${counsel.counselHistoryNo}, memberId=${counsel.memberId})} + '\''">
+									예약하기
+								</button>
 							</td>
 							<td>
 								<button type="button" class="btn btn-primary btn-sm btn-block"
-										onclick="">내용작성</button>
+										th:onclick="">
+									내용작성
+								</button>
 							</td>
 							<!-- 내용작성버튼을 눌러서 상담내용작성 폼으로 이동하여 -->
 							<!-- 내용을 작성하면 더이상 신청현황에는 보이지 않아야 한다. -->
@@ -148,6 +149,32 @@
 </th:block>
 
 <th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		function counselResultSelect(counselTypeNo) {
+			console.log(`counselTypeNo:${counselTypeNo}`);
+			
+			$.ajax({
+				 type: "POST"
+				,url: "/counselResultSelect"
+				,dataType:"json"
+				,data: counselTypeNo
+				,contentType: "application/json; charset=UTF-8"
+				,success: function(result){
+					//SELECT BOX 초기화           
+					$("#counselResultList").find("option").remove().end().append("<option value=''>상담결과명</option>");
+					
+					//배열 개수 만큼 option 추가
+					$.each(result, function(i){
+						console.log(`넘어온 상담결과코드:${result}`);
+						$("#counselResultList").append("<option value='"+result[i].counselResultNo+"'>"+result[i].counselResultName+"</option>");
+					});    
+				}
+				,error: function (jqXHR, textStatus, errorThrown) {
+					alert("오류가 발생하였습니다.");
+				}
+			});
+		}
+	</script>
 </th:block>
 
 </html>

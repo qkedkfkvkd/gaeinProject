@@ -21,8 +21,8 @@ public class CourseManageService {
 	
 	
 	// 관리자 : 과목코드 리스트 가져오기
-	public List<Subject> listSubject() {
-		return courseManageMapper.listSubject();
+	public List<Subject> subjectList() {
+		return courseManageMapper.subjectList();
 	}
 	
 	
@@ -101,8 +101,8 @@ public class CourseManageService {
 	
 	
 	// 관리자 : 강의실 리스트 가져오기
-	public List<AcademyRoom> listAcademyRoom() {
-		return courseManageMapper.listAcademyRoom();
+	public List<AcademyRoom> academyRoomList() {
+		return courseManageMapper.academyRoomList();
 	}
 	
 	
@@ -114,8 +114,8 @@ public class CourseManageService {
 	
 	
 	// 관리자 : 강의실 목록에서 강의실 검색
-	public List<AcademyRoom> listAcademyRoom(AcademyRoom room) {
-		return courseManageMapper.listAcademyRoom(room);
+	public List<AcademyRoom> academyRoomList(AcademyRoom room) {
+		return courseManageMapper.academyRoomList(room);
 	}
 	
 	
@@ -194,14 +194,14 @@ public class CourseManageService {
 	
 	
 	// 관리자 : 성적기준 리스트 가져오기
-	public List<GradingCriteria> listGradingCriteria() {
-		return courseManageMapper.listGradingCriteria();
+	public List<GradingCriteria> gradingCriteriaList() {
+		return courseManageMapper.gradingCriteriaList();
 	}
 	
 	
 	// 관리자 : 성적기준을 선택하여 검색하기
-	public List<GradingCriteria> listGradingCriteria(String gradingCriteriaRating) {
-		return courseManageMapper.listGradingCriteria(gradingCriteriaRating);
+	public List<GradingCriteria> gradingCriteriaList(String gradingCriteriaRating) {
+		return courseManageMapper.gradingCriteriaList(gradingCriteriaRating);
 	}
 	
 	

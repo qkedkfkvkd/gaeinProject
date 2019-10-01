@@ -10,7 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cafe24.smart_academy.academy_manage.course.manage.service.CourseManageService;
 import com.cafe24.smart_academy.academy_manage.course.manage.vo.AcademyRoom;
@@ -36,10 +38,10 @@ public class CourseController {
 	// 관리자 : 강좌 추가 폼 이동
 	@GetMapping("/addCourseInfo")
 	public String addCourseInfo(Model model) {
-		List<Subject> subjectList = courseManageService.listSubject();
+		List<Subject> subjectList = courseManageService.subjectList();
 		// 전체 과목 리스트를 가져온다.
 		
-		List<AcademyRoom> roomList = courseManageService.listAcademyRoom();
+		List<AcademyRoom> roomList = courseManageService.academyRoomList();
 		// 전체 강의실 리스트를 가져온다.
 		
 		model.addAttribute("subjectList", subjectList);
@@ -82,7 +84,7 @@ public class CourseController {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		String result = courseService.CourseRoomAssignBycourseAssignmentNo(inputCourseAssignNo);
+		String result = courseService.CourseRoomAssignByCourseAssignmentNo(inputCourseAssignNo);
 		// 강좌강의실배정 테이블에서 해당 배정코드가 존재하는지 확인
 		
 		if(result == null) {	// 결과가 없다 : 해당 배정코드가 존재하지 않는다.
@@ -108,8 +110,9 @@ public class CourseController {
 		
 		if(message == null) {
 			// 리턴받은 메세지가 널이라면 강좌추가에 성공했다는 뜻이다.
-			path = "redirect:/listSubject";
-			// 과목 리스트로 이동한다.
+			path = "redirect:/courseNotAssignmentTeacherList";
+			// 강좌를 처음 추가할 경우 강사가 배정이 안되어 있으므로
+			// 강사가 배정이 안된 강좌 목록으로 이동해야 한다.
 		}
 		
 		return path;
@@ -136,7 +139,7 @@ public class CourseController {
 		// 하나 이상의 테이블을 조인하므로 맵 형태의 리스트로 가져온다.
 		
 		
-		List<Subject> subjectList = courseManageService.listSubject();
+		List<Subject> subjectList = courseManageService.subjectList();
 		// 샐렉트박스에 넣어줄 과목 리스트를 가져온다.
 		
 		
@@ -188,7 +191,7 @@ public class CourseController {
 		// 여러 개의 테이블을 조인하므로 맵 형태의 리스트로 가져온다.
 		
 		
-		List<Subject> subjectList = courseManageService.listSubject();
+		List<Subject> subjectList = courseManageService.subjectList();
 		// 샐렉트박스에 넣어줄 과목 리스트를 가져온다.
 		
 		
@@ -203,23 +206,99 @@ public class CourseController {
 	}
 	
 	
-	// 관리자 : 강의실 혹은 강사가 배정이 안된 강좌목록
-	@GetMapping("/courseNotAssignment")
-	public String courseNotAssignment(Model model) {
+	// 관리자 : 강사가 배정이 안된 강좌목록
+	@GetMapping("/courseNotAssignmentTeacherList")
+	public String courseNotAssignmentTeacherList(Model model) {
 		
-		List<Map<String, Object>> courseNotAssignment =
-				courseService.courseNotAssignment();
+		List<Map<String, Object>> courseNotAssignmentTeacherList =
+				courseService.courseNotAssignmentTeacherSimple();
+		// 강좌 테이블과 강사 테이블을 서로 조인하여
+		// 강사가 배정되지 않은 강좌 목록을 가지고 온다. (간단한 정보만 가져온다.)
+		// 강좌코드, 강좌명, 과목명, 강좌등록일
 		
-		return "/view/lesson/course/listCourseNotAssignment";
+		List<Subject> subjectList = courseManageService.subjectList();
+		// 샐렉트박스에 넣어줄 과목 리스트를 가져온다.
+		
+		model.addAttribute("courseNotAssignmentTeacherList",
+				courseNotAssignmentTeacherList);
+		model.addAttribute("courseNotAssignmentTeacherListSize",
+				courseNotAssignmentTeacherList.size());
+		// 강좌 리스트의 사이즈를 보고 강좌를 뿌려줄 것인지,
+		// 강사가 배정되지 않은 강좌 목록이 없다는 메세지를 뿌려줄 것인지 판단한다.
+		
+		model.addAttribute("subjectList", subjectList);
+		
+		return "/view/lesson/course/listCourseNotAssignTeacher";
 	}
 	
 	
+	// 관리자 : 강사가 배정이 안된 강좌 상세보기
+	@GetMapping("/updateCourseNotAssignTeacher")
+	public String updateCourseNotAssignTeacher(
+			@RequestParam(value = "courseNo") String courseNo, Model model) {
+		
+		Course course = courseService.detailCourseByCourseNo(courseNo);
+		// 강좌코드로 강사가 배정이 안된 강좌의 상세정보 가져오기
+		
+		List<Map<String, Object>> courseAssignList = 
+				courseService.courseNotAssignTeacherList(courseNo);
+		// 강좌코드로 강사가 배정이 안된 강좌 강의실 배정목록 가져오기
+		
+		List<Subject> subjectList = courseManageService.subjectList();
+		// 샐렉트박스에 넣어줄 과목 리스트를 가져온다.
+		
+		List<AcademyRoom> roomList = courseManageService.academyRoomList();
+		// 전체 강의실 리스트를 가져온다.
+		
+		
+		model.addAttribute("course", course);
+		model.addAttribute("courseAssignList", courseAssignList);
+		model.addAttribute("courseAssignListSize", courseAssignList.size());
+		// 강좌 리스트의 사이즈를 보고 강좌를 뿌려줄 것인지,
+		// 강좌 목록이 없다는 메세지를 뿌려줄 것인지 판단한다.
+		
+		model.addAttribute("subjectList", subjectList);
+		model.addAttribute("roomList", roomList);
+		
+		return "/view/lesson/course/detailCourseNotAssignTeacher";
+	}
 	
 	
+	// 관리자 : 강사가 배정이 안된 강좌 수정 처리
+	@PostMapping("/updateCourseNotAssignTeacher")
+	public String updateCourseNotAssignTeacher(Course course, Model model
+			,RedirectAttributes redirectAttributes) {
+		String message = courseService.updateCourse(course);
+		// 해당 강좌 수정 처리 후 메세지 반환
+		
+		String path = "redirect:/courseNotAssignmentTeacherList";
+		// 강좌 수정에 성공했을 경우 강사가 배정이 안된 강좌목록 리스트로 이동한다.
+		
+		if(message != null) {
+			// 리턴받은 메세지가 널이 아니라면 강좌 수정에 실패했다는 뜻이다.
+			
+			System.out.println("강좌 수정 실패!!!!!!!!!!!!");
+			
+			redirectAttributes.addAttribute("courseNo", course.getCourseNo());
+			// 강좌 상세 페이지로 리다이렉트하면서 강좌코드를 넘겨준다.
+			
+			path = "redirect:/updateCourseNotAssignTeacher";
+			// 강좌 상세 페이지로 이동
+		}
+		
+		return path;
+	}
 	
 	
-	
-	
-	
-	
+	// 관리자 : 강사 배정안된 강좌 삭제 처리
+	@GetMapping("/deleteCourseNotAssignTeacher")
+	public String deleteCourseNotAssignTeacher(@RequestParam(value = "courseNo") String courseNo) {
+		System.out.println(courseNo + " <- courseNo   deleteCourseNotAssignTeacher()   CourseController.java");
+		String message = courseService.deleteCourse(courseNo);
+		// 해당 강좌 삭제 처리 후 메세지 반환
+		
+		System.out.println(message + " <- message   deleteCourseNotAssignTeacher()   CourseController.java");
+		
+		return "redirect:/courseNotAssignmentTeacherList";
+	}
 }

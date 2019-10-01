@@ -44,10 +44,10 @@ public class CourseManageController {
 	
 	
 	// 관리자 : 과목 리스트로 이동
-	@GetMapping("/listSubject")
-	public String listSubject(Model model) {
+	@GetMapping("/subjectList")
+	public String subjectList(Model model) {
 		
-		List<Subject> subjectList = courseManageService.listSubject();
+		List<Subject> subjectList = courseManageService.subjectList();
 		
 		model.addAttribute("subjectList", subjectList);
 		model.addAttribute("subjectListSize", subjectList.size());
@@ -95,7 +95,7 @@ public class CourseManageController {
 		
 		if(message == null) {
 			// 리턴받은 메세지가 널이라면 과목추가에 성공했다는 뜻이다.
-			path = "redirect:/listSubject";
+			path = "redirect:/subjectList";
 			// 과목 리스트로 이동한다.
 		}
 		
@@ -137,7 +137,7 @@ public class CourseManageController {
 			RedirectAttributes redirectAttributes) {
 		String message = courseManageService.updateSubject(subject);
 		
-		String path = "redirect:/listSubject";
+		String path = "redirect:/subjectList";
 		// 과목 수정에 성공했을 경우 과목리스트로 이동하게 초기화한다.
 		
 		if(message != null) {
@@ -165,16 +165,16 @@ public class CourseManageController {
 		
 		System.out.println(message + " <- message   deleteSubject()   CourseManageController.java");
 		
-		return "redirect:/listSubject";
+		return "redirect:/subjectList";
 	}
 	
 	
 	
 	// 관리자 : 강의실 리스트로 이동
-	@GetMapping("/listAcademyRoom")
-	public String listAcademyRoom(Model model) {
+	@GetMapping("/academyRoomList")
+	public String academyRoomList(Model model) {
 		
-		List<AcademyRoom> roomList = courseManageService.listAcademyRoom();
+		List<AcademyRoom> roomList = courseManageService.academyRoomList();
 		// 전체 강의실 리스트를 가지고 온다.
 		
 		List<Integer> roomFloorTempList = new ArrayList<Integer>();
@@ -231,10 +231,10 @@ public class CourseManageController {
 		System.out.println("강의실 검색 메소드 진입");
 		
 		List<AcademyRoom> roomList =
-				courseManageService.listAcademyRoom(room);
+				courseManageService.academyRoomList(room);
 		// 선택한 강의실 층수와 실용도로 강의실 리스트를 검색한다.
 		
-		List<AcademyRoom> allRoomFloorList = courseManageService.listAcademyRoom();
+		List<AcademyRoom> allRoomFloorList = courseManageService.academyRoomList();
 		// 전체 강의실 리스트를 가지고 온다. (여기서는 층수만 사용한다.)
 		
 		List<Integer> roomFloorTempList = new ArrayList<Integer>();
@@ -310,7 +310,7 @@ public class CourseManageController {
 		if(message == null) {
 			// 리턴받은 메세지가 널이라면 강의실 추가에 성공했다는 뜻이다.
 			
-			path = "redirect:/listAcademyRoom";
+			path = "redirect:/academyRoomList";
 			// 강의실 리스트로 리다이렉트한다.
 		}
 		
@@ -355,7 +355,7 @@ public class CourseManageController {
 		
 		String message = courseManageService.updateAcademyRoom(room);
 		
-		String path = "redirect:/listAcademyRoom";
+		String path = "redirect:/academyRoomList";
 		// 강의실 수정에 성공했을 경우 강의실 리스트로 이동하게 초기화한다.
 		
 		if(message != null) {
@@ -383,17 +383,17 @@ public class CourseManageController {
 		
 		System.out.println(message + " <- message   deleteAcademyRoom()   CourseManageController.java");
 		
-		return "redirect:/listAcademyRoom";
+		return "redirect:/academyRoomList";
 	}
 	
 	
 	
 	// 관리자 : 성적기준 리스트로 이동
-	@GetMapping("/listGradingCriteria")
-	public String listGradingCriteria(Model model) {
+	@GetMapping("/gradingCriteriaList")
+	public String gradingCriteriaList(Model model) {
 		
 		List<GradingCriteria> gradingCriteriaList =
-				courseManageService.listGradingCriteria();
+				courseManageService.gradingCriteriaList();
 		
 		model.addAttribute("gradingCriteriaList", gradingCriteriaList);
 		model.addAttribute("gradingCriteriaListSize", gradingCriteriaList.size());
@@ -408,10 +408,11 @@ public class CourseManageController {
 			,Model model) {
 		
 		List<GradingCriteria> gradingCriteriaList =
-				courseManageService.listGradingCriteria(gradingCriteriaRating);
+				courseManageService.gradingCriteriaList(gradingCriteriaRating);
+		// 선택한 등급(성적기준테이블 기본키)로 검색한 결과를 가지고 온다.
 		
 		model.addAttribute("gradingCriteriaList", gradingCriteriaList);
-		// 결과는 하나의 객체만 나오지만 listGradingCriteriaCode에서는 무조건
+		// 결과는 하나의 객체만 나오지만 listGradingCriteriaCode.html에서는 무조건
 		// 결과를 리스트로 뿌려주므로 어찌됬든 리스트로 받아서 뿌려준다.
 		
 		return "view/lesson/courseCode/listGradingCriteria";
@@ -460,7 +461,7 @@ public class CourseManageController {
 		if(message == null) {
 			// 리턴받은 메세지가 널이라면 성적기준 추가에 성공했다는 뜻이다.
 			
-			path = "redirect:/listGradingCriteria";
+			path = "redirect:/gradingCriteriaList";
 			// 성적기준 리스트로 리다이렉트한다.
 		}
 		
@@ -509,7 +510,7 @@ public class CourseManageController {
 		
 		System.out.println(message + " <- message   updateGradingCriteria()   CourseManageController.java");
 		
-		String path = "redirect:/listGradingCriteria";
+		String path = "redirect:/gradingCriteriaList";
 		// 성적기준 수정에 성공했을 경우 성적기준 리스트로 이동하게 초기화한다.
 		
 		if(message != null) {
@@ -541,7 +542,7 @@ public class CourseManageController {
 		
 		System.out.println(message + " <- message   deleteGradingCriteria()   CourseManageController.java");
 		
-		return "redirect:/listGradingCriteria";
+		return "redirect:/gradingCriteriaList";
 		// 성적기준 삭제 처리 후 성적기준 리스트 이동
 	}
 }

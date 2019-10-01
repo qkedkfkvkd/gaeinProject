@@ -45,13 +45,6 @@ public class StudentInfoController {
 	}
 	
 	
-	// 관리자의 회원 등록폼 이동하기
-//	@GetMapping("/addMember")
-//	public String addMember() {
-//		return "/view/academyRegister/memberInfo/memberInfo";
-//	}
-	
-	
 	// 관리자 전용 학생 등록 폼에서 학부모 휴대폰 번호 중복확인 버튼을 눌렀을 때
 	@PostMapping("/parentPhoneOverlapChk")
 	@ResponseBody
@@ -105,8 +98,8 @@ public class StudentInfoController {
 	
 	// 관리자 전용 학생 목록 페이지 이동
 	@GetMapping("/studentList")
-	public String listStudentInfo(Model model) {
-		List<Map<String, Object>> studentList = studentInfoService.listStudentInfo();
+	public String studentInfoList(Model model) {
+		List<Map<String, Object>> studentList = studentInfoService.studentInfoList();
 		// 디비에서 권한이 학생인 사람들만 목록을 가져온다. (로그인 테이블 - 회원 신상정보 테이블 아이디로 조인)
 		
 		model.addAttribute("studentList", studentList);
@@ -119,7 +112,7 @@ public class StudentInfoController {
 	@PostMapping("/searchStudentInfo")
 	public String searchStudentInfo(Member member, Model model) {
 		List<Map<String, Object>> studentList =
-				studentInfoService.listStudentInfo(member);
+				studentInfoService.studentInfoList(member);
 		// 입력한 학생명과 가입기간으로 디비에서 권한이 학생인 사람들만 목록을 가져온다.
 		// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
 		
@@ -136,13 +129,72 @@ public class StudentInfoController {
 //	}
 	
 	
+	// 관리자 : 특정 학생 상세 페이지 이동
+	@GetMapping("/updateStudentInfo")
+	public String updateStudentInfo(@RequestParam(value = "memberId")String memberId
+			, Model model) {
+		
+		Map<String, Object> studentInfo =
+				studentInfoService.detailStudentInfoByMemberId(memberId);
+		// 특정 학생의 아이디를 이용하여 아이디, 권한, 개인 신상정보, 학부모 정보를 가져온다.
+		// 두개 이상의 테이블을 조인하므로 맵으로 가져온다.
+		
+		model.addAttribute("studentInfo", studentInfo);
+		// 가져온 학생의 신상정보를 화면에 뿌려줄 객체에 넣는다.
+		
+		return "/view/academyRegister/studentInfo/detailStudentInfo";
+	}
+	
+	
+	// 관리자 : 특정 학생정보 수정 처리
+	@PostMapping("/updateStudentInfo")
+	public String updateStudentInfo(Member member, Parent parent, Model model
+			,RedirectAttributes redirectAttributes) {
+		String message = studentInfoService.updateStudentInfo(member, parent);
+		// 학생과 학부모 정보 수정 처리 후 메세지 반환
+		
+		String path = "redirect:/studentList";
+		// 학생정보 수정에 성공했을 경우 학생목록 리스트로 이동하게 초기화한다.
+		
+		if(message != null) {
+			// 리턴받은 메세지가 널이 아니라면 학생정보 수정에 실패했다는 뜻이다.
+			
+			System.out.println("학생정보 수정 실패!!!!!!!!!!!!");
+			
+			redirectAttributes.addAttribute("memberId", member.getMemberId());
+			// 학생정보 상세 페이지로 리다이렉트하면서 회원 아이디를 넘겨준다.
+			
+			path = "redirect:/updateStudentInfo";
+			// 학생정보 상세 페이지로 이동
+		}
+		
+		return path;
+	}
+	
+	
+	// 관리자 : 회원 삭제 처리
+/*	@GetMapping("/deleteStudentInfo")
+	public String deleteStudentInfo(@RequestParam(value = "memberId")String memberId) {
+		System.out.println(memberId + " <- memberId   deleteStudentInfo()   StudentInfoController.java");
+		String message = studentInfoService.deleteStudentInfo(memberId);
+		// 해당 회원 삭제 쿼리 실행 후 메세지 반환
+		
+		System.out.println(message + " <- message   deleteStudentInfo()   StudentInfoController.java");
+		
+		return "redirect:/listSubject";
+	}*/
+	
+	
+	
+	
 	// 관리자 전용 특정학생 결제정보 폼으로 이동
-	@GetMapping("/viewPayment")
-	public String viewPaymentInfo(@RequestParam(value = "memberId") String memberId, Model model) {
+	@GetMapping("/updatePaymentInfo")
+	public String updatePaymentInfo(@RequestParam(value = "memberId") String memberId, Model model) {
 		System.out.println(memberId + " <- memberId   addPayment()   StudentInfoController.java");
 		
-		PaymentInfo paymentInfo = studentInfoService.viewPaymentInfo(memberId);
-		// 학생의 아이디를 가지고 결제정보 테이블에서 객체를 얻어온다.
+		Map<String, Object> paymentInfo =
+				studentInfoService.detailPaymentInfoByMemberId(memberId);
+		// 학생의 아이디를 가지고 결제정보, 신상정보 테이블에서 객체를 얻어온다.
 		
 		String path = "/view/academyRegister/studentInfo/addPaymentInfo";
 		// 결제정보가 없을 경우 결제정보를 추가할 수 있도록 경로를 설정해준다.
@@ -153,9 +205,16 @@ public class StudentInfoController {
 			
 			model.addAttribute("paymentInfo", paymentInfo);
 			// 결제정보 객체를 모델에 넣어준다.
+		} else { // 결제정보가 없다면
+			Member studentSimpleInfo = studentInfoService.memberSimpleInfo(memberId);
+			// 결제 추가창 제목에 뿌려줄 학생의 아이디, 이름, 생년월일을 가져온다.
+			
+			model.addAttribute("student", studentSimpleInfo);
 		}
 		
 		model.addAttribute("memberId", memberId);
+		// 결제 추가 페이지로 가든, 상세 페이지로 가든 회원 아이디는 항상
+		// 가지고 가야 하므로 조건문 밖에 놓았다.
 		
 		return path;
 	}
@@ -180,64 +239,92 @@ public class StudentInfoController {
 	}
 	
 	
+	// 관리자 : 특정학생 결제 정보 수정 처리
+	@PostMapping("/updatePaymentInfo")
+	public String updatePaymentInfo(PaymentInfo paymentInfo, Model model
+			,RedirectAttributes redirectAttributes) {
+		String message = studentInfoService.updatePaymentInfo(paymentInfo);
+		// 결제정보 수정 처리 후 메세지 반환
+		
+		if(message != null) {
+			// 리턴받은 메세지가 널이 아니라면 결제정보 수정에 실패했다는 뜻이다.
+			
+			System.out.println("결제정보 수정 실패!!!!!!!!!!!!");
+		}
+		
+		redirectAttributes.addAttribute("memberId", paymentInfo.getMemberId());
+		// 결제정보 상세 페이지로 리다이렉트하면서 회원 아이디를 넘겨준다.
+		
+		return "redirect:/updatePaymentInfo";
+		// 결제정보 수정처리 후 결제정보 상세 페이지로 이동하게 초기화한다.
+	}
+	
+	
+	// 관리자 : 미납현황 리스트(결제 테이블에서 납부예정금액이 0보다 큰 리스트)
+	@GetMapping("/notPaymentStateList")
+	public String notPaymentStateList(Model model) {
+		
+		List<Map<String, Object>> notPaymentStateList =
+				studentInfoService.notPaymentStateList();
+		// 납부예정금액이 0보다 큰 값을 가진 모든 리스트를 가져온다.
+		
+		model.addAttribute("notPaymentStateList", notPaymentStateList);
+		// 화면에 뿌려주기위해 모델 객체에 넣는다.
+		
+		model.addAttribute("notPaymentStateListSize", notPaymentStateList.size());
+		// 내용의 존재여부를 판단하기 위한 리스트의 사이즈
+		
+		return "/view/academyRegister/studentInfo/listNotPaymentState";
+	}
+	
+	
+	
 	
 	// 관리자가 학생 목록에서 특정 학생의 상담 관리 페이지로 이동
 	@GetMapping("/counselManage")
-	public String oneStudentCounselManage(@RequestParam(value = "memberId") String memberId, Model model) {
-		model.addAttribute("studentInfo", studentInfoService.studentInfoIdNameBirthById(memberId));
-		// 서비스에서 아이디로 해당 학생의 아이디, 이름과 생년월일만 가져와서 바로 모델에 넣어준다.
-		
-		model.addAttribute("counselTypeList", memberService.counselTypeList());
-		// 검색할때 사용할 상담구분테이블에 있는 모든 객체 가져오기
-		
-		model.addAttribute("counselResultList", memberService.counselResultList());
-		// 검색할때 사용할 상담결과테이블에 있는 모든 객체 가져오기.
+	public String oneStudentCounselManage(CounselAppointment counselAppointment, Model model) {
 		
 		List<Map<String, Object>> counselHistoryList = 
-				studentInfoService.oneStudentCounselHistoryList(memberId);
+				studentInfoService.oneStudentCounselHistoryList(counselAppointment.getMemberId());
 		// 화면에 보여줄 해당 학생 상담 내역 리스트
-		
-		System.out.println(counselHistoryList
-					+ " <- counselHistoryList   oneStudentCounselManage()   StudentInfoController.java");
-		
-		
-		System.out.println("상담내역리스트 크기 : " + counselHistoryList.size());
-		
 		
 //		if(counselHistoryList.size() == 0) { // 해당 학생의 상담 내역이 존재하지 않는다면
 //			counselHistoryList = null; // 객체참조변수에 할당된 주소값을 날려버린다.
 //		}
 		
+		System.out.println(counselHistoryList + " <- counselHistoryList   oneStudentCounselManage()   StudentInfoController.java");
+	
+		System.out.println("상담내역리스트 크기 : " + counselHistoryList.size());
 		
-		System.out.println(counselHistoryList
-				+ " <- counselHistoryList   oneStudentCounselManage()   StudentInfoController.java");
-		
-		
-		model.addAttribute("counselHistoryList", counselHistoryList);
-		// 화면에 보여줄 해당 학생 상담내역 리스트
-		
-		model.addAttribute("counselHistoryListSize", counselHistoryList.size());
-		// 상담 내역을 뿌려줄 것인지, 상담내역이 없다는 메세지를 뿌려줄 것인지 판단용
 		
 		List<Map<String, Object>> counselAppointmentList = 
-				studentInfoService.oneStudentCounselAppointmentList(memberId);
+				studentInfoService.oneStudentCounselAppointment(counselAppointment);
 		// 화면에 보여줄 해당 학생 상담예약현황 리스트
-		
-		System.out.println(counselAppointmentList
-				+ " <- counselAppointmentList   oneStudentCounselManage()   StudentInfoController.java");
-		
-		
-		System.out.println("상담예약현황리스트 크기 : " + counselAppointmentList.size());
 		
 		
 //		if(counselAppointmentList.size() == 0) { // 해당 학생의 상담예약현황이 존재하지 않는다면
 //			counselAppointmentList = null; // 객체참조변수에 할당된 주소값을 날려버린다.
 //		}
 		
+		System.out.println(counselAppointmentList + " <- counselAppointmentList   oneStudentCounselManage()   StudentInfoController.java");
 		
-		System.out.println(counselAppointmentList
-				+ " <- counselAppointmentList   oneStudentCounselManage()   StudentInfoController.java");
+		System.out.println("상담예약현황리스트 크기 : " + counselAppointmentList.size());
 		
+		
+		model.addAttribute("studentInfo", studentInfoService.studentInfoIdNameBirthById(counselAppointment.getMemberId()));
+		// 서비스에서 아이디로 해당 학생의 아이디, 이름과 생년월일만 가져와서 바로 모델에 넣어준다.
+		
+		model.addAttribute("counselTypeList", memberService.counselTypeList());
+		// 검색할때 사용할 상담구분테이블에 있는 모든 객체 가져오기
+		
+		//model.addAttribute("counselResultList", memberService.counselResultList());
+		// 검색할때 사용할 상담결과테이블에 있는 모든 객체 가져오기.
+		
+		model.addAttribute("counselHistoryList", counselHistoryList);
+		// 화면에 보여줄 해당 학생 상담내역 리스트
+		
+		model.addAttribute("counselHistoryListSize", counselHistoryList.size());
+		// 상담 내역을 뿌려줄 것인지, 상담내역이 없다는 메세지를 뿌려줄 것인지 판단용
 		
 		model.addAttribute("counselAppointmentList", counselAppointmentList);
 		// 화면에 보여줄 해당 학생 상담예약현황 리스트
@@ -369,8 +456,8 @@ public class StudentInfoController {
 	
 	
 	// 관리자 : 상담예약현황 리스트 이동
-	@GetMapping("/listCurrentReservationState")
-	public String listCurrentReservationState(Model model) {
+	@GetMapping("/currentReservationStateList")
+	public String currentReservationStateList(Model model) {
 		
 		List<Map<String, Object>> counselReservationStateList =
 				studentInfoService.counselReservationStateList();
@@ -429,5 +516,24 @@ public class StudentInfoController {
 		model.addAttribute("counselTypeList", counselTypeList);
 		
 		return "/view/academyRegister/studentInfo/listCurrentReservationState";
+	}
+	
+	
+	// 관리자 : 학생 예약신청 상세보기
+	@GetMapping("/updateCounselAppointment")
+	public String updateCounselAppointment(
+			CounselAppointment counselAppointment, Model model) {
+		System.out.println(counselAppointment.getCounselHistoryNo() + " <- counselHistoryNo   updateCounselAppointment()   StudentInfoController.java");
+		System.out.println(counselAppointment.getMemberId() + " <- memberId   updateCounselAppointment()   StudentInfoController.java");
+		
+		List<Map<String, Object>> oneMap =
+				studentInfoService.oneStudentCounselAppointment(counselAppointment);
+		// 상담예약 테이블의 기본키인 상담내역코드로 값을 구해올 것이기에 한개만 나올 것이다.
+		
+		Map<String, Object> counselAppointmentInfo = oneMap.get(0);
+		
+		
+		
+		return "/view/academyRegister/studentInfo/detailCounselAppointment";
 	}
 }

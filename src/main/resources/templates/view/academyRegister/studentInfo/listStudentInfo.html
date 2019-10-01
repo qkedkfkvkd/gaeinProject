@@ -14,7 +14,7 @@
 		</div>
 	</div>
 	
-	<div class="col-sm-10 col-md-offset-3">
+	<div class="col-sm-11 col-md-offset-3">
 		<div class="row">
 			<div class="col-md-6">
 				<form action="/searchStudentInfo" method="post">
@@ -53,6 +53,7 @@
 					<th>학생명</th>
 					<th>생년월일</th>
 					<th>가입일</th>
+					<th>신상정보</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -71,7 +72,7 @@
 									</a>
 									<div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
 										<a class="dropdown-item"
-										   th:href="@{/viewPayment(memberId=${student.memberId})}">
+										   th:href="@{/updatePaymentInfo(memberId=${student.memberId})}">
 											결제정보
 										</a>
 										<a class="dropdown-item"
@@ -87,8 +88,8 @@
 											강좌시간표
 										</a>
 										<a class="dropdown-item"
-										   th:href="@{/oneStudentcourseInfo(memberId=${student.memberId})}">
-											학급정보
+										   th:href="@{/oneStudentCourseEnrolleeInfo(memberId=${student.memberId})}">
+											수강신청정보
 										</a>
 									</div>
 								</li>
@@ -102,10 +103,16 @@
 					<td th:text="${student.memberName}"></td>
 					<td th:text="${student.memberBirth}"></td>
 					<td th:text="${student.memberRegisteredDate}"></td>
+					<td>
+						<button type="button" class="btn btn-success btn-sm"
+								th:onclick="'window.location.href = \'' + @{/updateStudentInfo(memberId=${student.memberId})} + '\''">
+							상세
+						</button>
+					</td>
 				</tr>
 				
 				<tr th:unless="${studentList != null}">
-					<td colspan="6">등록된 학생이 없습니다.</td>
+					<td colspan="7">등록된 학생이 없습니다.</td>
 				</tr>
 			</tbody>
 		</table>

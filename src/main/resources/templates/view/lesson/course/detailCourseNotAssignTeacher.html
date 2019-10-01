@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>강사 배정안된 강좌 상세</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>강사 배정안된 강좌 상세</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-12 col-md-offset-3">
+		<div class="row">
+			<div class="col-md-3">
+				<form role="form" id="courseNotAssignTeacherUpdateFrm"
+					  action="/updateCourseNotAssignTeacher" method="post">
+					<input type="hidden" value="유" name="courseIsChanged">
+					<div class="form-group">
+						<label for="inputCourseNo">강좌코드</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="inputCourseNo"
+								   name="courseNo" th:value="${course.courseNo}"
+								   readonly="readonly">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="subjectList">과목명</label>
+						<!-- <div class="input-group"> -->
+						<select id="subjectList" name="subjectNo"
+								class="form-control">
+							<option value="">선택</option>
+							<option th:each="subject : ${subjectList}"
+									th:value="${subject.subjectNo}"
+									th:text="${subject.subjectName}"></option>
+						</select>
+						<!-- </div> -->
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCourseName">강좌명</label>
+						<input type="text" class="form-control" id="inputCourseName"
+							   name="courseName" th:value="${course.courseName}">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCourseReasonForChange">강좌변경사유</label>
+						<textarea class="form-control" rows="5" id="inputCourseReasonForChange"
+								  name="courseReasonForChange"
+								  th:text="${course.courseReasonForChange}"></textarea>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCourseChangedDate">강좌변경일</label>
+						<input type="text" class="form-control" id="inputCourseChangedDate"
+							   th:value="${#calendars.format(course.courseChangedDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCourseRegisteredDate">등록일</label>
+						<input type="text" class="form-control" id="inputCourseRegisteredDate"
+							   th:value="${#calendars.format(course.courseRegisteredDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<div class="row"> <!-- style="vertical-align: bottom;" -->
+							<div class="col-md-4">
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/deleteCourseNotAssignTeacher(courseNo=${course.courseNo})} + '\''">
+									삭제
+								</button>
+							</div>
+							<div class="col-md-4">
+								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+							</div>
+							<div class="col-md-4">
+								<button type="button" id="courseNotAssignTeacherUpdateFrmBtn"
+										class="btn btn-primary btn-sm btn-block">수정</button>
+							</div>
+						</div>
+					</div>
+				</form>	
+			</div>
+			<div class="col-md-9">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>강좌코드</th>
+							<th>강좌</th>
+							<th>과목</th>
+							<th>강의실</th>
+							<th>층</th>
+							<th>배정일</th>
+							<th>수정</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="courseAssign, lists : ${courseAssignList}"
+							th:if="${courseAssignListSize != 0}">
+							<td th:text="${lists.count}"></td>
+							<td th:text="${courseAssign.courseNo}"></td>
+							<td th:text="${courseAssign.courseName}"></td>
+							<td th:text="${courseAssign.subjectName}"></td>
+							<td th:text="${courseAssign.roomNumber + '호'}"></td>
+							<td th:text="${courseAssign.foomFloor + '층'}"></td>
+							<td th:text="${#calendars.format(courseAssign.courseAssignmentRegisteredDate,'yyyy-MM-dd')}"></td>
+							<td>
+								<button type="button" class="btn btn-success btn-sm"
+										th:onclick="'window.location.href = \'' + @{/updateCourseAssignment(courseAssignmentNo=${courseAssign.courseAssignmentNo})} + '\''">
+									수정
+								</button>
+							</td>
+						</tr>
+						
+						<tr th:unless="${courseAssignListSize != 0}">
+							<td colspan="5">해당 강좌로 등록된 강좌 강의실 배정목록이 없습니다.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+			var subjectNo = /*[[ ${course.subjectNo} ]]*/;
+		/*]]*/
+		
+		$(document).ready(function(){
+			$("#subjectList").val(subjectNo);
+		});
+	</script>
+	
+	<script type="text/javascript">
+		
+		// 강좌 수정 처리 전 공백 유효성 검사
+		$('#courseNotAssignTeacherUpdateFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+	        if($("#subjectList").val() ==''){
+	            alert('과목명을 선택하세요');
+	            $("#subjectList").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputCourseName").val() ==''){
+	            alert('강좌명을 입력하세요');
+	            $("#inputCourseName").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputCourseReasonForChange").val() ==''){
+	            alert('강좌변경사유를 입력하세요');
+	            $("#inputCourseReasonForChange").focus();
+	            return false;
+	        }
+	        
+	        $('#courseNotAssignTeacherUpdateFrm').submit();
+	    });
+	</script>
+</th:block>
+
+</html>

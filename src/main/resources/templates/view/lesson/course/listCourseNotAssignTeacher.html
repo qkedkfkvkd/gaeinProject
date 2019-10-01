@@ -44,43 +44,42 @@
 		</form>
 		
 		
-		<h4>배정해야할 강좌 현황</h4>
 		<table class="table table-striped">
 			<thead>
 				<tr>
 					<th>번호</th>
+					<th>강좌코드</th>
 					<th>강좌</th>
 					<th>과목</th>
 					<th>등록일</th>
-					<th>강의실 배정</th>
 					<th>강사 배정</th>
+					<th>상세</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="course, lists : ${courseNotAssignmentList}"
-					th:if="${courseNotAssignmentListSize != 0}">
+				<tr th:each="course, lists : ${courseNotAssignmentTeacherList}"
+					th:if="${courseNotAssignmentTeacherListSize != 0}">
 					<td th:text="${lists.count}"></td>
+					<td th:text="${course.courseNo}"></td>
 					<td th:text="${course.courseName}"></td>
 					<td th:text="${course.subjectName}"></td>
-					<td th:text="${course.courseRegisteredDate}"></td>
+					<td th:text="${#calendars.format(course.courseRegisteredDate,'yyyy-MM-dd')}"></td>
 					<td>
 						<button type="button" class="btn btn-success btn-sm"
-								th:onclick="'window.location.href = \'' + @{/addCourseRoomAssignment(courseNo=${course.courseNo})} + '\''">
-							강의실 배정
+								th:onclick="'window.location.href = \'' + @{/addCourseTeacherAssign(courseNo=${course.courseNo})} + '\''">
+							강사 배정
 						</button>
-						<!-- <span th:unless="">배정 완료</span> -->
 					</td>
 					<td>
 						<button type="button" class="btn btn-success btn-sm"
-								th:onclick="'window.location.href = \'' + @{/addCourseTeacherAssignment(courseNo=${course.courseNo})} + '\''">
-							강사 배정
+								th:onclick="'window.location.href = \'' + @{/updateCourseNotAssignTeacher(courseNo=${course.courseNo})} + '\''">
+							상세
 						</button>
-						<!-- <span th:unless="">배정 완료</span> -->
 					</td>
 				</tr>
 				
-				<tr th:unless="${courseListSize != 0}">
-					<td colspan="5">배정이 필요한 강좌목록이 없습니다.</td>
+				<tr th:unless="${courseNotAssignmentTeacherListSize != 0}">
+					<td colspan="5">강사 배정이 필요한 강좌목록이 없습니다.</td>
 				</tr>
 			</tbody>
 		</table>

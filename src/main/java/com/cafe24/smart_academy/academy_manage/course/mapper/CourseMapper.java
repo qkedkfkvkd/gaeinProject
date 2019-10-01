@@ -15,7 +15,7 @@ public interface CourseMapper {
 	public String courseByCourseNo(String inputCourseNo);
 	// 관리자 : 강좌테이블에서 해당 강좌코드 존재 확인
 	
-	public String CourseRoomAssignBycourseAssignmentNo(String courseAssignmentNo);
+	public String CourseRoomAssignByCourseAssignmentNo(String courseAssignmentNo);
 	// 관리자 : 강좌강의실배정 테이블에서 해당 배정코드 존재여부 확인
 	
 	public int addCourse(Course course);
@@ -37,9 +37,23 @@ public interface CourseMapper {
 	// 관리자 : 과목 리스트에서 과목코드 선택시 자동으로
 	//			해당 과목코드에 맞는 강좌 나오게 하기
 	
-	public List<Map<String, Object>> courseNotAssignmentRoom();
-	// 관리자 : 강의실에 배정되지 않은 강좌목록
+	public List<Map<String, Object>> courseNotAssignmentTeacherSimple();
+	// 관리자 : 강사와 매칭되지 않은 강좌목록 간단히 가져오기
+	// 강좌코드, 강좌명, 과목명, 강좌등록일
 	
-	public List<Map<String, Object>> courseNotAssignmentTeacher();
-	// 관리자 : 강사와 매칭되지 않은 강좌목록
+	public Course detailCourseByCourseNo(String courseNo);
+	// 관리자 : 강좌 상세정보 가져오기
+	// 관리자 : 강사가 배정이 안된 강좌의 상세 정보 가져오기
+	
+	public List<Map<String, Object>> courseNotAssignTeacherList(String courseNo);
+	// 관리자 : 강사가 배정이 안된 강좌 강의실 배정 목록 가져오기
+	
+	public int updateCourse(Course course);
+	// 관리자 : 강좌 수정 처리
+	
+	public int deleteCourseRoomAssignmentByCourseNo(String courseNo);
+	// 관리자 : 강좌 강의실 배정 테이블에서 해당 강좌코드를 참조하는 모든 레코드 삭제 처리
+	
+	public int deleteCourse(String courseNo);
+	// 관리자 : 해당 강좌 삭제 처리
 }

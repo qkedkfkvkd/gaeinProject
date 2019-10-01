@@ -14,6 +14,7 @@ public class PaymentInfo {
 	private String		endCourseDay;				// 마지막 수업일
 	private String		paymentReference;			// 결제 참고사항
 	private Date		paymentRegisteredDate;		// 결제정보 등록일
+	private Date		paymentModificationDate;	// 최종 수정일
 	
 	// 모든 강좌를 동일한 금액으로 통일시키든지,
 	// 강좌별 금액 테이블을 하나 더 생성해서 만들든지 해야한다.
@@ -97,5 +98,13 @@ public class PaymentInfo {
 		System.out.println(paymentRegisteredDate
 				+ " <- paymentRegisteredDate   setPaymentRegisteredDate()   PaymentInfo.java");
 		this.paymentRegisteredDate = paymentRegisteredDate;
+	}
+	public Date getPaymentModificationDate() {
+		return paymentModificationDate;
+	}
+	public void setPaymentModificationDate(Date paymentModificationDate) {
+		System.out.println(paymentModificationDate
+				+ " <- paymentModificationDate   setPaymentModificationDate()   PaymentInfo.java");
+		this.paymentModificationDate = paymentModificationDate;
 	}
 }

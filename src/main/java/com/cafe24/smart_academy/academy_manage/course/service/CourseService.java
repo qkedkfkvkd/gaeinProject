@@ -27,8 +27,8 @@ public class CourseService {
 	
 	
 	// 관리자 : 강좌강의실배정 테이블에서 해당 배정코드 존재 확인
-	public String CourseRoomAssignBycourseAssignmentNo(String inputCourseAssignNo) {
-		return courseMapper.CourseRoomAssignBycourseAssignmentNo(inputCourseAssignNo);
+	public String CourseRoomAssignByCourseAssignmentNo(String inputCourseAssignNo) {
+		return courseMapper.CourseRoomAssignByCourseAssignmentNo(inputCourseAssignNo);
 	}
 	
 	
@@ -38,7 +38,7 @@ public class CourseService {
 		// 강좌테이블에 해당 강좌코드가 존재하는지 확인
 		
 		String courseAssignExistChk =
-				courseMapper.CourseRoomAssignBycourseAssignmentNo(courseAssign.getCourseAssignmentNo());
+				courseMapper.CourseRoomAssignByCourseAssignmentNo(courseAssign.getCourseAssignmentNo());
 		// 강좌강의실배정 테이블에 해당 배정코드가 존재하는지 확인
 		
 		String resultMessage = "usedCourseCode";
@@ -89,27 +89,65 @@ public class CourseService {
 	}
 	
 	
-	// 관리자 : 강의실 혹은 강좌가 배정이 안된 강좌목록
-	public List<Map<String, Object>> courseNotAssignment() {
-		return courseMapper.courseNotAssignmentRoom();
+	// 관리자 : 강사가 배정이 안된 강좌목록 간단히 가져오기
+	// 강좌코드, 강좌명, 과목명, 강좌등록일
+	public List<Map<String, Object>> courseNotAssignmentTeacherSimple() {
+		return courseMapper.courseNotAssignmentTeacherSimple();
 	}
 	
 	
-	// 관리자 : 강의실 혹은 강좌가 배정이 안된 강좌목록
-	public Map<String, Object> courseNotAssignment123() {
+	// 관리자 : 강사가 배정이 안된 강좌의 상세 정보 가져오기
+	// 관리자 : 강좌 상세정보 가져오기
+	public Course detailCourseByCourseNo(String courseNo) {
+		return courseMapper.detailCourseByCourseNo(courseNo);
+	}
+	
+	
+	// 관리자 : 강사가 배정이 안된 강좌 강의실 배정 목록 가져오기
+	public List<Map<String, Object>> courseNotAssignTeacherList(String courseNo) {
+		return courseMapper.courseNotAssignTeacherList(courseNo);
+	}
+	
+	
+	// 관리자 : 강좌 수정 처리
+	public String updateCourse(Course course) {
+		String resultMessage = "updateCourseFail";
+		// 만약 강좌 수정처리에 실패했다면 이 메세지가 리턴될 것이다.
 		
-		Map<String, Object> map = new HashMap<String, Object>();
+		int result = courseMapper.updateCourse(course);
+		// 강좌 수정 처리
 		
+		if(result == 1) {  // 강좌 수정에 성공했다면
+			resultMessage = null;
+			// 리턴 메세지에 널값을 준다
+		}
 		
+		return resultMessage;
+	}
+	
+	
+	// 관리자 : 강좌 삭제 처리
+	public String deleteCourse(String courseNo) {
+		String existChk = courseByCourseNo(courseNo);
+		// 삭제하기 전 해당 강좌코드로된 강좌가 존재하는지 확인
 		
-		List<Map<String, Object>> courseNotAssignmentRoom =
-				courseMapper.courseNotAssignmentRoom();
-		// 강의실에 배정되지 않은 강좌 목록
+		String resultMessage = "deleteCourseFail";
+		// 강좌 삭제 실패로 초기화
 		
-		List<Map<String, Object>> courseNotAssignmentTeacher =
-				courseMapper.courseNotAssignmentTeacher();
-		// 강사와 매칭되지 않은 강좌 목록
+		if(existChk != null) { // 해당 강좌코드 존재(삭제 가능)
+			int courseAssignResult =
+					courseMapper.deleteCourseRoomAssignmentByCourseNo(courseNo);
+			// 강좌 강의실 배정 테이블에서 해당 강좌코드를 참조하는 모든 레코드 삭제 처리
+			
+			int courseResult = courseMapper.deleteCourse(courseNo);
+			// 해당 강좌 삭제 처리
+			
+			if(courseAssignResult == 1 & courseResult == 1) { // 해당 강좌 삭제 성공
+				resultMessage = "deleteCourseSuccess";
+				// 강좌 삭제 성공 메세지
+			}
+		}
 		
-		return map;
+		return resultMessage;
 	}
 }

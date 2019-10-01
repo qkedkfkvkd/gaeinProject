@@ -143,11 +143,11 @@ public class MemberController {
 	
 	
 	//관리자 : 상담기준코드 리스트 가져오기
-	@GetMapping("/listCounselStandard")
-	public String listCounselStandard(Model model) {
+	@GetMapping("/counselStandardList")
+	public String counselStandardList(Model model) {
 		
 		List<Map<String, Object>> counselStandardList =
-				memberService.listCounselStandard();
+				memberService.counselStandardList();
 		// 관리자 : 상담기준코드 리스트 가져오기
 		
 		
@@ -199,7 +199,7 @@ public class MemberController {
 	public String searchCounselStandard(CounselResult counselResult, Model model) {
 		
 		List<Map<String, Object>> searchCounselStandardList =
-				memberService.listCounselStandard(counselResult);
+				memberService.counselStandardList(counselResult);
 		// 선택한 상담구분코드와 상담결과코드로 상담기준리스트 검색결과 가져오기
 		
 		
@@ -224,8 +224,8 @@ public class MemberController {
 	
 	
 	// 관리자 : 상담구분코드 리스트 이동
-	@GetMapping("/listCounselType")
-	public String listCounselType(Model model) {
+	@GetMapping("/counselTypeList")
+	public String counselTypeList(Model model) {
 		
 		List<CounselType> counselTypeList = memberService.counselTypeList();
 		// 상담구분코드 리스트 가져오기
@@ -283,7 +283,7 @@ public class MemberController {
 		
 		if(message == null) {
 			// 리턴받은 메세지가 널이라면 상담구분코드 추가에 성공했다는 뜻이다.
-			path = "redirect:/listCounselType";
+			path = "redirect:/counselTypeList";
 			// 상담구분코드 리스트로 이동한다.
 			
 			//path = "redirect:/listCounselStandard";
@@ -323,7 +323,7 @@ public class MemberController {
 		String message = memberService.updateCounselType(counselType);
 		// 해당 상담구분코드 수정 처리 후 메세지 반환
 		
-		String path = "redirect:/listCounselStandard";
+		String path = "redirect:/counselStandardList";
 		// 상담구분 수정에 성공했을 경우 상담기준코드 리스트로 이동하게 초기화한다.
 		
 		if(message != null) {
@@ -354,7 +354,7 @@ public class MemberController {
 		
 		System.out.println(message + " <- message   deleteCounselType()   MemberController.java");
 		
-		return "redirect:/listCounselType";
+		return "redirect:/counselTypeList";
 		// 삭제 완료 후 상담구분코드 리스트로 이동한다.
 	}
 	
@@ -407,7 +407,7 @@ public class MemberController {
 		
 		if(message == null) {
 			// 리턴받은 메세지가 널이라면 상담결과코드 추가에 성공했다는 뜻이다.
-			path = "redirect:/listCounselStandard";
+			path = "redirect:/counselStandardList";
 			// 상담기준코드 리스트로 이동한다.
 		}
 		
@@ -444,7 +444,7 @@ public class MemberController {
 		String message = memberService.updateCounselResult(counselResult);
 		// 해당 상담결과코드 수정 처리 후 메세지 반환
 		
-		String path = "redirect:/listCounselStandard";
+		String path = "redirect:/counselStandardList";
 		// 상담결과 수정에 성공했을 경우 상담기준코드 리스트로 이동하게 초기화한다.
 		
 		if(message != null) {
@@ -475,7 +475,7 @@ public class MemberController {
 		
 		System.out.println(message + " <- message   deleteCounselResult()   MemberController.java");
 		
-		return "redirect:/listCounselStandard";
+		return "redirect:/counselStandardList";
 		// 삭제 완료 후 상담기준코드 리스트로 이동한다.
 	}
 }
