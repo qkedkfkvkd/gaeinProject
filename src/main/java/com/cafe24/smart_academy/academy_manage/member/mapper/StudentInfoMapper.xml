@@ -380,58 +380,95 @@
 	</select>
 	
 	
-	<!-- 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담내역 리스트 -->
-	<select id="oneStudentCounselHistoryList" parameterType="String" resultType="map">
+	
+	
+	<!-- 학생 : 상담예약신청 시 상담내역코드 중복 확인 -->
+	<select id="counselAppointmentByCounselHistoryNo"
+			parameterType="String" resultType="String">
 		select
-			 ct.counsel_type_no				AS counselTypeNo
-			,ct.counsel_type_name			AS counselTypeName
-			,cr.counsel_result_no			AS counselResultNo
-			,cr.counsel_result_name			AS counselResultName
-			,ca.counsel_history_no			AS counselHistoryNo
-			,ca.counsel_appointment_date	AS counselAppointmentDate
-			,login.member_id				AS memberId
-			,co.counsel_content				AS counselContent
+			counsel_history_no
 		from
-			 counsel_type					AS ct
-			,counsel_result					AS cr
-			,counsel_appointment			AS ca
-			,member_login					AS login
-			,counsel						AS co
+			counsel_appointment
+		where
+			counsel_history_no = #{counselHistoryNo}
+	</select>
+	
+	
+	<!-- 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담내역 리스트 -->
+	<!-- 관리자 : 상담내역리스트 -->
+	<!-- 관리자 : 학생 상담내역 상세보기 -->
+	<select id="oneStudentCounselHistory"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.CounselAppointment"
+			resultType="map">
+		select
+			 ct.counsel_type_no							AS counselTypeNo
+			,ct.counsel_type_name						AS counselTypeName
+			,cr.counsel_result_no						AS counselResultNo
+			,cr.counsel_result_name						AS counselResultName
+			,ca.counsel_history_no						AS counselHistoryNo
+			,ca.counsel_appointment_date				AS counselAppointmentDate
+			,ca.counsel_appointment_registered_date		AS counselAppointmentRegisteredDate
+			,login.member_id							AS memberId
+			,co.counsel_content							AS counselContent
+			,mem.member_name							AS memberName
+		from
+			 counsel_type			AS ct
+			,counsel_result			AS cr
+			,counsel_appointment	AS ca
+			,member_login			AS login
+			,member					AS mem
+			,counsel				AS co
 		where
 			ct.counsel_type_no = cr.counsel_type_no
 		and
 			cr.counsel_result_no = ca.counsel_result_no
 		and
-			ca.member_id = login.member_id
-		and
 			ca.counsel_history_no = co.counsel_history_no
 		and
-			ca.counsel_whether = 'Y'
+			ca.member_id = login.member_id
 		and
-			ca.counsel_appointment_whether = 'Y'
+			login.member_id = mem.member_id
+		and
+			ca.counsel_whether = '유'
+		and
+			ca.counsel_appointment_whether = '유'
+		<if test="counselHistoryNo != null and counselHistoryNo neq ''.toString()">
+		and
+			ca.counsel_history_no = #{counselHistoryNo}
+		</if>
+		<if test="memberId != null and memberId neq ''.toString()">
 		and
 			login.member_id = #{memberId}
+		</if>
 	</select>
 	
 	
 	<!-- 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담예약현황 리스트  -->
-	<select id="oneStudentCounselAppointment"
+	<!-- 관리자 : 학생예약신청 상세보기 -->
+	<select id="counselAppointmentOneOrList"
 			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.CounselAppointment"
 			resultType="map">
 		select
-			 ct.counsel_type_no				AS counselTypeNo
-			,ct.counsel_type_name			AS counselTypeName
-			,cr.counsel_result_no			AS counselResultNo
-			,cr.counsel_result_name			AS counselResultName
-			,ca.counsel_history_no			AS counselHistoryNo
-			,ca.counsel_appointment_date	AS counselAppointmentDate
-			,ca.counsel_appointment_whether	AS counselAppointmentWhether
-			,login.member_id				AS memberId
+			 ct.counsel_type_no							AS counselTypeNo
+			,ct.counsel_type_name						AS counselTypeName
+			,cr.counsel_result_no						AS counselResultNo
+			,cr.counsel_result_name						AS counselResultName
+			,ca.counsel_history_no						AS counselHistoryNo
+			,ca.counsel_appointment_date				AS counselAppointmentDate
+			,ca.counsel_appointment_whether				AS counselAppointmentWhether
+			,ca.counsel_appointment_registered_date		AS counselAppointmentRegisteredDate
+			,ca.counsel_whether							AS counselWhether
+			,ca.counsel_appointment_whether				AS counselAppointmentWhether
+			,login.member_id							AS memberId
+			,mem.member_name							AS memberName
+			,mem.member_email							AS memberEmail
+			,mem.member_birth							AS memberBirth
 		from
-			 counsel_type					AS ct
-			,counsel_result					AS cr
-			,counsel_appointment			AS ca
-			,member_login					AS login
+			 counsel_type			AS ct
+			,counsel_result			AS cr
+			,counsel_appointment	AS ca
+			,member_login			AS login
+			,member					AS mem
 		where
 			ct.counsel_type_no = cr.counsel_type_no
 		and
@@ -439,10 +476,15 @@
 		and
 			ca.member_id = login.member_id
 		and
-			ca.counsel_whether = 'N'
+			login.member_id = mem.member_id
+		<if test="counselWhether == '무'.toString()">
 		and
-			ca.counsel_appointment_whether = 'N'
-		
+			counsel_whether = '무'
+		</if>
+		<if test="counselAppointmentWhether == '무'.toString()">
+		and
+			counsel_appointment_whether = '무'
+		</if>
 		<if test="counselHistoryNo != null and counselHistoryNo neq ''.toString()">
 		and
 			ca.counsel_history_no = #{counselHistoryNo}
@@ -512,18 +554,6 @@
 	</select>
 	
 	
-	<!-- 관리자 : 상담예약테이블에서 상담내역코드 중복 확인 -->
-	<select id="counselAppointmentBycounselHistoryNo"
-			parameterType="String" resultType="String">
-		select
-			counsel_history_no
-		from
-			counsel_appointment
-		where
-			counsel_history_no = #{inputCounselHistoryNo}
-	</select>
-	
-	
 	<!-- 관리자 : 상담예약테이블 추가 처리 -->
 	<insert id="addCounselAppointment">
 		insert into counsel_appointment (
@@ -546,20 +576,6 @@
 	</insert>
 	
 	
-	<!-- 관리자 : 상담테이블에 상담내용 추가 처리 -->
-	<insert id="addCounsel">
-		insert into counsel (
-			 counsel_history_no
-			,counsel_content
-			,counsel_registered_date
-		) values (
-			 #{counselHistoryNo}
-			,#{counselContent}
-			,curdate()
-		)
-	</insert>
-	
-	
 	<!-- 로그인 테이블은 학생 권한만 가져오기 위함이다. -->
 	<!-- 관리자 : 상담예약현황 리스트 가져오기 -->
 	<!-- 관리자 : 상담예약현황 리스트에서 선택한 상담코드로 검색 -->
@@ -567,15 +583,17 @@
 			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.CounselResult"
 			resultType="map">
 		select
-			 ct.counsel_type_no				AS counselTypeNo
-			,ct.counsel_type_name			AS counselTypeName
-			,cr.counsel_result_no			AS counselResultNo
-			,cr.counsel_result_name			AS counselResultName
-			,ca.counsel_history_no			AS counselHistoryNo
-			,ca.counsel_appointment_date	AS counselAppointmentDate
-			,login.member_id				AS memberId
-			,mem.member_name				AS memberName
-			,mem.member_email				AS memberEmail
+			 ct.counsel_type_no					AS counselTypeNo
+			,ct.counsel_type_name				AS counselTypeName
+			,cr.counsel_result_no				AS counselResultNo
+			,cr.counsel_result_name				AS counselResultName
+			,ca.counsel_history_no				AS counselHistoryNo
+			,ca.counsel_appointment_date		AS counselAppointmentDate
+			,ca.counsel_whether					AS counselWhether
+			,ca.counsel_appointment_whether		AS counselAppointmentWhether
+			,login.member_id					AS memberId
+			,mem.member_name					AS memberName
+			,mem.member_email					AS memberEmail
 		from
 			 counsel_type					AS ct
 			,counsel_result					AS cr
@@ -588,10 +606,6 @@
 			ca.counsel_result_no = cr.counsel_result_no
 		and
 			ca.member_id = login.member_id
-		and
-			ca.counsel_whether = 'N'
-		and
-			ca.counsel_appointment_whether = 'N'
 		and
 			login.member_id = mem.member_id
 		and
@@ -609,4 +623,105 @@
 			</if>
 		</if>
 	</select>
+	
+	
+	<!-- 관리자 : 학생예약신청 예약처리하기 -->
+	<update id="permissionCounselAppointment" parameterType="String">
+		update
+			counsel_appointment
+		set
+			counsel_appointment_whether = '유'
+		where
+			counsel_history_no = #{counselHistoryNo}
+	</update>
+	
+	
+	<!-- 관리자, 학생 : 학생상담예약신청 수정 처리 -->
+	<update id="updateCounselAppointment"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.CounselAppointment">
+		update
+			counsel_appointment
+		<trim prefix="set" prefixOverrides=",">
+			<if test="counselResultNo != null and counselResultNo neq ''.toString()">
+				 counsel_result_no				= #{counselResultNo}
+			</if>
+			<if test="counselAppointmentDate != null and counselAppointmentDate neq ''.toString()">
+				,counsel_appointment_date	= #{counselAppointmentDate}
+			</if>
+		</trim>
+		where
+			counsel_history_no = #{counselHistoryNo}
+	</update>
+	
+	
+	<!-- 관리자, 학생 : 학생상담예약신청 삭제 처리 -->
+	<delete id="deleteCounselAppointment" parameterType="String">
+		delete from
+			counsel_appointment
+		where
+			counsel_history_no = #{counselHistoryNo}
+	</delete>
+	
+	
+	<!-- 관리자 : 상담신청 테이블 상담 처리하기 -->
+	<update id="permissionCounsel"
+			parameterType="String">
+		update
+			counsel_appointment
+		set
+			counsel_whether = '유'
+		where
+			counsel_history_no = #{counselHistoryNo}
+		and
+			member_id = #{memberId}
+	</update>
+	
+	
+	
+	
+	<!-- 관리자 : 상담테이블에 해당 상담내역코드로된 레코드가 존재하는지 확인 -->
+	<select id="counselByCounselHistoryNo"
+			parameterType="String" resultType="String">
+		select
+			counsel_history_no
+		from
+			counsel
+		where
+			counsel_history_no = #{counselHistoryNo}
+	</select>
+	
+	
+	<!-- 관리자 : 상담테이블에 상담내용 추가 처리 -->
+	<insert id="addCounsel">
+		insert into counsel (
+			 counsel_history_no
+			,counsel_content
+			,counsel_registered_date
+		) values (
+			 #{counselHistoryNo}
+			,#{counselContent}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자 : 상담내용 테이블 수정 처리 -->
+	<update id="updateCounsel"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Counsel">
+		update
+			counsel
+		set
+			counsel_content = #{counselContent}
+		where
+			counsel_history_no = #{counselHistoryNo}
+	</update>
+	
+	
+	<!-- 관리자 : 해당 상담내용 삭제 처리 -->
+	<delete id="deleteCounsel" parameterType="String">
+		delete from
+			counsel
+		where
+			counsel_history_no = #{counselHistoryNo}
+	</delete>
 </mapper>

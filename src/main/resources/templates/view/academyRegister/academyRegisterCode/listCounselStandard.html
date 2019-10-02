@@ -20,7 +20,7 @@
 				<label class="sr-only" for="counselTypeList">상담구분명</label>
 				<!-- <div class="input-group"> -->
 				<select id="counselTypeList" name="counselTypeNo"
-						onchange="counselResultSelect(this.value)" class="form-control">
+						onchange="counselResultListSelect(this.value)" class="form-control">
 					<option value="not">상담구분명</option>
 					<option th:each="counselType : ${counselTypeList}"
 							th:value="${counselType.counselTypeNo}"
@@ -117,12 +117,12 @@
 
 <th:block layout:fragment="customScript">
 	<script type="text/javascript">
-		function counselResultSelect(counselTypeNo) {
+		function counselResultListSelect(counselTypeNo) {
 			console.log(`counselTypeNo:${counselTypeNo}`);
 			
 			$.ajax({
 				 type: "POST"
-				,url: "/counselResultSelect"
+				,url: "/counselResultListSelect"
 				,dataType:"json"
 				,data: counselTypeNo
 				,contentType: "application/json; charset=UTF-8"

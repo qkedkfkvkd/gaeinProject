@@ -119,7 +119,7 @@
 							<td th:text="${counsel.counselAppointmentDate}"></td>
 							<td>
 								<button type="button" class="btn btn-success btn-sm"
-										th:onclick="'window.location.href = \'' + @{/updateCounselAppointment(counselHistoryNo=${counsel.counselHistoryNo}, memberId=${counsel.memberId})} + '\''">
+										th:onclick="'window.location.href = \'' + @{/updateCounselAppointment(counselHistoryNo=${counsel.counselHistoryNo})} + '\''">
 									수정
 								</button>
 							</td>

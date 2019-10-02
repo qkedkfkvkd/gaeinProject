@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>상담예약 상세</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>상담예약 상세</h3>
+			<h6>[[${counselAppointment.memberId + ' : ' + counselAppointment.memberBirth
+					+ '일이 생일인 ' + counselAppointment.memberName + ' 학생'}]]</h6>
+		</div>
+	</div>
+	
+	<div class="col-sm-8 col-md-offset-3">
+		<form role="form" id="counselAppointmentUpdateFrm"
+			  action="/updateCounselAppointment" method="post">
+			<div class="form-group">
+				<label for="inputCounselHistoryNo">상담내역코드</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="inputCounselHistoryNo"
+						   name="counselHistoryNo"
+						   th:value="${counselAppointment.counselHistoryNo}"
+						   readonly="readonly">
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label for="counselTypeList">상담구분명</label>
+				<!-- <div class="input-group"> -->
+				<select id="counselTypeList" name="counselTypeNo"
+						onchange="counselResultListSelect(this.value)" class="form-control">
+					<option value="">선택</option>
+					<option th:each="counselType : ${counselTypeList}"
+							th:value="${counselType.counselTypeNo}"
+							th:text="${counselType.counselTypeName}"></option>
+				</select>
+				<!-- </div> -->
+			</div>
+			
+			<div class="form-group">
+				<label for="counselResultList">상담결과명</label>
+				<!-- <div class="input-group"> -->
+				<select id="counselResultList" name="counselResultNo"
+						class="form-control">
+					<option value="">선택</option>
+				</select>
+				<!-- </div> -->
+				
+			</div>
+			
+			<div class="form-group">
+				<label for="inputStudentName">상담학생명</label>
+				<input type="text" class="form-control" id="inputStudentName"
+						   name="memberId" th:value="${counselAppointment.memberName}"
+						   readonly="readonly">
+			</div>
+			
+			<div class="form-group">
+				<label for="inputCounselAppointmentDate">상담예약일</label>
+				<input type="date" class="form-control" id="inputCounselAppointmentDate"
+					   name="counselAppointmentDate"
+					   th:value="${counselAppointment.counselAppointmentDate}">
+			</div>
+			
+			<div class="form-group">
+				<label for="inputCounselAppointmentRegisteredDate">등록일</label>
+				<input type="text" class="form-control" id="inputCounselAppointmentRegisteredDate"
+					   th:value="${#calendars.format(counselAppointment.counselAppointmentRegisteredDate,'yyyy-MM-dd')}"
+					   readonly="readonly">
+			</div>
+			
+			<div class="form-group">
+				<div class="row"> <!-- style="vertical-align: bottom;" -->
+					<div class="col-md-3">
+						<button type="button" class="btn btn-primary btn-sm btn-block"
+								th:onclick="'window.location.href = \'' + @{/deleteCounselAppointment(counselHistoryNo=${counselAppointment.counselHistoryNo})} + '\''">
+							삭제
+						</button>
+					</div>
+					<div class="col-md-3">
+						<span th:if="${counselAppointment.counselAppointmentWhether != '유'}">
+							<button type="button" class="btn btn-primary btn-sm btn-block"
+								id="permissionCounselAppointmentBtn">
+								예약
+							</button>
+						</span>
+						<span th:unless="${counselAppointment.counselAppointmentWhether != '유'}">
+							<button type="button" class="btn btn-primary btn-sm btn-block"
+									disabled="disabled">
+								예약완료
+							</button>
+						</span>
+					</div>
+					<div class="col-md-3">
+						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+					</div>
+					<div class="col-md-3">
+						<button type="button" id="counselAppointmentUpdateFrmBtn"
+								class="btn btn-primary btn-sm btn-block">수정</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+			var counselTypeNo = /*[[ ${counselAppointment.counselTypeNo} ]]*/;
+			var counselResultNo = /*[[ ${counselAppointment.counselResultNo} ]]*/;
+		/*]]*/
+		
+		$(document).ready(function(){
+			$("#counselTypeList").val(counselTypeNo);
+			
+			// 처음 넘어온 상담결과코드로 상담결과명을 얻어와서 해당 상담결과명
+			// 자동선택되게 하는 ajax 코드
+			$.ajax({
+				 type: "POST"
+				,url: "/counselResultNoSelect"
+				,dataType:"json"
+				,data: counselResultNo
+				,contentType: "application/json; charset=UTF-8"
+				,success: function(result){
+					console.log('리졸트리졸트리졸트');
+					
+					//SELECT BOX 초기화           
+					$("#counselResultList").find("option").remove().end().append("<option value=''>선택</option>");
+					
+					$("#counselResultList").append("<option value='"+result.counselResultNo+"'>"+result.counselResultName+"</option>");
+					
+					$("#counselResultList").val(result.counselResultNo).prop("selected", true);
+				}
+				,error: function (jqXHR, textStatus, errorThrown) {
+					alert("오류가 발생하였습니다.");
+				}
+			});
+		});
+	</script>
+	
+	<script type="text/javascript">
+		
+		// 예약 버튼을 눌러서 예약되었습니다 메세지 후 페이지 이동
+		$('#permissionCounselAppointmentBtn').on('click', function(e){
+			e.preventDefault();
+			
+			var counselHistoryNo = $('#inputCounselHistoryNo').val();
+			console.log(`counselHistoryNo:${counselHistoryNo}`);
+			
+			$.ajax({
+	            url: '/permissionCounselAppointment',
+	            type: 'POST',
+	            data: counselHistoryNo,
+	            dataType: 'json',
+	            contentType: "application/json; charset=UTF-8",
+	            success: function (response) {
+	                if(response.result == 1){
+	                	alert('예약 성공');
+	                	location.href = "/currentReservationStateList";
+	                } else if(response.result == 0){
+	                	alert('예약 실패');
+	                } else {
+	                    alert('검사 중 에러가 발생했습니다');
+	                }
+	            },
+	            error: function(jqXHR, textStatus, errorThrown){
+	                alert("arjax error : " + textStatus + "\n" + errorThrown);
+	            }
+	        });
+	    });
+		
+		// 선택한 상담구분코드를 참조하는 상담결과목록 가져오기
+		function counselResultListSelect(counselTypeNo) {
+			console.log(`counselTypeNo:${counselTypeNo}`);
+			
+			$.ajax({
+				 type: "POST"
+				,url: "/counselResultListSelect"
+				,dataType:"json"
+				,data: counselTypeNo
+				,contentType: "application/json; charset=UTF-8"
+				,success: function(result){
+					//SELECT BOX 초기화           
+					$("#counselResultList").find("option").remove().end().append("<option value=''>선택</option>");
+					
+					//배열 개수 만큼 option 추가
+					$.each(result, function(i){
+						console.log(`넘어온 상담결과코드:${result}`);
+						$("#counselResultList").append("<option value='"+result[i].counselResultNo+"'>"+result[i].counselResultName+"</option>");
+					});    
+				}
+				,error: function (jqXHR, textStatus, errorThrown) {
+					alert("오류가 발생하였습니다.");
+				}
+			});
+		}
+		
+		// 상담결과코드 수정 처리 전 공백 유효성 검사
+		$('#counselAppointmentUpdateFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+	        if($("#counselTypeList").val() ==''){
+	            alert('상담구분명을 선택하세요');
+	            $("#counselTypeList").focus();
+	            return false;
+	        }
+	        
+	        if($("#counselResultList").val() ==''){
+	            alert('상담결과명을 선택하세요');
+	            $("#counselResultList").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputCounselAppointmentDate").val() ==''){
+	            alert('상담예약일을 입력하세요');
+	            $("#inputCounselAppointmentDate").focus();
+	            return false;
+	        }
+	        
+	        $('#counselAppointmentUpdateFrm').submit();
+	    });
+	</script>
+</th:block>
+
+</html>

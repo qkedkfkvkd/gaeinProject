@@ -177,10 +177,10 @@ public class MemberController {
 	
 	
 	// 관리자 : 상담기준코드 리스트에서 상담구분코드 선택시
-	//			선택값에 따른 상담결과코드 보이기
-	@PostMapping("/counselResultSelect")
+	//			선택값에 따른 상담결과코드 리스트 보이기
+	@PostMapping("/counselResultListSelect")
 	@ResponseBody
-	public List<Map<String, Object>> counselResultSelect(@RequestBody String counselTypeNo) {
+	public List<Map<String, Object>> counselResultListSelect(@RequestBody String counselTypeNo) {
 		System.out.println(counselTypeNo
 				+ "<- counselTypeNo   counselResultSelect()   MemberController.java");
 		

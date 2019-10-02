@@ -16,7 +16,7 @@
 	<!-- </div> -->
 	
 	
-	<div class="col-sm-10 col-md-offset-3">
+	<div class="col-sm-12 col-md-offset-3">
 		<form class="form-inline mx-auto" action="/searchStudentInfo" method="post">
 			<input type="hidden" th:value="${studentInfo.memberId}" name="memberId">
 			
@@ -24,7 +24,7 @@
 				<label class="sr-only" for="counselTypeList">상담구분명</label>
 				<!-- <div class="input-group"> -->
 				<select id="counselTypeList" name="counselTypeNo"
-						onchange="counselResultSelect(this.value)" class="form-control">
+						onchange="counselResultListSelect(this.value)" class="form-control">
 					<option value="">상담구분명</option>
 					<option th:each="counselType : ${counselTypeList}"
 							th:value="${counselType.counselTypeNo}"
@@ -65,19 +65,21 @@
 				</table>
 			</div>
 		</div>
+		<hr/>
 		
 		<div class="row">
-			<div class="col-md-6">
+			<div class="col-md-5">
 				<h4>상담내역</h4>
 				
-				<table class="table table-striped">
+				<table class="table table-striped" style="text-align: center;">
 					<thead>
 						<tr>
 							<th>번호</th>
 							<th>구분</th>
 							<th>결과</th>
-							<th>상담내용</th>
+							<th>내용</th>
 							<th>상담일</th>
+							<th>상세</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -86,8 +88,14 @@
 							<td th:text="${lists.count}"></td>
 							<td th:text="${counsel.counselTypeName}"></td>
 							<td th:text="${counsel.counselResultName}"></td>
-							<td th:text="${#strings.abbreviate(counsel.counselContent, 9)}"></td>
+							<td th:text="${#strings.abbreviate(counsel.counselContent, 5)}"></td>
 							<td th:text="${counsel.counselAppointmentDate}"></td>
+							<td>
+								<button type="button" class="btn btn-success btn-sm"
+										th:onclick="'window.location.href = \'' + @{/updateCounsel(counselHistoryNo=${counsel.counselHistoryNo})} + '\''">
+									수정
+								</button>
+							</td>
 						</tr>
 						
 						<tr th:unless="${counselHistoryListSize != 0}">
@@ -96,9 +104,9 @@
 					</tbody>
 				</table>
 			</div>
-			<div class="col-md-6">
+			<div class="col-md-7">
 				<h4>상담신청현황</h4>
-				<table class="table table-striped">
+				<table class="table table-striped" style="text-align: center;">
 					<thead>
 						<tr>
 							<th>번호</th>
@@ -107,7 +115,8 @@
 							<th>신청일</th>
 							<th>예약여부</th>
 							<th>예약</th>
-							<th>내용작성</th>
+							<th>수정</th>
+							<th>작성</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -119,16 +128,38 @@
 							<td th:text="${counsel.counselAppointmentDate}"></td>
 							<td th:text="${counsel.counselAppointmentWhether}"></td>
 							<td>
-								<button type="button" class="btn btn-primary btn-sm btn-block"
-										th:onclick="'window.location.href = \'' + @{/updateCounselAppointment(counselHistoryNo=${counsel.counselHistoryNo}, memberId=${counsel.memberId})} + '\''">
-									예약하기
+								<span th:if="${counsel.counselAppointmentWhether != '유'}">
+									<button type="button" class="btn btn-primary btn-sm btn-block"
+											th:onclick="permissionCounsel([[${counsel.counselHistoryNo}]], [[${counsel.memberId}]])">
+										예약
+									</button>
+								</span>
+								<span th:unless="${counsel.counselAppointmentWhether != '유'}">
+									<button type="button" class="btn btn-primary btn-sm btn-block"
+											disabled="disabled">
+										완료
+									</button>
+								</span>
+							</td>
+							<td>
+								<button type="button" class="btn btn-success btn-sm"
+								th:onclick="'window.location.href = \'' + @{/updateCounselAppointment(counselHistoryNo=${counsel.counselHistoryNo})} + '\''">
+									수정
 								</button>
 							</td>
 							<td>
-								<button type="button" class="btn btn-primary btn-sm btn-block"
-										th:onclick="">
-									내용작성
-								</button>
+								<span th:if="${counsel.counselAppointmentWhether == '유'}">
+									<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/addCounselHistory(counselHistoryNo=${counsel.counselHistoryNo})} + '\''">
+										작성
+									</button>
+								</span>
+								<span th:unless="${counsel.counselAppointmentWhether == '유'}">
+									<button type="button" class="btn btn-primary btn-sm btn-block"
+											disabled="disabled">
+										작성
+									</button>
+								</span>
 							</td>
 							<!-- 내용작성버튼을 눌러서 상담내용작성 폼으로 이동하여 -->
 							<!-- 내용을 작성하면 더이상 신청현황에는 보이지 않아야 한다. -->
@@ -136,6 +167,7 @@
 							<!-- 존재하지 않으면 상담내용이 없는 것이고, 존재하면 상담내용이 있는 것이다. -->
 							<!-- 즉, 상담테이블에 해당 상담내역코드로된 레코드의 존재 여부를 판단하여 -->
 							<!-- 현황에 보일 것인지, 말 것인지 결정한다. -->
+							<!-- 상담여부컬럼을 제거하고 상담예약테이블과 상담테이블을 left outer join 할 것인가? -->
 						</tr>
 						
 						<tr th:unless="${counselAppointmentListSize != 0}">
@@ -150,12 +182,42 @@
 
 <th:block layout:fragment="customScript">
 	<script type="text/javascript">
-		function counselResultSelect(counselTypeNo) {
+		
+		// 예약 버튼을 눌러서 예약되었습니다 메세지 후 페이지 새로고침
+		function permissionCounsel(counselHistoryNo, memberId) {
+			
+			console.log(`counselHistoryNo:${counselHistoryNo}`);
+			console.log(`memberId:${memberId}`);
+			
+			$.ajax({
+	            url: '/permissionCounselAppointment',
+	            type: 'POST',
+	            data: counselHistoryNo,
+	            dataType: 'json',
+	            contentType: "application/json; charset=UTF-8",
+	            success: function (response) {
+	                if(response.result == 1){
+	                	alert('예약 성공');
+	                	location.href = "/counselManage?memberId="+memberId;
+	                } else if(response.result == 0){
+	                	alert('예약 실패');
+	                } else {
+	                    alert('검사 중 에러가 발생했습니다');
+	                }
+	            },
+	            error: function(jqXHR, textStatus, errorThrown){
+	                alert("arjax error : " + textStatus + "\n" + errorThrown);
+	            }
+	        });
+	    }
+		
+		// 선택한 상담구분코드를 참조하는 상담결과목록 가져오기
+		function counselResultListSelect(counselTypeNo) {
 			console.log(`counselTypeNo:${counselTypeNo}`);
 			
 			$.ajax({
 				 type: "POST"
-				,url: "/counselResultSelect"
+				,url: "/counselResultListSelect"
 				,dataType:"json"
 				,data: counselTypeNo
 				,contentType: "application/json; charset=UTF-8"

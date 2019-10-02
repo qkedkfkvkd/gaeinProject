@@ -15,40 +15,75 @@
 	</div>
 	
 	<div class="col-sm-7 col-md-offset-3">
-		<form role="form" action="/addCounselHistoryNo" method="post">
-		<!-- <input type="hidden" th:value="${member.memberId}" name="memberId"> -->
+		<form role="form" id="counselUpdateFrm"
+			  action="/updateCounsel" method="post">
+			<input type="hidden" name="memberId" th:value="${counsel.memberId}">
 			<div class="form-group">
 				<label for="inputCounselHistoryNo">상담내역코드</label>
-				<div class="input-group">
-					<input type="email" class="form-control" id="inputCounselHistoryNo"
-						   name="counselHistoryNo">
-					<span class="input-group-btn">
-						<button type="button" class="btn btn-primary btn-sm"
-								id="counselHistoryNoOverlapBtn">중복확인</button>
-						<input type="hidden" id="counselHistoryNoOverlapClickChk" value="0">
-					</span>
-				</div>
+				<input type="text" class="form-control" id="inputCounselHistoryNo"
+					   name="counselHistoryNo"
+					   th:value="${counsel.counselHistoryNo}"
+					   readonly="readonly">
 			</div>
 			
 			<div class="form-group">
-				<label for="inputCounselDate">상담일자</label>
-				<input type="date" class="form-control" id="inputCounselDate"
-					   name="counselDate">
+				<label for="inputCounselTypeName">상담구분명</label>
+				<input type="text" class="form-control" id="inputCounselTypeName"
+					   th:value="${counsel.counselTypeName}"
+					   readonly="readonly">
+			</div>
+			
+			<div class="form-group">
+				<label for="inputCounselResultName">상담결과명</label>
+				<input type="text" class="form-control" id="inputCounselResultName"
+					   th:value="${counsel.counselResultName}"
+					   readonly="readonly">
+			</div>
+			
+			<div class="form-group">
+				<label for="inputStudentName">상담학생명</label>
+				<input type="text" class="form-control" id="inputStudentName"
+					   th:value="${counsel.memberName}"
+					   readonly="readonly">
 			</div>
 			
 			<div class="form-group">
 				<label for="inputCounselContent">상담내용</label>
 				<textarea class="form-control" rows="10" id="inputCounselContent"
-						  name="counselContent"></textarea>
+						  name="counselContent"
+						  th:text="${counsel.counselContent}"></textarea>
+			</div>
+			
+			<div class="form-group">
+				<label for="inputCounselAppointmentDate">상담일</label>
+				<input type="date" class="form-control"
+					   id="inputCounselAppointmentDate"
+					   th:value="${counsel.counselAppointmentDate}"
+					   readonly="readonly">
+			</div>
+			
+			<div class="form-group">
+				<label for="inputCounselAppointmentRegisteredDate">등록일</label>
+				<input type="text" class="form-control"
+					   id="inputCounselAppointmentRegisteredDate"
+					   th:value="${#calendars.format(counsel.counselAppointmentRegisteredDate,'yyyy-MM-dd')}"
+					   readonly="readonly">
 			</div>
 			
 			<div class="form-group">
 				<div class="row"> <!-- style="vertical-align: bottom;" -->
-					<div class="col-md-6">
+					<div class="col-md-4">
+						<button type="button" class="btn btn-primary btn-sm btn-block"
+								th:onclick="'window.location.href = \'' + @{/deleteCounsel(counselHistoryNo=${counsel.counselHistoryNo}, memberId=${counsel.memberId})} + '\''">
+							삭제
+						</button>
+					</div>
+					<div class="col-md-4">
 						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 					</div>
-					<div class="col-md-6">
-						<button type="submit" class="btn btn-primary btn-sm btn-block">입력</button>
+					<div class="col-md-4">
+						<button type="button" id="counselUpdateFrmBtn"
+								class="btn btn-primary btn-sm btn-block">수정</button>
 					</div>
 				</div>
 			</div>
@@ -57,6 +92,21 @@
 </th:block>
 
 <th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		
+		// 상담 수정 처리 전 공백 유효성 검사
+		$('#counselUpdateFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+	        if($("#inputCounselContent").val() ==''){
+	            alert('상담내용을 입력하세요');
+	            $("#inputCounselContent").focus();
+	            return false;
+	        }
+	        
+	        $('#counselUpdateFrm').submit();
+	    });
+	</script>
 </th:block>
 
 </html>

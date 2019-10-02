@@ -232,16 +232,17 @@ public class StudentInfoService {
 	
 	
 	// 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담내역 리스트
-	public List<Map<String, Object>> oneStudentCounselHistoryList(String memberId) {
-		System.out.println(memberId + " <- memberId   oneStudentCounselHistoryList()   MemberService.java");
-		return studentInfoMapper.oneStudentCounselHistoryList(memberId);
+	// 관리자 : 상담내용 수정 화면 이동
+	public List<Map<String, Object>> oneStudentCounselHistory(CounselAppointment counselAppointment) {
+		System.out.println(counselAppointment + " <- counselAppointment   oneStudentCounselHistory()   MemberService.java");
+		return studentInfoMapper.oneStudentCounselHistory(counselAppointment);
 	}
 	
 	
 	// 관리자 : 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 상담예약현황 리스트
 	// 관리자 : 학생 예약신청 상세보기
-	public List<Map<String, Object>> oneStudentCounselAppointment(CounselAppointment counselAppointment) {
-		return studentInfoMapper.oneStudentCounselAppointment(counselAppointment);
+	public List<Map<String, Object>> counselAppointmentOneOrList(CounselAppointment counselAppointment) {
+		return studentInfoMapper.counselAppointmentOneOrList(counselAppointment);
 	}
 	
 	
@@ -269,16 +270,10 @@ public class StudentInfoService {
 		return studentInfoMapper.getCounselResultNo(getCounselResultNo);
 	}
 	
-
-	// 관리자 : 상담예약테이블에서 상담내역코드 중복 확인
-	public String counselAppointmentBycounselHistoryNo(String inputCounselHistoryNo) {
-		return studentInfoMapper.counselAppointmentBycounselHistoryNo(inputCounselHistoryNo);
-	}
-	
 	
 	// 관리자 : 상담예약테이블에 추가처리
 	public String addCounselAppointment(CounselAppointment appointment) {
-		String existChk = counselAppointmentBycounselHistoryNo(
+		String existChk = counselAppointmentByCounselHistoryNo(
 									appointment.getCounselHistoryNo());
 		// 상담예약 테이블의 기본키인 상담내역코드로 추가하려는 상담내역코드가
 		// 중복되는지 확인한다.
@@ -296,13 +291,12 @@ public class StudentInfoService {
 		}
 		
 		return resultMessage;
-	}
+	}	
 	
 	
-	// 관리자 : 상담테이블에 상담 내용 추가 처리
-	public int addCounsel(Counsel counsel) {
-		return studentInfoMapper.addCounsel(counsel);
-		// 상담 테이블 추가 처리
+	// 학생 : 상담예약신청 시 상담내역코드 중복확인
+	public String counselAppointmentByCounselHistoryNo(String counselHistoryNo) {
+		return studentInfoMapper.counselAppointmentByCounselHistoryNo(counselHistoryNo);
 	}
 	
 	
@@ -316,5 +310,138 @@ public class StudentInfoService {
 	public List<Map<String, Object>> counselReservationStateList(
 						CounselResult counselResult) {
 		return studentInfoMapper.counselReservationStateList(counselResult);
+	}
+	
+	
+	// 관리자 : 학생 예약신청 처리 메소드
+	public String permissionCounselAppointment(String counselHistoryNo) {
+		String resultMessage = "CounselAppointmentFail";
+		// 업데이트 실패로 초기화
+		
+		int result = studentInfoMapper.permissionCounselAppointment(counselHistoryNo);
+		// 예약처리하기
+		
+		if(result == 1) { // 업데이트 성공(예약 성공)
+			resultMessage = null;
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	// 관리자, 학생 : 상담예약신청 수정처리
+	public String updateCounselAppointment(CounselAppointment counselAppointment) {
+		String resultMessage = "updateCounselAppointmentFail";
+		// 만약 상담예약 수정처리에 실패했다면 이 메세지가 리턴될 것이다.
+		
+		int result = studentInfoMapper.updateCounselAppointment(counselAppointment);
+		// 상담예약 수정 처리
+		
+		if(result == 1) {  // 상담예약 수정에 성공했다면
+			resultMessage = null;
+			// 리턴 메세지에 널값을 준다
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	// 관리자, 학생 : 해당 상담예약 삭제 처리
+	public String deleteCounselAppointment(String counselHistoryNo) {
+		String existChk = counselAppointmentByCounselHistoryNo(counselHistoryNo);
+		// 삭제하기 전 해당 상담내역코드로된 상담예약현황이 존재하는지 확인
+		
+		String resultMessage = "deleteCounselAppointmentFail";
+		// 상담예약 삭제 실패로 초기화
+		
+		if(existChk != null) { // 해당 상담내역코드 존재(삭제 가능)
+			int result = studentInfoMapper.deleteCounselAppointment(counselHistoryNo);
+			// 해당 상담예약 삭제 처리
+			
+			if(result == 1) { // 해당 상담예약 삭제 성공
+				resultMessage = "deleteCounselAppointmentSuccess";
+				// 상담예약 삭제 성공 메세지
+			}
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	// 관리자 : 상담예약 테이블에서 상담여부 '유' 처리
+	public String permissionCounsel(CounselAppointment counselAppointment) {
+		String resultMessage = "permissionCounselFail";
+		// 상담여부 '유'처리 실패로 초기화
+		
+		int result = studentInfoMapper.permissionCounsel(counselAppointment);
+		// 상담처리하기
+		
+		if(result == 1) { // 업데이트 성공(상담처리 성공)
+			resultMessage = null;
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	// 관리자 : 상담테이블에 상담 내용 추가 처리
+	public String addCounsel(Counsel counsel) {
+		String existChk =
+				studentInfoMapper.counselByCounselHistoryNo(counsel.getCounselHistoryNo());
+		// 상담테이블에 추가하기 전에 해당 상담내역코드로된 레코드가 존재하는지 확인
+		
+		String resultMessage = "counselInsertFail";
+		// 상담내역 입력 실패로 초기화
+		
+		if(existChk == null) { // 해당 상담내역코드로된 레코드가 존재하지 않음(추가 가능)
+			int result = studentInfoMapper.addCounsel(counsel);
+			
+			if(result == 1) {  // 상담 등록에 성공했다면
+				resultMessage = null;
+				// 리턴 메세지에 널값을 준다
+			}
+		}
+		
+		return resultMessage;
+		// 상담 테이블 추가 처리
+	}
+	
+	
+	// 관리자 : 상담내용 테이블 수정 처리
+	public String updateCounsel(Counsel counsel) {
+		String resultMessage = "updateCounselFail";
+		// 만약 상담내용 수정처리에 실패했다면 이 메세지가 리턴될 것이다.
+		
+		int result = studentInfoMapper.updateCounsel(counsel);
+		// 상담내용 수정 처리
+		
+		if(result == 1) {  // 상담내용 수정에 성공했다면
+			resultMessage = null;
+			// 리턴 메세지에 널값을 준다
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	// 관리자 : 해당 상담내용 삭제 처리
+	public String deleteCounsel(String counselHistoryNo) {
+		String existChk = studentInfoMapper.counselByCounselHistoryNo(counselHistoryNo);
+		// 삭제하기 전 해당 상담내역코드로된 상담 내용이 존재하는지 확인
+		
+		String resultMessage = "deleteCounselFail";
+		// 상담내용 삭제 실패로 초기화
+		
+		if(existChk != null) { // 해당 과목코드 존재(삭제 가능)
+			int result = studentInfoMapper.deleteCounsel(counselHistoryNo);
+			// 해당 과목 삭제 처리
+			
+			if(result == 1) { // 해당 과목 삭제 성공
+				resultMessage = "deleteCounselSuccess";
+				// 과목 삭제 성공 메세지
+			}
+		}
+		
+		return resultMessage;
 	}
 }

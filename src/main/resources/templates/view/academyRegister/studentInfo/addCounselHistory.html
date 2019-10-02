@@ -16,56 +16,48 @@
 	
 	<div class="col-sm-7 col-md-offset-3">
 		<form role="form" id="counselHistoryFrm" action="/addCounselHistory" method="post">
-			<input type="hidden" th:value="${memberId}" name="memberId">
-			<input type="hidden" value="Y" name="counselWhether">
-			
-			
-			<input type="hidden" value="Y" name="counselAppointmentWhether">
-			<!-- 쿼리 실행을 위해 임시로 넣었다. (상담예약여부) -->
+			<input type="hidden" th:value="${counselAppointment.memberId}" name="memberId">
+			<input type="hidden" value="유" name="counselWhether">
 			
 			<div class="form-group">
 				<label for="inputCounselHistoryNo">상담내역코드</label>
 				<div class="input-group">
 					<input type="text" class="form-control" id="inputCounselHistoryNo"
-						   name="counselHistoryNo">
-					<span class="input-group-btn">
+						   name="counselHistoryNo"
+						   th:value="${counselAppointment.counselHistoryNo}"
+						   readonly="readonly">
+						   
+						   
+					<!-- 학생 상담예약신청폼 작성시 참고 -->
+					<!-- <span class="input-group-btn">
 						<button type="button" class="btn btn-primary btn-sm"
 								id="counselHistoryNoOverlapBtn">중복확인</button>
 						<input type="hidden" id="counselHistoryNoOverlapClickChk" value="0">
-					</span>
+					</span> -->
 				</div>
 			</div>
 			
 			<div class="form-group">
-				<label class="sr-only" for="counselTypeList">상담구분명</label>
-				<!-- <div class="input-group"> -->
-				<select id="counselTypeList" name="counselTypeNo"
-						class="form-control">
-					<option value="">상담구분명</option>
-					<!-- <option th:each="counselType : ${counselTypeList}"
-							th:value="${counselType.counselTypeNo}"
-							th:text="${counselType.counselTypeName}"></option> -->
-				</select>
-				<!-- </div> -->
+				<label for="viewCounselType">상담구분명</label>
+				<input type="text" class="form-control" id="viewCounselType"
+					   th:value="${counselAppointment.counselTypeName}"
+					   readonly="readonly">
+				<!-- 화면에 구분코드를 보여주면 안되니 구분명을 보여준다. -->
 			</div>
 			
 			<div class="form-group">
-				<label class="sr-only" for="counselResultList">상담결과명</label>
-				<!-- <div class="input-group"> -->
-				<select id="counselResultList" name="counselResultName"
-						onchange="counselTypeSelect(this.value)" class="form-control">
-					<option value="">상담결과명</option>
-					<option th:each="counselResult : ${counselResultList}"
-							th:value="${counselResult.counselResultName}"
-							th:text="${counselResult.counselResultName}"></option>
-				</select>
-				<!-- </div> -->
+				<label for="viewCounselResult">상담결과명</label>
+				<input type="text" class="form-control" id="viewCounselResult"
+					   th:value="${counselAppointment.counselResultName}"
+					   readonly="readonly">
+				<!-- 화면에 결과코드를 보여주면 안되니 결과명을 보여준다. -->
 			</div>
 			
 			<div class="form-group">
-				<label for="inputCounselDate">상담일자</label>
-				<input type="date" class="form-control" id="inputCounselDate"
-					   name="counselAppointmentDate">
+				<label for="inputCounselAppointmentDate">상담일자</label>
+				<input type="date" class="form-control" id="inputCounselAppointmentDate"
+					   th:value="${counselAppointment.counselAppointmentDate}"
+					   readonly="readonly">
 			</div>
 			
 			<div class="form-group">
@@ -91,34 +83,10 @@
 
 <th:block layout:fragment="customScript">
 	<script type="text/javascript">
-		function counselTypeSelect(counselResultName) {
-			console.log(`counselResultName:${counselResultName}`);
-			
-			$.ajax({
-				 type: "POST"
-				,url: "/counselTypeSelect"
-				,dataType:"json"
-				,data: counselResultName
-				,contentType: "application/json; charset=UTF-8"
-				,success: function(result){
-					//SELECT BOX 초기화           
-					$("#counselTypeList").find("option").remove().end().append("<option value=''>상담구분명</option>");
-					
-					//배열 개수 만큼 option 추가
-					$.each(result, function(i){
-						console.log(`넘어온 상담구분코드:${result}`);
-						$("#counselTypeList").append("<option value='"+result[i].counselTypeNo+"'>"+result[i].counselTypeName+"</option>")
-					});    
-				}
-				,error: function (jqXHR, textStatus, errorThrown) {
-					alert("오류가 발생하였습니다.");
-				}                     
-			});
-		}
 		
-		
+		// 학상 상담예약신청 폼 작성 시 복붙
 		// 상담내역코드 중복 확인
-		$('#counselHistoryNoOverlapBtn').on('click', function(e){
+		/*$('#counselHistoryNoOverlapBtn').on('click', function(e){
 			e.preventDefault();
 			var inputCounselHistoryNo = $('#inputCounselHistoryNo').val();
 			console.log(`inputCounselHistoryNo:${inputCounselHistoryNo}`);
@@ -155,14 +123,14 @@
 		$("#inputCounselHistoryNo").on('change', function(e) {
 			e.preventDefault();
 			$('#counselHistoryNoOverlapClickChk').val(0);
-		});
+		});*/
 		
 		
 		// 상담내역 등록 처리 전 공백 및 중복확인 눌렀는지 유효성 검사
 		$('#counselHistoryBtn').on('click', function(e){
 			e.preventDefault();
 			
-			var counselHistoryNoOverlapClickChk = $('#counselHistoryNoOverlapClickChk').val();
+			/*var counselHistoryNoOverlapClickChk = $('#counselHistoryNoOverlapClickChk').val();
 			
 			console.log(`counselHistoryNoOverlapClickChk:${counselHistoryNoOverlapClickChk}`);
 			console.log('0이면 사용 중, 1이면 사용 가능');
@@ -180,25 +148,7 @@
 	            alert('상담내역코드 중복확인을 해주세요');
 	            $("#inputCounselHistoryNo").focus();
 	            return false;
-	        }
-	        
-	        if($("#counselTypeList").val() ==''){
-	            alert('상담구분명을 선택하세요');
-	            $("#counselTypeList").focus();
-	            return false;
-	        }
-
-	        if($("#counselResultList").val() ==''){
-	            alert('상담결과명을 선택하세요');
-	            $("#counselResultList").focus();
-	            return false;
-	        }
-	        
-	        if($("#inputCounselDate").val() ==''){
-	            alert('상담일자를 선택하세요');
-	            $("#inputCounselDate").focus();
-	            return false;
-	        }
+	        }*/
 	        
 	        if($("#inputCounselContent").val() ==''){
 	            alert('상담내용을 입력하세요');

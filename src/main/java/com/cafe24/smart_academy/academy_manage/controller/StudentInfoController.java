@@ -285,7 +285,7 @@ public class StudentInfoController {
 	public String oneStudentCounselManage(CounselAppointment counselAppointment, Model model) {
 		
 		List<Map<String, Object>> counselHistoryList = 
-				studentInfoService.oneStudentCounselHistoryList(counselAppointment.getMemberId());
+				studentInfoService.oneStudentCounselHistory(counselAppointment);
 		// 화면에 보여줄 해당 학생 상담 내역 리스트
 		
 //		if(counselHistoryList.size() == 0) { // 해당 학생의 상담 내역이 존재하지 않는다면
@@ -296,9 +296,11 @@ public class StudentInfoController {
 	
 		System.out.println("상담내역리스트 크기 : " + counselHistoryList.size());
 		
+		counselAppointment.setCounselWhether("무");
+		// 상담 여부 '무' 조건쿼리를 넣기위한 글자
 		
 		List<Map<String, Object>> counselAppointmentList = 
-				studentInfoService.oneStudentCounselAppointment(counselAppointment);
+				studentInfoService.counselAppointmentOneOrList(counselAppointment);
 		// 화면에 보여줄 해당 학생 상담예약현황 리스트
 		
 		
@@ -336,36 +338,10 @@ public class StudentInfoController {
 	}
 	
 	
-	// 관리자 : 학생 상담내역 작성
-	@GetMapping("/addCounselHistory")
-	public String addCounselHistory(Model model
-			,@RequestParam(value = "memberId")String memberId
-	/* ,@RequestParam(value = "counselResultName")String counselResultName */) {
-		
-		model.addAttribute("memberId", memberId);
-		// 모델 객체에 회원 아이디 넣어준다.
-		
-		//List<Map<String, Object>> counselKindList =
-		//		studentInfoService.listCounselKind(counselResultName);
-		// 상담결과명이 입학상담인 레코드의 상담구분코드와 상담구분명,
-		// 상담결과코드에서 상담결과코드와 상담결과명을 두 테이블을 서로 조인해서 가져온다.
-		
-		//model.addAttribute("counselKindList", counselKindList);
-		
-		List<CounselResult> counselResultList =
-				studentInfoService.counselResultNameList();
-		// 상담결과코드 이름만 리스트로 가져오기
-		
-		model.addAttribute("counselResultList", counselResultList);
-		
-		return "/view/academyRegister/studentInfo/addCounselHistory";
-	}
-	
-	
-	// 관리자 : 선택한 상담결과코드로 상담구분코드 가져오기
-	@PostMapping("/counselTypeSelect")
+	// 관리자 : 선택한 상담결과코드로 상담구분코드 리스트 가져오기
+	@PostMapping("/counselTypeListSelect")
 	@ResponseBody
-	public List<CounselType> counselTypeSelect(@RequestBody String counselResultName) {
+	public List<CounselType> counselTypeListSelect(@RequestBody String counselResultName) {
 		System.out.println(counselResultName + "<- counselResultName   counselTypeSelect()   StudentInfoController.java");
 		
 		//Map<Object, Object> map = new HashMap<Object, Object>();
@@ -378,7 +354,9 @@ public class StudentInfoController {
 	}
 	
 	
-	// 관리자 : 상담내역코드 중복확인
+	
+	
+	// 학생 : 상담내역코드 중복확인
 	@PostMapping("/counselHistoryNoOverlapChk")
 	@ResponseBody
 	public Map<Object, Object> counselHistoryNoOverlapChk(@RequestBody String inputCounselHistoryNo) {
@@ -388,7 +366,7 @@ public class StudentInfoController {
 		Map<Object, Object> map = new HashMap<Object, Object>();
 		
 		String counselHistoryNoResult =
-				studentInfoService.counselAppointmentBycounselHistoryNo(inputCounselHistoryNo);
+				studentInfoService.counselAppointmentByCounselHistoryNo(inputCounselHistoryNo);
 		// 서비스의 상담내역코드 중복확인 메소드 호출
 		
 		if(counselHistoryNoResult == null) { // 조회한 값이 없다면
@@ -407,60 +385,18 @@ public class StudentInfoController {
 	}
 	
 	
-	// 관리자 : 학생 상담내역 추가 처리
-	@PostMapping("/addCounselHistory")
-	public String addCounselHistory(
-			 CounselAppointment appointment
-			,Counsel counsel
-			,GetCounselResultNo getCounselResultNo
-			,Model model
-			,RedirectAttributes redirectAttributes) {
-		// 상담예약객체(CounselAppointment)에는
-		// 상담내역코드, 회원아이디, 상담일자(상담예약일), 상담여부, 예약여부(임시)가 있다.
-		// 필수로 들어가야하는 상담결과코드가 없다.
-		// 상담결과코드는 상담구분코드와 상담결과명으로 구해야한다.
-		
-		String counselResultNo = studentInfoService.getCounselResultNo(getCounselResultNo);
-		// 원래는 이 코드도 학생이 상담예약 신청할 때 있어야하는 코드이다.
-		// 나중에 복붙하면 되지 않을까.
-		
-		appointment.setCounselResultNo(counselResultNo);
-		// 상담예약테이블에 필수로 들어가야하는 상담결과코드를 얻어온 코드로 셋팅한다.
-		// 원래는 학생이 상담예약신청을 하면 상담예약테이블에 객체가 추가되어야한다.
-		// 쿼리 실행을 위해 임시로 써놓았다.
-		// 학생까지 코드가 완료되면 수정할 것이다.
-		
-		String appointmentMessage = studentInfoService.addCounselAppointment(appointment);
-		// 상담예약 테이블 추가 처리
-		
-		int counselResult= studentInfoService.addCounsel(counsel);
-		// 상담 테이블 추가 처리
-		
-		String path = "redirect:/counselManage";
-		// 입력 성공시 해당 학생 상담 관리 페이지로 이동한다.
-		
-		if(appointmentMessage == null & counselResult == 1) { // 입력 성공
-			redirectAttributes.addAttribute("memberId", appointment.getMemberId());
-			// 학생 상담관리 페이지로 리다이렉트하면서 회원 아이디를 같이 넘겨준다.
-			
-		} else { // 메세지가 널이 아니다. 메세지에 값이 존재한다면 입력 실패이다.
-			path = "/view/academyRegister/studentInfo/addCounselHistory";
-			// 상담내역을 다시 입력해야한다.
-			
-			model.addAttribute("insertFail", "입력실패! 다시 입력해주세요.");
-		}
-		
-		return path;
-	}
-	
-	
-	
 	// 관리자 : 상담예약현황 리스트 이동
 	@GetMapping("/currentReservationStateList")
 	public String currentReservationStateList(Model model) {
 		
+		CounselAppointment counselAppointment = new CounselAppointment();
+		counselAppointment.setCounselWhether("무");
+		// 상담예약현황 리스트를 보여주어야 하므로
+		// 조건문 조각쿼리 상담여부를 안했다는 '무' 라는 조건으로 검색하기 위해
+		// 객체를 선언하고 조건문에 쓰일 문자열을 넣어주었다.
+		
 		List<Map<String, Object>> counselReservationStateList =
-				studentInfoService.counselReservationStateList();
+				studentInfoService.counselAppointmentOneOrList(counselAppointment);
 		// 상담구분 테이블에서 상담구분코드(기본키)와 상담구분명(전화상담, 방문상담 등),
 		// 상담결과 테이블에서 상담결과코드(기본키)와 상담결과명(입학상담, 성적상담 등),
 		// 상담예약 테이블에서 상담내역코드(기본키)와 상담예약일(상담일),
@@ -524,16 +460,270 @@ public class StudentInfoController {
 	public String updateCounselAppointment(
 			CounselAppointment counselAppointment, Model model) {
 		System.out.println(counselAppointment.getCounselHistoryNo() + " <- counselHistoryNo   updateCounselAppointment()   StudentInfoController.java");
-		System.out.println(counselAppointment.getMemberId() + " <- memberId   updateCounselAppointment()   StudentInfoController.java");
 		
 		List<Map<String, Object>> oneMap =
-				studentInfoService.oneStudentCounselAppointment(counselAppointment);
+				studentInfoService.counselAppointmentOneOrList(counselAppointment);
 		// 상담예약 테이블의 기본키인 상담내역코드로 값을 구해올 것이기에 한개만 나올 것이다.
 		
 		Map<String, Object> counselAppointmentInfo = oneMap.get(0);
+		// 어차피 상담예약테이블의 기본키로 구한 결과이기에 한개만 나오므로 그 결과값을
+		// 맵을 선언하여 넣어준다.
+		
+		List<CounselType> counselTypeList = memberService.counselTypeList();
+		// 학생예약신청 상세보기에서 보여줄 상담구분리스트
 		
 		
+		model.addAttribute("counselAppointment", counselAppointmentInfo);
+		// 한명의 학생의 상담예약정보를 넣어준다.
+		
+		model.addAttribute("counselTypeList", counselTypeList);
+		// 상세보기에서 보여줄 상담구분리스트를 넣어준다.
 		
 		return "/view/academyRegister/studentInfo/detailCounselAppointment";
+	}
+	
+	
+	// 관리자 : 학생예약신청 페이지에서 해당 상담결과코드로된 상담결과명 보이기
+	@PostMapping("/counselResultNoSelect")
+	@ResponseBody
+	public CounselResult counselResultNoSelect(@RequestBody String counselResultNo) {
+		System.out.println(counselResultNo + "<- counselResultNo   counselResultNoSelect()   StudentInfoController.java");
+		
+		CounselResult counselResult =
+				memberService.detailCounselResultByCounselResultNo(counselResultNo);
+		// 해당 상담결과코드 가져오기
+		
+		return counselResult;
+	}
+	
+	
+	// 관리자 : 학생 상담예약신청 예약처리
+	@PostMapping("/permissionCounselAppointment")
+	@ResponseBody
+	public Map<Object, Object> permissionCounselAppointment(@RequestBody String counselHistoryNo) {
+		System.out.println(counselHistoryNo + "<- counselHistoryNo   permissionCounselAppointment()   StudentInfoController.java");
+		
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		
+		String message = studentInfoService.permissionCounselAppointment(counselHistoryNo);
+		// 학생 상담예약신청 처리 메소드 호출
+		
+		System.out.println(message + " <- message   permissionCounselAppointment()   StudentInfoController.java");
+		
+		if(message == null) {
+			map.put("result", 1);
+			// 메세지가 존재하지 않음 : 예약 성공
+			
+		} else {
+			map.put("result", 0);
+			//메세지가 존재함 : 예약 실패
+		}
+		
+		return map;
+	}
+	
+	
+	// 관리자, 학생 : 상담예약신청 수정처리
+	@PostMapping("/updateCounselAppointment")
+	public String updateCounselAppointment(CounselAppointment counselAppointment, Model model,
+			RedirectAttributes redirectAttributes) {
+		String message = studentInfoService.updateCounselAppointment(counselAppointment);
+		// 상담예약 수정 처리 후 메세지를 리턴받는다.
+		
+		String path = "redirect:/currentReservationStateList";
+		// 상담예약 수정에 성공했을 경우 상담예약현황 리스트로 이동하게 초기화한다.
+		
+		if(message != null) {
+			// 리턴받은 메세지가 널이 아니라면 상담예약 수정에 실패했다는 뜻이다.
+			
+			System.out.println("상담예약 수정 실패!!!!!!!!!!!!");
+			
+			redirectAttributes.addAttribute("counselHistoryNo", counselAppointment.getCounselHistoryNo());
+			// 상담예약 상세 페이지로 리다이렉트하면서 상담내역코드를 넘겨준다.
+			
+			path = "redirect:/updateCounselAppointment";
+			// 학생 상담예약신청 상세 페이지로 이동
+		}
+		
+		return path;
+	}
+	
+	
+	// 관리자, 학생 : 상담예약신청 삭제처리
+	@GetMapping("/deleteCounselAppointment")
+	public String deleteCounselAppointment(
+			@RequestParam(value = "counselHistoryNo")String counselHistoryNo) {
+		
+		System.out.println(counselHistoryNo + " <- counselHistoryNo   deleteCounselAppointment()   StudentInfoController.java");
+		String message = studentInfoService.deleteCounselAppointment(counselHistoryNo);
+		// 해당 상담예약 삭제 쿼리 실행 후 메세지 반환
+		
+		System.out.println(message + " <- message   deleteCounselAppointment()   StudentInfoController.java");
+		
+		return "redirect:/currentReservationStateList";
+	}
+	
+	
+	// 관리자 : 학생 상담내역 입력 폼 이동
+	@GetMapping("/addCounselHistory")
+	public String addCounselHistory(Model model
+			,CounselAppointment counselAppointment
+	/* ,@RequestParam(value = "counselResultName")String counselResultName */) {
+		
+		List<Map<String, Object>> oneMap =
+				studentInfoService.counselAppointmentOneOrList(counselAppointment);
+		// 상담예약 테이블의 기본키인 상담내역코드로 값을 구해올 것이기에 한개만 나올 것이다.
+		
+		Map<String, Object> counselAppointmentInfo = oneMap.get(0);
+		// 어차피 상담예약테이블의 기본키로 구한 결과이기에 한개만 나오므로 그 결과값을
+		// 맵을 선언하여 넣어준다.
+		
+		
+		model.addAttribute("counselAppointment", counselAppointmentInfo);
+		// 한명의 학생의 상담예약정보를 넣어준다.
+		
+		
+		//List<Map<String, Object>> counselKindList =
+		//		studentInfoService.listCounselKind(counselResultName);
+		// 상담결과명이 입학상담인 레코드의 상담구분코드와 상담구분명,
+		// 상담결과코드에서 상담결과코드와 상담결과명을 두 테이블을 서로 조인해서 가져온다.
+		
+		//model.addAttribute("counselKindList", counselKindList);
+		
+		
+		//List<CounselResult> counselResultList =
+		//		studentInfoService.counselResultNameList();
+		// 상담결과코드 이름만 리스트로 가져오기
+		
+		//model.addAttribute("counselResultList", counselResultList);
+		
+		return "/view/academyRegister/studentInfo/addCounselHistory";
+	}
+	
+	
+	// 관리자 : 학생 상담내역 추가 처리
+	@PostMapping("/addCounselHistory")
+	public String addCounselHistory(
+			 CounselAppointment counselAppointment
+			,Counsel counsel
+			,Model model
+			,RedirectAttributes redirectAttributes) {
+		// 상담예약객체(CounselAppointment)에는
+		// 상담내역코드, 회원아이디, 상담일자(상담예약일), 상담여부, 예약여부(임시)가 있다.
+		// 필수로 들어가야하는 상담결과코드가 없다.
+		// 상담결과코드는 상담구분코드와 상담결과명으로 구해야한다.
+		
+		//String counselResultNo = studentInfoService.getCounselResultNo(getCounselResultNo);
+		// 원래는 이 코드도 학생이 상담예약 신청할 때 있어야하는 코드이다.
+		// 나중에 복붙하면 되지 않을까.
+		
+		//appointment.setCounselResultNo(counselResultNo);
+		// 상담예약테이블에 필수로 들어가야하는 상담결과코드를 얻어온 코드로 셋팅한다.
+		// 원래는 학생이 상담예약신청을 하면 상담예약테이블에 객체가 추가되어야한다.
+		// 쿼리 실행을 위해 임시로 써놓았다.
+		// 학생까지 코드가 완료되면 수정할 것이다.
+		
+		//String appointmentMessage = studentInfoService.addCounselAppointment(appointment);
+		// 상담예약 테이블 추가 처리(학생이 상담예약 신청하면서 추가되므로)
+		
+		String counselMessage = studentInfoService.addCounsel(counsel);
+		// 상담 테이블 추가 처리
+		
+		String counselAppointmentMessage =
+				studentInfoService.permissionCounsel(counselAppointment);
+		
+		System.out.println(counselMessage + " <- counselMessage   addCounselHistory()   StudentInfoController.java");
+		
+		System.out.println(counselAppointmentMessage + " <- counselAppointmentMessage   addCounselHistory()   StudentInfoController.java");
+		
+		String path = "redirect:/counselManage";
+		// 입력 성공시 해당 학생 상담 관리 페이지로 이동한다.
+		
+		if(counselMessage == null) { // 입력 성공
+			redirectAttributes.addAttribute("memberId", counselAppointment.getMemberId());
+			// 학생 상담관리 페이지로 리다이렉트하면서 회원 아이디를 같이 넘겨준다.
+			
+		} else { // 메세지가 널이 아니다. 메세지에 값이 존재한다면 입력 실패이다.
+			path = "/view/academyRegister/studentInfo/addCounselHistory";
+			// 상담내역을 다시 입력해야한다.
+			
+			model.addAttribute("insertFail", "입력실패! 다시 입력해주세요.");
+		}
+		
+		return path;
+	}
+	
+	
+	// 관리자 : 상담내용 수정 화면 이동
+	@GetMapping("/updateCounsel")
+	public String updateCounsel(CounselAppointment counselAppointment, Model model) {
+		
+		List<Map<String, Object>> oneMap = studentInfoService.oneStudentCounselHistory(counselAppointment);
+		// 상담 테이블의 기본키인 상담내역코드로 값을 구해올 것이기에 한개만 나올 것이다.
+		
+		Map<String, Object> counselInfo = oneMap.get(0);
+		// 어차피 상담테이블의 기본키로 구한 결과이기에 한개만 나오므로 그 결과값을
+		// 맵을 선언하여 넣어준다.
+		
+		model.addAttribute("counsel", counselInfo);
+		// 한명의 학생의 상담정보를 넣어준다.
+		
+		return "/view/academyRegister/studentInfo/detailCounselHistory";
+	}
+	
+	
+	// 관리자 : 상담 내용 수정 처리
+	@PostMapping("/updateCounsel")
+	public String updateCounsel(
+			 Counsel counsel
+			,@RequestParam(value = "memberId") String memberId
+			,Model model
+			,RedirectAttributes redirectAttributes) {
+		String message = studentInfoService.updateCounsel(counsel);
+		// 상담내용 수정 처리 메소드 실행 후 메세지 반환
+		
+		String path = "redirect:/counselManage";
+		// 상담내용 수정에 성공했을 경우 해당학생 상담관리 리스트로 이동하게 초기화한다.
+		
+		if(message == null) {
+			// 리턴받은 메세지가 널이라면 상담내용 수정에 성공했다는 뜻이다.
+			
+			redirectAttributes.addAttribute("memberId", memberId);
+			// 해당 학생 상담관리 페이지로 가기 위해서는 반드시 회원 아이디를 가지고 가야 한다.
+			
+		} else {
+			// 리턴받은 메세지가 널이 아니라면 상담내용 수정에 실패했다는 뜻이다.
+			
+			System.out.println("상담내용 수정 실패!!!!!!!!!!!!");
+			
+			redirectAttributes.addAttribute("counselHistoryNo", counsel.getCounselHistoryNo());
+			// 상담내용 상세 페이지로 리다이렉트하면서 상담내역코드를 넘겨준다.
+			
+			path = "redirect:/updateCounsel";
+			// 상담내용 상세 페이지로 이동
+		}
+		
+		return path;
+	}
+	
+	
+	// 관리자 : 해당 상담내용 삭제 처리
+	@GetMapping("/deleteCounsel")
+	public String deleteCounsel(
+			 @RequestParam(value = "counselHistoryNo")String counselHistoryNo
+			,@RequestParam(value = "memberId") String memberId
+			,RedirectAttributes redirectAttributes) {
+		
+		System.out.println(counselHistoryNo + " <- counselHistoryNo   deleteCounsel()   StudentInfoController.java");
+		String message = studentInfoService.deleteCounsel(counselHistoryNo);
+		// 해당 상담내용 삭제 쿼리 실행 후 메세지 반환
+		
+		System.out.println(message + " <- message   deleteCounsel()   StudentInfoController.java");
+		
+		redirectAttributes.addAttribute("memberId", memberId);
+		// 해당 학생의 상담관리 페이지로 넘어가려면 반드시 회원 아이디를 가지고 가야한다.
+		
+		return "redirect:/counselManage";
+		// 해당 학생 상담관리 페이지로 이동
 	}
 }
