@@ -11,7 +11,7 @@
 	<select id="totalGradeResultList" parameterType="map" resultType="map">
 		select
 			 co.course_name								AS courseName
-			,(select member_name from member where mem.member_id = tea.teacher_id) AS teacherName
+			,(select member_name from member where mem.member_id = tea.member_id) AS teacherName
 			,aro.room_number							AS roomNumber
 			,aro.room_floor								AS roomFloor
 			,ed.examination_name						AS examinationName
@@ -44,7 +44,7 @@
 		and
 			co.course_no				= tea.course_no
 		and
-			tea.teacher_id				= login.member_id
+			tea.member_id				= login.member_id
 		and
 			login.member_id				= mem.member_id
 		and
@@ -52,9 +52,9 @@
 		and
 			cen.member_id				= login.member_id
 		and
-			cen.course_assignment_no	= cra.course_assignment_no
+			cen.course_no				= co.course_no
 		and
-			cen.course_assignment_no	= ed.course_assignment_no
+			cen.course_no				= cra.course_no
 		and
 			si.grading_criteria_rating	= gcr.grading_criteria_rating
 		<if test="gradingCriteriaRating != null and gradingCriteriaRating neq ''.toString()">

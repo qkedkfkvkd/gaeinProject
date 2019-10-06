@@ -23,6 +23,7 @@ import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
 import com.cafe24.smart_academy.academy_manage.member.vo.GetCounselResultNo;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
+import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
 import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 
@@ -71,7 +72,12 @@ public class StudentInfoController {
 	
 	// 관리자 전용 학생 추가 처리 메소드
 	@PostMapping("/addStudent")
-	public String addStudent(Model model, MemberLogin loginInfo, Member memberInfo, Parent parent) {
+	public String addStudent(
+			 MemberLogin loginInfo
+			,Member memberInfo
+			,Parent parent
+			,Model model
+			,RedirectAttributes redirectAttributes) {
 		String message = studentInfoService.addStudent(loginInfo, memberInfo, parent);
 		
 		String path = "/view/academyRegister/studentInfo/addStudentInfo";
@@ -81,6 +87,9 @@ public class StudentInfoController {
 		if(message == null) { // 널값이면 입력 성공했다는 뜻이다.
 			path = "redirect:/studentList";
 			// 입력 성공 시 학생 목록 페이지로 이동한다.
+			
+			redirectAttributes.addAttribute("memberLevel", "학생");
+			// 권한이 학생인 학생 리스트를 가져와야 하므로 리스트 검색키워드를 입력한다.
 			
 		} else if(message.equals("idUsed")) { // 아이디 중복 메세지가 넘어올 경우
 			model.addAttribute("idOverlap", "이미 사용 중인 아이디입니다.");
@@ -98,8 +107,12 @@ public class StudentInfoController {
 	
 	// 관리자 전용 학생 목록 페이지 이동
 	@GetMapping("/studentList")
-	public String studentInfoList(Model model) {
-		List<Map<String, Object>> studentList = studentInfoService.studentInfoList();
+	public String studentInfoList(MemberSearchVO memberSearchVO, Model model) {
+		
+		System.out.println(memberSearchVO.getMemberLevel()
+				+ " <- memberLevel   studentInfoList()   StudentInfoController.java");
+		
+		List<Map<String, Object>> studentList = memberService.memberInfoList(memberSearchVO);
 		// 디비에서 권한이 학생인 사람들만 목록을 가져온다. (로그인 테이블 - 회원 신상정보 테이블 아이디로 조인)
 		
 		model.addAttribute("studentList", studentList);
@@ -110,9 +123,9 @@ public class StudentInfoController {
 	
 	// 관리자 : 학생을 이름 혹은 가입기간으로 검색
 	@PostMapping("/searchStudentInfo")
-	public String searchStudentInfo(Member member, Model model) {
+	public String searchStudentInfo(MemberSearchVO memberSearchVO, Model model) {
 		List<Map<String, Object>> studentList =
-				studentInfoService.studentInfoList(member);
+				memberService.memberInfoList(memberSearchVO);
 		// 입력한 학생명과 가입기간으로 디비에서 권한이 학생인 사람들만 목록을 가져온다.
 		// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
 		
@@ -156,7 +169,13 @@ public class StudentInfoController {
 		String path = "redirect:/studentList";
 		// 학생정보 수정에 성공했을 경우 학생목록 리스트로 이동하게 초기화한다.
 		
-		if(message != null) {
+		if(message == null) {
+			// 리턴받은 메세지가 널이라면 학생정보 수정에 성공했다는 뜻이다.
+			
+			redirectAttributes.addAttribute("memberLevel", "학생");
+			// 권한이 학생인 회원목록을 가져와야 하므로 리스트 검색 키워드를 입력한다.
+			
+		} else {
 			// 리턴받은 메세지가 널이 아니라면 학생정보 수정에 실패했다는 뜻이다.
 			
 			System.out.println("학생정보 수정 실패!!!!!!!!!!!!");
@@ -206,7 +225,7 @@ public class StudentInfoController {
 			model.addAttribute("paymentInfo", paymentInfo);
 			// 결제정보 객체를 모델에 넣어준다.
 		} else { // 결제정보가 없다면
-			Member studentSimpleInfo = studentInfoService.memberSimpleInfo(memberId);
+			Member studentSimpleInfo = memberService.memberSimpleInfo(memberId);
 			// 결제 추가창 제목에 뿌려줄 학생의 아이디, 이름, 생년월일을 가져온다.
 			
 			model.addAttribute("student", studentSimpleInfo);
@@ -285,7 +304,7 @@ public class StudentInfoController {
 	public String oneStudentCounselManage(CounselAppointment counselAppointment, Model model) {
 		
 		List<Map<String, Object>> counselHistoryList = 
-				studentInfoService.oneStudentCounselHistory(counselAppointment);
+				studentInfoService.oneStudentCounselHistoryOneOrList(counselAppointment);
 		// 화면에 보여줄 해당 학생 상담 내역 리스트
 		
 //		if(counselHistoryList.size() == 0) { // 해당 학생의 상담 내역이 존재하지 않는다면
@@ -465,6 +484,9 @@ public class StudentInfoController {
 				studentInfoService.counselAppointmentOneOrList(counselAppointment);
 		// 상담예약 테이블의 기본키인 상담내역코드로 값을 구해올 것이기에 한개만 나올 것이다.
 		
+		System.out.println(oneMap.toString() + " <- oneMap.toString()   updateCounselAppointment()   StudentInfoController.java");
+		System.out.println(oneMap.size() + " <- oneMap.size()   updateCounselAppointment()   StudentInfoController.java");
+		
 		Map<String, Object> counselAppointmentInfo = oneMap.get(0);
 		// 어차피 상담예약테이블의 기본키로 구한 결과이기에 한개만 나오므로 그 결과값을
 		// 맵을 선언하여 넣어준다.
@@ -574,6 +596,10 @@ public class StudentInfoController {
 				studentInfoService.counselAppointmentOneOrList(counselAppointment);
 		// 상담예약 테이블의 기본키인 상담내역코드로 값을 구해올 것이기에 한개만 나올 것이다.
 		
+		System.out.println(oneMap.toString() + " <- oneMap.toString()   addCounselHistory()   StudentInfoController.java");
+		System.out.println(oneMap.size() + " <- oneMap.size()   addCounselHistory()   StudentInfoController.java");
+		
+		
 		Map<String, Object> counselAppointmentInfo = oneMap.get(0);
 		// 어차피 상담예약테이블의 기본키로 구한 결과이기에 한개만 나오므로 그 결과값을
 		// 맵을 선언하여 넣어준다.
@@ -658,8 +684,12 @@ public class StudentInfoController {
 	@GetMapping("/updateCounsel")
 	public String updateCounsel(CounselAppointment counselAppointment, Model model) {
 		
-		List<Map<String, Object>> oneMap = studentInfoService.oneStudentCounselHistory(counselAppointment);
+		List<Map<String, Object>> oneMap = studentInfoService.oneStudentCounselHistoryOneOrList(counselAppointment);
 		// 상담 테이블의 기본키인 상담내역코드로 값을 구해올 것이기에 한개만 나올 것이다.
+		
+		System.out.println(oneMap.toString() + " <- oneMap.toString()   updateCounsel()   StudentInfoController.java");
+		System.out.println(oneMap.size() + " <- oneMap.size()   updateCounsel()   StudentInfoController.java");
+		
 		
 		Map<String, Object> counselInfo = oneMap.get(0);
 		// 어차피 상담테이블의 기본키로 구한 결과이기에 한개만 나오므로 그 결과값을

@@ -41,20 +41,9 @@
 						</li>
 						
 						<li class="nav-item">
-							<a class="nav-link" th:href="@{/studentList}">학생목록</a>
+							<a class="nav-link" th:href="@{/studentList(memberLevel='학생')}">학생목록</a>
+							<!-- 권한이 학생인 사람들만 검색한다. -->
 							<!-- 학생신상정보디테일에서 하단에 버튼을 줘서 결제 정보 등을 볼 수 있게 한다. -->
-						</li>
-						
-						<li class="nav-item">
-							<a class="nav-link" href="/currentReservationStateList">상담예약현황</a>
-						</li>
-						
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">출결관리</a>
-						</li>
-						
-						<li class="nav-item">
-							<a class="nav-link" th:href="@{/notPaymentStateList}">미납현황</a>
 						</li>
 					</ul>
 				</div>
@@ -67,7 +56,7 @@
 				<div class="collapse" id="ui-class">
 					<ul class="nav flex-column sub-menu" style="">
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/addCourseInfo}">강좌등록</a>
+							<a class="nav-link" th:href="@{/addCourse}">강좌등록</a>
 						</li>
 						
 						<li class="nav-item"> <!--  -->
@@ -75,8 +64,7 @@
 						</li>
 						
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">수업계획관리</a>
-							<!-- 클릭시 강좌별로 강의계획서 리스트를 조회할 수 있게 한다. -->
+							<a class="nav-link" th:href="@{/courseAssignList}">강사배정목록</a>
 						</li>
 						
 						<li class="nav-item"> <!--  -->
@@ -85,12 +73,6 @@
 							<!-- 강사권한의 시간표 작성할 때 참고하면서 작성한다. -->
 						</li>
 						
-						<!-- 만약 강좌별 금액 테이블을 생성할 것이라면 이 메뉴는 필요하다.
-							 하지만 모든 강좌를 동일한 금액으로 통일할 것이라면 필요없다.
-						<li class="nav-item"> 
-							<a class="nav-link" th:href="@{/goodsList}">강좌별수납관리</a>
-						</li>
-						-->
 					</ul>
 				</div>
 			</li>
@@ -103,10 +85,10 @@
 				<div class="collapse" id="ui-teacher">
 					<ul class="nav flex-column sub-menu">
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/addGoods}">강사등록</a>
+							<a class="nav-link" th:href="@{/addTeacher}">강사등록</a>
 						</li>
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/addGoods}">강사목록</a>
+							<a class="nav-link" th:href="@{/teacherList(memberLevel='강사')}">강사목록</a>
 						</li>
 					</ul>
 				</div>
@@ -120,8 +102,9 @@
 				<div class="collapse" id="ui-counsel">
 					<ul class="nav flex-column sub-menu">
 						<li class="nav-item"> <!-- 수강생이 상담신청한 후 상담일과 제목 등 조회 -->
-							<a class="nav-link" th:href="@{/addGoods}">예약현황</a>
+							<a class="nav-link" href="/currentReservationStateList">상담예약현황</a>
 						</li>
+						
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/goodsList}">신입생상담</a>
 						</li>
@@ -139,33 +122,9 @@
 						<li class="nav-item"> <!--  -->
 							<a class="nav-link" th:href="@{/addGoods}">수납현황</a>
 						</li>
-					</ul>
-				</div>
-			</li>
-			
-			<li class="nav-item">
-				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-textbook" aria-expanded="false" aria-controls="ui-textbook">
-					<i class="mdi mdi-package-variant menu-icon"></i> 
-					<span class="menu-title">교재관리</span> <i class="menu-arrow"></i>
-				</a>
-				<div class="collapse" id="ui-textbook">
-					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/addGoods}">교재목록</a>
-						</li>
-					</ul>
-				</div>
-			</li>
-			
-			<li class="nav-item">
-				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-academyinfo" aria-expanded="false" aria-controls="ui-academyinfo">
-					<i class="mdi mdi-package-variant menu-icon"></i> 
-					<span class="menu-title">학원정보</span> <i class="menu-arrow"></i>
-				</a>
-				<div class="collapse" id="ui-academyinfo">
-					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/addGoods}">공지사항</a>
+						
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/notPaymentStateList}">미납현황</a>
 						</li>
 					</ul>
 				</div>

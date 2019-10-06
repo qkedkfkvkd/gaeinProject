@@ -111,7 +111,7 @@ public class CourseManageController {
 		// 과목 수정을 위해 해당 과목코드의 모든 데이터 가져오기
 		
 		List<Map<String, Object>> courseAssignmentList =
-				courseService.courseAssignmentList(searchVO);
+				courseService.courseAssignmentOneOrList(searchVO);
 		// 강좌 테이블에서 강좌코드와 강좌명,
 		// 과목 테이블에서 과목코드와 과목명,
 		// 강의실 테이블에서 강의실코드와 호실번호, 층수,
@@ -328,7 +328,7 @@ public class CourseManageController {
 		
 		
 		List<Map<String, Object>> courseAssignmentList =
-				courseService.courseAssignmentList(searchVO);
+				courseService.courseAssignmentOneOrList(searchVO);
 		// 강좌 테이블에서 강좌코드와 강좌명,
 		// 과목 테이블에서 과목코드와 과목명,
 		// 강의실 테이블에서 강의실코드와 호실번호, 층수,

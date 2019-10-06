@@ -9,6 +9,7 @@ import com.cafe24.smart_academy.academy_manage.member.vo.CounselResult;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
+import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
 import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 
@@ -16,6 +17,25 @@ import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 public interface MemberMapper {
 	public String memberLoginInfoById(String memberId);
 	// 로그인 테이블에서 아이디 존재 여부 확인
+	
+	public String memberByEmail(String memberEmail);
+	// 관리자가 학생 혹은 강사를 등록할 때 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인
+	
+	public int addMemberLogin(MemberLogin loginInfo);
+	// 관리자 : 학생이나 강사를 등록할 때 회원 등록 처리
+	//			로그인 테이블 먼저 등록 처리
+	
+	public int addMember(Member memberInfo);
+	// 관리자 : 학생이나 강사를 등록할 때 회원 등록 처리
+	//			로그인 테이블 먼저 등록 후 회원 신상정보 등록
+	
+	public int updateMemberInfo(Member member);
+	// 관리자 : 특정 학생이나 강사 신상정보 수정 처리
+	
+	public int deleteMemberLogin(String memberId);
+	// 관리자 : 학생이나 강사 삭제시 해당 로그인 레코드 삭제
+	//			학생이나 강사를 등록하다가 중간에 실패시 있을지도 모르는 로그인 레코드 삭제
+	
 	
 	public MemberLogin memberLogin(MemberLogin login);
 	// 로그인 체크 - 비밀번호까지 일치하는지 확인
@@ -25,8 +45,15 @@ public interface MemberMapper {
 	// 로그인 됬을 시 기본키인 아이디값으로 정보 가져오기,
 	// 회원가입 시 로그인 테이블 먼저 insert 해준 후 신상정보 입력하기
 	
-	public String memberByEmail(String memberEmail);
-	// 관리자가 학생 혹은 강사를 등록할 때 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인
+	public Member memberSimpleInfo(String memberId);
+	// 관리자 : 결제정보가 없는 학생일 경우
+	// 제목 상단에 아이디, 이름, 생년월일을 나타내기 위함
+	
+	public List<Map<String, Object>> memberInfoList(MemberSearchVO memberSearchVO);
+	// 관리자 : 학생이나 강사 목록 페이지로 이동할 때 가져갈 리스트 객체
+	// 관리자 : 입력한 이름과 가입기간으로 디비에서 권한이
+	//			학생이나 강사인 사람들만 목록을 가져온다.
+	// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
 	
 	
 	

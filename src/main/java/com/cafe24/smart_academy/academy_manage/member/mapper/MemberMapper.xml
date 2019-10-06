@@ -17,6 +17,163 @@
 	</select>
 	
 	
+	<!-- 관리자가 회원등록할 시 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인 -->
+	<select id="memberByEmail" parameterType="String" resultType="String">
+		select
+			member_email
+		from
+			member
+		where
+			member_email = #{memberEmail}
+	</select>
+	
+	
+	<!-- 관리자 : 학생이나 강사를 등록할 시 로그인 테이블 등록 -->
+	<insert id="addMemberLogin" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin">
+		insert into member_login (
+			 member_id
+			,member_pw
+			,member_level
+			,member_registered_date
+		) values (
+			 #{memberId}
+			,#{memberPw}
+			,#{memberLevel}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자 : 학생이나 강사를 등록할 시 회원신상정보 테이블 등록 -->
+	<insert id="addMember"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member">
+		insert into member (
+			 member_id
+			,member_name
+			,member_birth
+			,member_email
+			,member_tel
+			,member_phone
+			,member_address
+			,member_registered_date
+		) values (
+			 #{memberId}
+			,#{memberName}
+			,#{memberBirth}
+			,#{memberEmail}
+			,#{memberTel}
+			,#{memberPhone}
+			,#{memberAddress}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자 : 특정 학생 및 강사 정보 수정 처리 -->
+	<update id="updateMemberInfo"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member">
+		update
+			member
+		<trim prefix="set" prefixOverrides=",">
+			<if test="memberName != null and memberName neq ''.toString()">
+				 member_name		= #{memberName}
+			</if>
+			<if test="memberBirth != null and memberBirth neq ''.toString()">
+				,member_birth		= #{memberBirth}
+			</if>
+			<if test="memberEmail != null and memberEmail neq ''.toString()">
+				,member_email		= #{memberEmail}
+			</if>
+			<if test="memberPhone != null and memberPhone neq ''.toString()">
+				,member_phone		= #{memberPhone}
+			</if>
+			<if test="memberTel != null and memberTel neq ''.toString()">
+				,member_tel			= #{memberTel}
+			</if>
+			<if test="memberAddress != null and memberAddress neq ''.toString()">
+				,member_address		= #{memberAddress}
+			</if>
+		</trim>
+		where
+			member_id = #{memberId}
+	</update>
+	
+	
+	<!-- 관리자 : 학생이나 강사 삭제시 해당 로그인 레코드 삭제 -->
+	<!-- 학생이나 강사를 등록하다가 중간에 실패시 있을지도 모르는 로그인 레코드 삭제 -->
+	<delete id="deleteMemberLogin" parameterType="String">
+		delete from
+			member_login
+		where
+			member_id = #{memberId}
+	</delete>
+	
+	
+	<!-- 관리자 : 결제정보가 없는 학생일 경우 -->
+	<!-- 제목 상단에 아이디, 이름, 생년월일을 나타내기 위함 -->
+	<select id="memberSimpleInfo" parameterType="String"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.Member">
+		select
+			 mem.member_id			AS memberId
+			,mem.member_name		AS memberName
+			,mem.member_birth		AS memberBirth
+		from
+			 member_login		AS login
+			,member				AS mem
+		where
+			login.member_id = mem.member_id
+		and
+			mem.member_id = #{memberId}
+	</select>
+	
+	
+	<!-- 관리자 : 학생이나 강사목록 페이지로 이동하고자 할때 가져올 리스트 -->
+	<!-- 관리자 : 입력한 학생명과 가입기간으로 디비에서 권한이 -->
+	<!-- 		  학생이나 강사인 사람들만 목록을 가져온다. -->
+	<!-- 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인 -->
+	<select id="memberInfoList"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO"
+			resultType="map">
+		select
+			 m.member_id					AS memberId
+			,m.member_level					AS memberLevel
+			,me.member_name					AS memberName
+			,me.member_birth				AS memberBirth
+			,me.member_registered_date		AS memberRegisteredDate
+		from
+			 member_login					AS m
+			,member							AS me
+		where
+			m.member_id = me.member_id
+		and
+			m.member_level = #{memberLevel}
+		
+		<!-- 이름을 입력했을 경우 -->
+		<if test="memberName != null and memberName neq ''.toString()">
+		and
+			me.member_name = #{memberName}
+		</if>
+		
+		<!-- 시작 가입기간만 입력했을 경우 -->
+		<if test="startJoinDate != null and startJoinDate neq ''.toString() and
+				  (endJoinDate == null or endJoinDate eq ''.toString())">
+		and
+			me.member_registered_date >= #{startJoinDate}
+		</if>
+		
+		<!-- 시작 가입기간부터 마지막 가입기간까지 입력했을 경우 -->
+		<if test="startJoinDate != null and startJoinDate neq ''.toString() and
+				  endJoinDate != null and endJoinDate neq ''.toString()">
+		and
+			me.member_registered_date
+		between
+			#{startJoinDate}
+		and
+			#{endJoinDate}
+		</if>
+	</select>
+	
+	
 	<!-- 로그인 테이블에서 아이디와 비밀번호 일치 여부 확인 -->
 	<select id="memberLogin" parameterType="com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin"
 			resultType="com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin">
@@ -49,15 +206,6 @@
 	</select>
 	
 	
-	<!-- 관리자가 회원등록할 시 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인 -->
-	<select id="memberByEmail" parameterType="String" resultType="String">
-		select
-			member_email
-		from
-			member
-		where
-			member_email = #{memberEmail}
-	</select>
 	
 	
 	<!-- 관리자 : 상담기준코드 리스트 가져오기 -->

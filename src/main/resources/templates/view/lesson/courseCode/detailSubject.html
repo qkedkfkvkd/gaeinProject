@@ -105,7 +105,7 @@
 							<td th:text="${course.memberName}"></td>
 							<td>
 								<button type="button" class="btn btn-success btn-sm"
-										th:onclick="'window.location.href = \'' + @{/updateCourse(courseAssignmentNo=${course.courseAssignmentNo})} + '\''">
+										th:onclick="'window.location.href = \'' + @{/updateCourseAssign(courseAssignmentNo=${course.courseAssignmentNo}, memberId=${course.memberId})} + '\''">
 									수정
 								</button>
 							</td>

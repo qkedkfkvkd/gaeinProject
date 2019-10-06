@@ -6,7 +6,7 @@ import java.util.Date;
 public class CourseEnrollee {
 	private String	courseEnrolleeNo;				// 수강신청코드(기본키)
 	private String	memberId;						// 회원아이디(로그인 테이블 참조 외래키 1:다 대응)
-	private String	courseAssignmentNo;				// 강좌배정코드(강좌 강의실 배정 테이블 참조 외래키 1:다 대응)
+	private String	courseNo;						// 강좌코드(강좌 테이블 참조 외래키 1:다 대응)
 	private Date	courseEnrolleeRegisteredDate;	// 등록일
 	
 	public String getCourseEnrolleeNo() {
@@ -24,13 +24,12 @@ public class CourseEnrollee {
 		System.out.println(memberId + " <- memberId   setMemberId()   CourseEnrollee.java");
 		this.memberId = memberId;
 	}
-	public String getCourseAssignmentNo() {
-		return courseAssignmentNo;
+	public String getCourseNo() {
+		return courseNo;
 	}
-	public void setCourseAssignmentNo(String courseAssignmentNo) {
-		System.out.println(courseAssignmentNo
-				+ " <- courseAssignmentNo   setCourseAssignmentNo()   CourseEnrollee.java");
-		this.courseAssignmentNo = courseAssignmentNo;
+	public void setCourseAssignmentNo(String courseNo) {
+		System.out.println(courseNo + " <- courseNo   setCourseNo()   CourseEnrollee.java");
+		this.courseNo = courseNo;
 	}
 	public Date getCourseEnrolleeRegisteredDate() {
 		return courseEnrolleeRegisteredDate;

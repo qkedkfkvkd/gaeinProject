@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import com.cafe24.smart_academy.academy_manage.member.vo.Counsel;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselAppointment;
@@ -18,39 +17,14 @@ import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 
 @Mapper
 public interface StudentInfoMapper {
-	public String memberLoginInfoById(String memberId);
-	// 로그인 테이블에서 아이디 존재 여부 확인
-	
-	public String memberByEmail(String memberEmail);
-	// 관리자가 학생 등록할 때 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인
-	
 	public String parentByPhone(String inputParentPhone);
 	// 관리자가 학생 등록시 학부모 테이블에서 유니크값인 폰번호 중복 체크
-	
-	public int addMemberLogin(MemberLogin loginInfo);
-	// 관리자가 학생 등록할 때 회원 등록 처리 (로그인 테이블 먼저 등록 처리)
-	
-	public int addStudent(Member memberInfo);
-	// 관리자가 학생 등록할 때 회원 등록 처리 (로그인 테이블 먼저 등록 후 회원 신상정보 등록)
 	
 	public int addParent(Parent parent);
 	// 관리자가 학생 등록할 때 학부모 등록 처리
 	
-	
-	
-	public List<Map<String, Object>> studentInfoList();
-	// 관리자가 학생 목록 페이지로 이동할 때 가져올 목록
-	
-	public List<Map<String, Object>> studentInfoList(Member member);
-	// 관리자 : 입력한 학생명과 가입기간으로 디비에서 권한이
-	//			학생인 사람들만 목록을 가져온다.
-	// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
-	
 	public Map<String, Object> detailStudentInfoByMemberId(String memberId);
 	// 관리자 : 특정 학생 상세 페이지 이동
-	
-	public int updateStudentInfo(Member member);
-	// 관리자 : 특정 학생정보 수정 처리
 	
 	public int updateParent(Parent parent);
 	// 관리자 : 학부모정보 수정 처리
@@ -59,10 +33,6 @@ public interface StudentInfoMapper {
 	
 	public Map<String, Object> paymentInfoById(String memberId);
 	// 관리자 전용 특정 학생의 결제정보 가져오기
-	
-	public Member memberSimpleInfo(String memberId);
-	// 관리자 : 결제정보가 없는 학생일 경우
-	// 제목 상단에 아이디, 이름, 생년월일을 나타내기 위함
 	
 	public int addPaymentInfo(PaymentInfo paymentInfo);
 	// 관리자 전용 특정 학생 결제정보 입력 처리
@@ -78,7 +48,7 @@ public interface StudentInfoMapper {
 	public Member studentInfoIdNameBirthById(String memberId);
 	// 관리자 상담관리 페이지에 보여줄 특정 학생의 이름과 생년월일 가져오기
 	
-	public List<Map<String, Object>> oneStudentCounselHistory(CounselAppointment counselAppointment);
+	public List<Map<String, Object>> oneStudentCounselHistoryOneOrList(CounselAppointment counselAppointment);
 	// 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담내역 리스트
 	
 	public List<Map<String, Object>> counselAppointmentOneOrList(CounselAppointment counselAppointment);

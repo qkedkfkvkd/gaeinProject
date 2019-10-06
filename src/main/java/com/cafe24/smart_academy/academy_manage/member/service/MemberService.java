@@ -13,6 +13,7 @@ import com.cafe24.smart_academy.academy_manage.member.vo.CounselResult;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
+import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
 import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 
@@ -61,6 +62,22 @@ public class MemberService {
 	public String memberByEmail(String memberEmail) {
 		return memberMapper.memberByEmail(memberEmail);
 		// 존재하는 이메일인지 아닌지 체크한다.
+	}
+	
+	
+	// 관리자 : 결제정보가 없는 학생일 경우
+	// 제목 상단에 아이디, 이름, 생년월일을 나타내기 위함
+	public Member memberSimpleInfo(String memberId) {
+		return memberMapper.memberSimpleInfo(memberId);
+	}
+	
+	
+	// 관리자 : 학생이나 강사 목록 페이지로 이동할 때 가져갈 리스트 객체
+	// 관리자 : 입력한 이름과 가입기간으로 디비에서 권한이
+	//			학생이거나 강사인 사람들만 목록을 가져온다.
+	// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
+	public List<Map<String, Object>> memberInfoList(MemberSearchVO memberSearchVO) {
+		return memberMapper.memberInfoList(memberSearchVO);
 	}
 	
 	

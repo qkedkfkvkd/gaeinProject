@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cafe24.smart_academy.academy_manage.member.mapper.MemberMapper;
 import com.cafe24.smart_academy.academy_manage.member.mapper.StudentInfoMapper;
 import com.cafe24.smart_academy.academy_manage.member.vo.Counsel;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselAppointment;
@@ -23,8 +24,14 @@ import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 public class StudentInfoService {
 	
 	@Autowired
+	MemberMapper memberMapper;
+	// 아이디, 이메일 중복 확인 및 로그인 테이블, 회원신상정보 테이블 관리 담당 매퍼
+	
+	@Autowired
 	StudentInfoMapper studentInfoMapper;
 	// 학생 정보 관리 담당 매퍼
+	
+	
 	
 	// 관리자가 학생 등록시 학부모 테이블에서 유니크값인 폰번호 중복 체크
 	public String parentByPhone(String inputParentPhone) {
@@ -34,10 +41,10 @@ public class StudentInfoService {
 	
 	// 관리자가 회원 등록할 때 회원 등록 처리
 	public String addStudent(MemberLogin loginInfo, Member memberInfo, Parent parent) {
-		String memberIdchk = studentInfoMapper.memberLoginInfoById(loginInfo.getMemberId());
+		String memberIdchk = memberMapper.memberLoginInfoById(loginInfo.getMemberId());
 		// 중복되는 아이디를 입력하여 가입 시도를 하였는가?
 		
-		String memberEmailChk = studentInfoMapper.memberByEmail(memberInfo.getMemberEmail());
+		String memberEmailChk = memberMapper.memberByEmail(memberInfo.getMemberEmail());
 		// 중복되는 이메일을 입력하여 가입 시도를 하였는가?
 		
 		String studentParentPhoneChk = studentInfoMapper.parentByPhone(parent.getParentPhone());
@@ -58,7 +65,7 @@ public class StudentInfoService {
 			result = "parentPhoneUsed";
 			
 		} else {
-			int check = studentInfoMapper.addMemberLogin(loginInfo);
+			int loginJoincheck = memberMapper.addMemberLogin(loginInfo);
 			// 로그인 테이블 먼저 등록처리한다. (회원 신상정보 테이블의 기본키인 회원 아이디가 로그인 테이블의 회원 아이디를 참조)
 			// 로그인 테이블 : 회원 신상정보 테이블 -> 1:1 관계
 			
@@ -69,11 +76,11 @@ public class StudentInfoService {
 			// 학부모 입력 실패로 초기화
 			
 			
-			if(check == 1) {  // 로그인 테이블 등록 성공
+			if(loginJoincheck == 1) {  // 로그인 테이블 등록 성공
 				memberInfo.setMemberId(loginInfo.getMemberId());
 				// 로그인 테이블 객체에서 아이디 값을 꺼내와서 회원 신상정보 테이블의 아이디값에 셋팅
 				
-				memCheck = studentInfoMapper.addStudent(memberInfo);
+				memCheck = memberMapper.addMember(memberInfo);
 				// 회원 신상정보 테이블 등록 처리
 				
 				parent.setMemberId(loginInfo.getMemberId());
@@ -83,15 +90,28 @@ public class StudentInfoService {
 				// 학부모 테이블 등록 처리
 			}
 			
-			if(studentParent == 0 || check == 0 || memCheck == 0) {
+			if(studentParent == 0 || loginJoincheck == 0 || memCheck == 0) {
 				// 학부모 테이블 혹은 로그인 테이블 혹은 회원신상정보 테이블 둘 중 하나라도 입력 실패시
 				
+				String loginInfoChk = memberMapper.memberLoginInfoById(loginInfo.getMemberId());
+				// 학부모 테이블과 회원테이블의 기본키가되는 회원 아이디는
+				// 모두 로그인 테이블의 회원아이디(기본키)와 1:1대응 관계이다.
+				// 즉, 로그인 테이블에 해당 아이디가 없는데
+				// 회원신상정보 테이블이나 학부모 테이블에 값이 있다는 것은 말이 안된다.
+				// --> 참조관계이므로
 				
-				// 디비가서 있을지도 모르는 해당 레코드 삭제 코드 추가해야함.
+				result = "insertDeleteFail";
+				// 입력 삭제 둘 다 실패 메세지
 				
-				
-				result = "insertFail";
-				// 입력 실패 메세지
+				if(loginInfoChk != null) {
+					int deleteChk = memberMapper.deleteMemberLogin(loginInfo.getMemberId());
+					// 디비가서 있을지도 모르는 해당 레코드 삭제 처리
+					
+					if(deleteChk == 1) {
+						result = "insertFailDeleteSuccess";
+						// 입력은 실패했으나 삭제에는 성공했다는 메세지
+					}
+				}
 			}
 		}
 		
@@ -99,20 +119,6 @@ public class StudentInfoService {
 	}
 	
 	
-	
-	// 관리자 : 디비에서 권한이 학생인 사람들만 목록을 가져오기
-	// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
-	public List<Map<String, Object>> studentInfoList() {
-		return studentInfoMapper.studentInfoList();
-	}
-	
-	
-	// 관리자 : 입력한 학생명과 가입기간으로 디비에서 권한이
-	//			학생인 사람들만 목록을 가져온다.
-	// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
-	public List<Map<String, Object>> studentInfoList(Member member) {
-		return studentInfoMapper.studentInfoList(member);
-	}
 	
 	
 	// 관리자 : 특정 학생 상세 페이지 이동
@@ -126,7 +132,7 @@ public class StudentInfoService {
 		String resultMessage = "updateStudentInfoFail";
 		// 만약 학생정보 수정처리에 실패했다면 이 메세지가 리턴될 것이다.
 		
-		int studentResult = studentInfoMapper.updateStudentInfo(member);
+		int studentResult = memberMapper.updateMemberInfo(member);
 		// 학생정보 수정 처리
 		
 		int parentResult = studentInfoMapper.updateParent(parent);
@@ -172,13 +178,6 @@ public class StudentInfoService {
 		Map<String, Object> paymentInfo = studentInfoMapper.paymentInfoById(memberId);
 		// 학생의 아이디를 가지고 결제정보 테이블에서 객체를 얻어온다.
 		return paymentInfo;
-	}
-	
-	
-	// 관리자 : 결제정보가 없는 학생일 경우
-	// 제목 상단에 아이디, 이름, 생년월일을 나타내기 위함
-	public Member memberSimpleInfo(String memberId) {
-		return studentInfoMapper.memberSimpleInfo(memberId);
 	}
 	
 	
@@ -233,9 +232,9 @@ public class StudentInfoService {
 	
 	// 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담내역 리스트
 	// 관리자 : 상담내용 수정 화면 이동
-	public List<Map<String, Object>> oneStudentCounselHistory(CounselAppointment counselAppointment) {
-		System.out.println(counselAppointment + " <- counselAppointment   oneStudentCounselHistory()   MemberService.java");
-		return studentInfoMapper.oneStudentCounselHistory(counselAppointment);
+	public List<Map<String, Object>> oneStudentCounselHistoryOneOrList(CounselAppointment counselAppointment) {
+		System.out.println(counselAppointment + " <- counselAppointment   oneStudentCounselHistoryOneOrList()   MemberService.java");
+		return studentInfoMapper.oneStudentCounselHistoryOneOrList(counselAppointment);
 	}
 	
 	

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>강좌배정 상세</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>강좌배정 상세</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-12 col-md-offset-3">
+		<div class="row">
+			<div class="col-md-3">
+				<form role="form" id="courseAssignUpdateFrm"
+					  action="/updateCourseAssign" method="post">
+					
+					<input type="hidden" value="무" id="teacherIsChanged" name="teacherIsChanged">
+					<input type="hidden" value="무" id="courseIsChanged" name="courseIsChanged">
+					<input type="hidden" value="무" id="courseAssignmentIsChanged" name="courseAssignmentIsChanged">
+					
+					<div class="form-group">
+						<label for="inputCourseAssignmentNo">강좌배정코드</label>
+						<div class="input-group">
+							<input type="text" class="form-control"
+								   id="inputCourseAssignmentNo"
+								   name="courseAssignmentNo"
+								   th:value="${course.courseAssignmentNo}"
+								   readonly="readonly">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputMemberName">강사명</label>
+						<input type="text" class="form-control" id="inputMemberName"
+							   th:value="${course.memberName}" readonly="readonly">
+						<input type="hidden" id="memberId" th:value="${course.memberId}">
+					</div>
+					
+					<div class="form-group">
+						<label for="courseList">강좌코드</label>
+						<!-- <div class="input-group"> -->
+						<select id="courseList" name="courseNo"
+								onchange="subjectSelect(this.value)" class="form-control">
+							<option value="">선택</option>
+							<option th:each="course : ${courseList}"
+									th:value="${course.courseNo}"
+									th:text="${course.courseNo}"></option>
+						</select>
+						<!-- </div> -->
+						<input type="hidden" id="dbCourseAssignAndTeacherCourseNo" th:value="${course.courseNo}">
+						<input type="hidden" id="courseNoChangeChk" value="1">
+					</div>
+					
+					<div class="form-group">
+						<label for="subjectList">과목명</label>
+						<!-- <div class="input-group"> -->
+						<select id="subjectList" name="subjectNo"
+								class="form-control">
+							<option value="">선택</option>
+							<option th:value="${courseSubject.subjectNo}"
+									th:text="${courseSubject.subjectName}"></option>
+						</select>
+						<!-- </div> -->
+						<input type="hidden" th:value="${course.subjectNo}" id="dbSubjectNo">
+						<input type="hidden" id="subjectNoChangeChk" value="1">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCourseName">강좌명</label>
+						<input type="text" class="form-control" id="inputCourseName"
+							   name="courseName" th:value="${course.courseName}">
+						<input type="hidden" th:value="${course.courseName}" id="dbCourseName">
+						<input type="hidden" id="courseNameChangeChk" value="1">
+					</div>
+					
+					<div class="form-group">
+						<label for="academyRoomList">강의실</label>
+						<!-- <div class="input-group"> -->
+						<select id="academyRoomList" name="roomNo"
+								class="form-control">
+							<option value="">선택</option>
+							<option th:each="room : ${roomList}"
+									th:value="${room.roomNo}"
+									th:text="${room.roomNumber + '호, ' + room.roomFloor + '층, ' + room.roomUsage}"></option>
+						</select>
+						<!-- </div> -->
+						<input type="hidden" th:value="${course.roomNo}" id="dbRoomNo">
+						<input type="hidden" id="roomNoChangeChk" value="1">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputTeacherReasonForChange">강사 담당 강좌변경사유</label>
+						<textarea class="form-control" rows="3" id="inputTeacherReasonForChange"
+								  name="teacherReasonForChange"
+								  th:text="${course.teacherReasonForChange}"></textarea>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCourseReasonForChange">강좌변경사유</label>
+						<textarea class="form-control" rows="3" id="inputCourseReasonForChange"
+								  name="courseReasonForChange"
+								  th:text="${course.courseReasonForChange}"></textarea>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCourseAssignmentReasonForChange">강좌강의실배정 변경사유</label>
+						<textarea class="form-control" rows="3" id="inputCourseAssignmentReasonForChange"
+								  name="courseAssignmentReasonForChange"
+								  th:text="${course.courseAssignmentReasonForChange}"></textarea>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputTeacherChangedDate">강사 담당 강좌변경일</label>
+						<input type="text" class="form-control" id="inputTeacherChangedDate"
+							   th:value="${#calendars.format(course.teacherChangedDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCourseChangedDate">강좌변경일</label>
+						<input type="text" class="form-control" id="inputCourseChangedDate"
+							   th:value="${#calendars.format(course.courseChangedDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCourseChangedDate">강좌강의실 배정 변경일</label>
+						<input type="text" class="form-control" id="inputCourseAssignmentChangedDate"
+						   th:value="${#calendars.format(course.courseAssignmentChangedDate,'yyyy-MM-dd')}"
+						   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCourseRegisteredDate">등록일</label>
+						<input type="text" class="form-control" id="inputCourseRegisteredDate"
+							   th:value="${#calendars.format(course.courseRegisteredDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<div class="row"> <!-- style="vertical-align: bottom;" -->
+							<div class="col-md-6">
+								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+							</div>
+							<div class="col-md-6">
+								<button type="button" id="courseAssignUpdateFrmBtn"
+										class="btn btn-primary btn-sm btn-block">수정</button>
+							</div>
+						</div>
+					</div>
+				</form>	
+			</div>
+			<div class="col-md-9">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>배정코드</th>
+							<th>강좌</th>
+							<th>과목</th>
+							<th>강의실</th>
+							<th>층</th>
+							<th>강사</th>
+							<th>등록일</th>
+							<th>수정</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="courseAssign, lists : ${courseAssignList}"
+							th:if="${courseAssignListSize != 0}">
+							<td th:text="${lists.count}"></td>
+							<td th:text="${courseAssign.courseAssignmentNo}"></td>
+							<td th:text="${courseAssign.courseName}"></td>
+							<td th:text="${courseAssign.subjectName}"></td>
+							<td th:text="${courseAssign.roomNumber + '호'}"></td>
+							<td th:text="${courseAssign.foomFloor + '층'}"></td>
+							<td th:text="${courseAssign.memberName}"></td>
+							<td th:text="${#calendars.format(courseAssign.courseAssignmentRegisteredDate,'yyyy-MM-dd')}"></td>
+							<td>
+								<span th:if="${course.courseAssignmentNo != courseAssign.courseAssignmentNo}">
+									<button type="button" class="btn btn-success btn-sm"
+											th:onclick="'window.location.href = \'' + @{/updateCourseAssign(courseAssignmentNo=${courseAssign.courseAssignmentNo}, memberId=${course.memberId})} + '\''">
+										수정
+									</button>
+								</span>
+								<span th:unless="${course.courseAssignmentNo != courseAssign.courseAssignmentNo}">
+									<button type="button" class="btn btn-success btn-sm"
+											disabled="disabled">
+										수정
+									</button>
+								</span>
+							</td>
+						</tr>
+						
+						<tr th:unless="${courseAssignListSize != 0}">
+							<td colspan="5">해당 강좌로 등록된 강좌 강의실 배정목록이 없습니다.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+			var courseNo = /*[[ ${course.courseNo} ]]*/;
+			var subjectNo = /*[[ ${course.subjectNo} ]]*/;
+			var roomNo = /*[[ ${course.roomNo} ]]*/;
+		/*]]*/
+		
+		$(document).ready(function(){
+			console.log(`courseNo:${courseNo}`);
+			console.log(`subjectNo:${subjectNo}`);
+			
+			$("#courseList").val(courseNo);
+			$("#subjectList").val(subjectNo);
+			$("#academyRoomList").val(roomNo);
+		});
+	</script>
+	
+	<script type="text/javascript">
+		
+		// 강좌코드를 변경했을 경우 그에 맞는 과목코드를 보여준다.
+		function subjectSelect(courseNo) {
+			console.log(`courseNo:${courseNo}`);
+			
+			$.ajax({
+				 type: "POST"
+				,url: "/subjectSelect"
+				,dataType:"json"
+				,data: courseNo
+				,contentType: "application/json; charset=UTF-8"
+				,success: function(result){
+					//SELECT BOX 초기화           
+					$("#subjectList").find("option").remove().end().append("<option value=''>선택</option>");
+					
+					$("#subjectList").append("<option value='"+result.subjectNo+"'>"+result.subjectName+"</option>");
+					
+					$("#subjectList").val(result.subjectNo).prop("selected", true);
+					
+					$("#inputCourseName").attr('value', result.courseName);
+				}
+				,error: function (jqXHR, textStatus, errorThrown) {
+					alert("오류가 발생하였습니다.");
+				}
+			});
+		}
+		
+		
+		// 강사가 담당하는 강좌코드가 바뀌었다면
+		$('#courseList').on('change', function(e){
+			e.preventDefault();
+			
+			if($('#dbCourseAssignAndTeacherCourseNo').val() != $("#courseList").val()) {
+				// 디비에 저장된 강사담당 강좌코드와
+				// 새로 선택한 강사담당 강좌코드가 서로 다를 경우
+				$("#courseNoChangeChk").val(0);
+				// 코드가 바뀌었다고 값을 넣어준다.
+				// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+			} else {
+				$("#courseNoChangeChk").val(1);
+				// 다른걸 선택했다가 다시 원래 선택값으로 바꾸었다.
+				// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+			}
+		});
+		
+		
+		// 강좌명이 바뀌었다면
+		$('#inputCourseName').on('change', function(e){
+			e.preventDefault();
+			
+			if($('#dbCourseName').val() != $("#inputCourseName").val()) {
+				// 디비에 저장된 강좌명과 새로 입력한 강좌명이 서로 다를 경우
+				$("#courseNameChangeChk").val(0);
+				// 이름이 바뀌었다고 값을 넣어준다.
+				// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+			} else {
+				$("#courseNameChangeChk").val(1);
+				// 새로 입력했다가 다시 원래 입력값으로 바꾸었다.
+				// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+			}
+		});
+		
+		
+		// 강의실이 바뀌었다면
+		$('#academyRoomList').on('change', function(e){
+			e.preventDefault();
+			
+			if($('#dbRoomNo').val() != $("#academyRoomList").val()) {
+				// 디비에 저장된 강의실코드와 새로 선택한 강의실코드가 서로 다를 경우
+				$("#roomNoChangeChk").val(0);
+				// 코드가 바뀌었다고 값을 넣어준다.
+				// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+			} else {
+				$("#roomNoChangeChk").val(1);
+				// 다른걸 선택했다가 다시 원래 선택값으로 바꾸었다.
+				// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+			}
+		});
+		
+		
+		// 강좌 수정 처리 전 공백 유효성 검사
+		$('#courseAssignUpdateFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+			if($("#courseList").val() ==''){
+	        	// 강좌코드를 선택하지 않았다.
+	            alert('강좌코드를 선택하세요');
+	            $("#courseList").focus();
+	            $("#courseNoChangeChk").val(0);
+	         // 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+	            return false;
+	        }
+			
+			if($("#subjectList").val() ==''){
+	        	// 과목을 선택하지 않았다.
+	            alert('과목명을 선택하세요');
+	            $("#subjectList").focus();
+	            $("#subjectNoChangeChk").val(0);
+	         // 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+	            return false;
+	        }
+	        
+	        if($("#inputCourseName").val() ==''){
+	        	// 강좌명이 빈칸이다.
+	            alert('강좌명을 입력하세요');
+	            $("#inputCourseName").focus();
+	            $("#courseNameChangeChk").val(0);
+	         // 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+	            return false;
+	        }
+	        
+	        if($("#academyRoomList").val() ==''){
+	        	// 강의실을 선택하지 않았다.
+ 	            alert('강의실을 선택하세요');
+ 	            $("#academyRoomList").focus();
+ 	            $("#roomNoChangeChk").val(0);
+ 	            // 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+ 	            return false;
+ 	        }
+	        
+	        if($("#courseNoChangeChk").val() == 0 && $("#inputTeacherReasonForChange").val() == ''){
+	        	// 강사 테이블의 강좌코드를 바꿨으나 강사 담당 강좌변경사유를 입력하지 않았다면
+	        	// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+	            alert('강사담당 강좌변경사유를 입력하세요');
+	            $("#inputTeacherReasonForChange").focus();
+	            return false;
+	        }
+	        
+	        if(($("#subjectNoChangeChk").val() == 0 || $("#courseNameChangeChk").val() == 0)
+	        		&& $("#inputCourseReasonForChange").val() == ''){
+	        	// 강좌테이블의 과목코드 혹은 강좌명을 바꿨으나 강좌변경사유를 입력하지 않았다면
+	        	// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+	            alert('강좌변경사유를 입력하세요');
+	            $("#inputCourseReasonForChange").focus();
+	            return false;
+	        }
+	        
+	        if(($("#roomNoChangeChk").val() == 0 || $("#courseNoChangeChk").val() == 0)
+	        		&& $("#inputCourseAssignmentReasonForChange").val() == ''){
+	            // 강좌 강의실 배정에서 강좌 혹은 강의실을 변경하였으나 강좌 강의실 배정 변경사유를 입력하지 않았다면
+	        	// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+	            alert('강좌강의실 배정변경사유를 입력하세요');
+	            $("#inputCourseAssignmentReasonForChange").focus();
+	            return false;
+	        }
+	        
+	        if($("#courseNoChangeChk").val() == 0 && $("#inputTeacherReasonForChange").val() != ''){
+	        	// 강좌코드를 수정했고 강사 담당 강좌변경사유를 입력했다면
+	        	// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+	        	$("#teacherIsChanged").val("유");
+	        	// 강사담당 강좌변경유무를 "유"로 바꿔준다.
+ 	        }
+	        
+	        if(($("#subjectNoChangeChk").val() == 0 || $("#courseNameChangeChk").val() == 0)
+	        		&& $("#inputCourseReasonForChange").val() != ''){
+	        	// 과목코드나 강좌명을 수정했고 강좌변경사유를 입력했다면
+	        	// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+	        	$("#courseIsChanged").val("유");
+	        	// 강좌변경유무를 "유"로 바꿔준다.
+ 	        }
+ 	        
+ 	        if(($("#roomNoChangeChk").val() == 0 || $("#courseNoChangeChk").val() == 0)
+ 	        		&& $("#inputCourseAssignmentReasonForChange").val() != ''){
+ 	        	// 강좌 강의실 배정에서 강좌 혹은 강의실을 변경하였고 강좌강의실 배정 변경사유를 입력했다면
+ 	        	// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+ 	        	$("#courseAssignmentIsChanged").val("유");
+ 	        	// 강좌 강의실 배정 변경유무를 "유"로 바꿔준다.
+ 	        }
+	        
+	        $('#courseAssignUpdateFrm').submit();
+	    });
+	</script>
+</th:block>
+
+</html>

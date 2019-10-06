@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cafe24.smart_academy.academy_manage.member.mapper.TeacherInfoMapper">
+	
+	<!-- 관리자 : 강사 아이디 중복 확인 (로그인 테이블의 회원아이디 참조 1:1 대응) -->
+	<select id="teacherByMemberId"
+			parameterType="String"
+			resultType="String">
+		select
+			member_id
+		from
+			teacher
+		where
+			member_id = #{memberId}
+	</select>
+	
+	
+	<!-- 관리자 : 강사 테이블에 강사 등록 처리 -->
+	<insert id="addTeacher"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Teacher">
+		insert into teacher (
+			 member_id
+			,course_no
+			,teacher_registered_date
+		) values (
+			 #{memberId}
+			,#{courseNo}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자 : 강사 정보 목록 가져오기 -->
+	<!-- 아이디, 권한, 이름, 이메일, 휴대폰번호, 담당 강좌코드, 과목명, 강좌명, 강사 등록일 -->
+	<select id="teacherInfoList"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO"
+			resultType="map">
+		select
+			 login.member_id				AS memberId
+			,login.member_level				AS memberLevel
+			,mem.member_name				AS memberName
+			,mem.member_email				AS memberEmail
+			,mem.member_phone				AS memberPhone
+			,tea.course_no					AS courseNo
+			,sub.subject_name				AS subjectName
+			,co.course_name					AS courseName
+			,tea.teacher_registered_date	AS teacherRegisteredDate
+		from
+			 member_login		AS login
+			,member				AS mem
+			,teacher			AS tea
+			,course				AS co
+			,subject			AS sub
+		where
+			login.member_id = mem.member_id
+		and
+			login.member_id = tea.member_id
+		and
+			tea.course_no = co.course_no
+		and
+			co.subject_no = sub.subject_no
+		and
+			login.member_level = #{memberLevel}
+	</select>
+	
+	
+	<!-- 관리자 : 강사 담당 강좌코드 수정 -->
+	<update id="updateTeacher"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Teacher">
+		update
+			teacher
+		<trim prefix="set">
+			<if test="courseNo != null and courseNo neq ''.toString()">
+				 course_no					= #{courseNo}
+			</if>
+				,teacher_is_changed			= #{teacherIsChanged}
+				,teacher_changed_date		= curdate()
+		</trim>
+		where
+			member_id = #{memberId}
+	</update>
+</mapper>
