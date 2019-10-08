@@ -113,4 +113,23 @@ public class TeacherInfoService {
 	}
 	
 	
+	// 관리자 : 강사 테이블에 강좌 매핑하기
+	// -> 강좌 강사 배정 추가처리
+	public String updateTeacher(Teacher teacher) {
+		
+		String resultMessage = "updateTeacherFail";
+		// 만약 강좌 강사 배정 수정처리에 실패했다면 이 메세지가 리턴될 것이다.
+		
+		int result = teacherInfoMapper.updateTeacher(teacher);
+		// 강좌 강사 배정 수정 처리
+		
+		if(result == 1) {  // 강좌 강사 배정 수정에 성공했다면
+			resultMessage = null;
+			// 리턴 메세지에 널값을 준다
+		}
+		
+		return resultMessage;
+	}
+	
+	
 }

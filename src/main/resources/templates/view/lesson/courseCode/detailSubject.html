@@ -88,24 +88,22 @@
 							<th>번호</th>
 							<th>강좌</th>
 							<th>과목</th>
-							<th>강의실</th>
-							<th>층</th>
-							<th>강사</th>
+							<th>변경</th>
+							<th>등록일</th>
 							<th>수정</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:each="course, lists : ${courseAssignmentList}"
+						<tr th:each="course, lists : ${courseList}"
 							th:if="${courseAssignmentListSize != 0}">
 							<td th:text="${lists.count}"></td>
 							<td th:text="${course.courseName}"></td>
 							<td th:text="${course.subjectName}"></td>
-							<td th:text="${course.roomNumber + '호'}"></td>
-							<td th:text="${course.foomFloor + '층'}"></td>
-							<td th:text="${course.memberName}"></td>
+							<td th:text="${course.courseIsChanged}"></td>
+							<td th:text="${course.courseRegisteredDate}"></td>
 							<td>
 								<button type="button" class="btn btn-success btn-sm"
-										th:onclick="'window.location.href = \'' + @{/updateCourseAssign(courseAssignmentNo=${course.courseAssignmentNo}, memberId=${course.memberId})} + '\''">
+										th:onclick="'window.location.href = \'' + @{/updateCourse(courseNo=${course.courseNo})} + '\''">
 									수정
 								</button>
 							</td>

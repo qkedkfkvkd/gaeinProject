@@ -99,9 +99,9 @@
 							<th>번호</th>
 							<th>강좌</th>
 							<th>과목</th>
+							<th>코드</th>
 							<th>강의실</th>
 							<th>층</th>
-							<th>강사</th>
 							<th>수정</th>
 						</tr>
 					</thead>
@@ -111,12 +111,12 @@
 							<td th:text="${lists.count}"></td>
 							<td th:text="${course.courseName}"></td>
 							<td th:text="${course.subjectName}"></td>
+							<td th:text="${course.roomNo}"></td>
 							<td th:text="${course.roomNumber + '호'}"></td>
 							<td th:text="${course.foomFloor + '층'}"></td>
-							<td th:text="${course.memberName}"></td>
 							<td>
 								<button type="button" class="btn btn-success btn-sm"
-										th:onclick="'window.location.href = \'' + @{/updateCourseAssign(courseAssignmentNo=${course.courseAssignmentNo}, memberId=${course.memberId})} + '\''">
+										th:onclick="'window.location.href = \'' + @{/updateCourseNotAssignTeacher(courseAssignmentNo=${course.courseAssignmentNo}, courseNo=${course.courseNo})} + '\''">
 									수정
 								</button>
 							</td>

@@ -7,8 +7,7 @@ public class CourseSchedule {
 	private String	scheduleNo;					// 시간표코드(기본키)
 	private String	courseAssignmentNo;			// 강좌배정코드(강좌 강의실 배정 테이블 참조 외래키 1:다 대응)
 	private String	day;						// 요일
-	private String	startTime;					// 시작시간
-	private String	endTime;					// 마침시간
+	private String	period;						// 교시
 	private String	scheduleApprovalStatus;		// 승인여부
 	private Date	scheduleRegisteredDate;		// 등록일
 	private Date	scheduleModificationDate;	// 최종수정일자
@@ -35,19 +34,12 @@ public class CourseSchedule {
 		System.out.println(day + " <- day   setDay()   CourseSchedule.java");
 		this.day = day;
 	}
-	public String getStartTime() {
-		return startTime;
+	public String getPeriod() {
+		return period;
 	}
-	public void setStartTime(String startTime) {
-		System.out.println(startTime + " <- startTime   setStartTime()   CourseSchedule.java");
-		this.startTime = startTime;
-	}
-	public String getEndTime() {
-		return endTime;
-	}
-	public void setEndTime(String endTime) {
-		System.out.println(endTime + " <- endTime   setEndTime()   CourseSchedule.java");
-		this.endTime = endTime;
+	public void setPeriod(String period) {
+		System.out.println(period + " <- period   setPeriod()   CourseSchedule.java");
+		this.period = period;
 	}
 	public String getScheduleApprovalStatus() {
 		return scheduleApprovalStatus;

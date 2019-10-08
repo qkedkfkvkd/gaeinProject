@@ -71,6 +71,13 @@ public class CourseService {
 	}
 	
 	
+	// 관리자 : 과목 리스트에서 과목코드 선택시 자동으로
+	//			해당 과목코드에 맞는 강좌 나오게 하기
+	public List<Course> courseListBySubjectNo(String subjectNo) {
+		return courseMapper.courseListBySubjectNo(subjectNo);
+	}
+	
+	
 	
 	// 관리자 : 강좌 수정 처리
 	public int updateCourse(Course course) {
@@ -118,6 +125,37 @@ public class CourseService {
 	
 	
 	
+
+	
+	
+	
+	
+	// 관리자 : 강사가 배정이 안된 강좌목록 간단히 가져오기
+	// 강좌코드, 강좌명, 과목명, 변경여부, 강좌등록일
+	public List<Map<String, Object>> courseNotAssignmentTeacherSimpleList() {
+		return courseMapper.courseNotAssignmentTeacherSimpleList();
+	}
+	
+	
+	// 관리자 : 강사와 매칭되지 않은 강좌목록 검색결과 가져오기
+	// 강좌코드, 강좌명, 과목명, 변경여부, 강좌등록일
+	public List<Map<String, Object>> courseNotAssignmentTeacherSimpleList(Course course) {
+		return courseMapper.courseNotAssignmentTeacherSimpleList(course);
+	}
+	
+	
+	// 관리자 : 강사가 배정된 강좌 리스트 가져오기
+	public List<Map<String, Object>> courseAssignTeacherList() {
+		return courseMapper.courseAssignTeacherList();
+	}
+	
+	
+	// 강사가 배정된 강좌 검색결과 리스트
+	public List<Map<String, Object>> courseAssignTeacherList(Course course) {
+		return courseMapper.courseAssignTeacherList(course);
+	}
+	
+	
 	
 	
 	
@@ -153,6 +191,12 @@ public class CourseService {
 	}
 	
 	
+	// 관리자 : 강사가 배정이 안된 강좌 강의실 배정 목록 상세하게 가져오기
+	// 관리자 : 강사가 배정이 안된 강좌의 상세 정보 가져오기
+	public List<Map<String, Object>> courseNotAssignTeacherOneOrList(Map<String, Object> map) {
+		return courseMapper.courseNotAssignTeacherOneOrList(map);
+	}
+	
 	
 	// 관리자 : 강좌배정목록 가져오기
 	public List<Map<String, Object>> courseAssignmentOneOrList() {
@@ -165,6 +209,73 @@ public class CourseService {
 	public List<Map<String, Object>> courseAssignmentOneOrList(CourseRoomSearchVO searchVO) {
 		return courseMapper.courseAssignmentOneOrList(searchVO);
 	}
+	
+	
+	// 관리자 : 강사가 배정이 안된 강좌 수정 처리
+	public int updateCourseNotAssignTeacher(CourseRoomAssignment assignment, Course course) {
+		
+		int changeCheck = 0;
+		// 수정 사항이 아무 것도 없다는 것으로 초기화
+		
+		System.out.println(assignment.getCourseAssignmentIsChanged()
+				+ " <- assignment.getCourseAssignmentIsChanged()   updateCourseNotAssignTeacher()   CourseService.java");
+		
+		System.out.println(course.getCourseIsChanged()
+				+ " <- course.getCourseIsChanged()   updateCourseNotAssignTeacher()   CourseService.java");
+		
+		if(assignment.getCourseAssignmentIsChanged().equals("유")) {
+			// 강좌 강의실 배정테이블에 변경사항이 존재한다면
+			
+			int courseAssignmentResult = courseMapper.updateCourseAssignment(assignment);
+			// 강좌 강의실 배정 수정 처리
+			
+			if(courseAssignmentResult == 1) { // 강좌 강의실 배정 수정 성공시
+				changeCheck++;
+				// 한개 수정되었다.
+			}
+		}
+		
+		if(course.getCourseIsChanged().equals("유")) {
+			// 강좌테이블에 변경사항이 존재한다면
+			
+			int courseResult = courseMapper.updateCourse(course);
+			// 강좌 수정 처리
+			
+			if(courseResult == 1) { // 강좌 수정 성공시
+				changeCheck++;
+				// 한개 수정되었다.
+			}
+		}
+		
+		return changeCheck;
+	}
+	
+	
+	// 관리자 : 강좌배정 삭제 처리
+	public String deleteCourseAssign(String courseAssignmentNo) {
+		
+		String existChk = courseRoomAssignByCourseAssignmentNo(courseAssignmentNo);
+		// 삭제하기 전 해당 강좌배정코드로된 강좌배정이 존재하는지 확인
+		
+		String resultMessage = "deleteCourseAssignmentFail";
+		// 강좌 삭제 실패로 초기화
+		
+		if(existChk != null) { // 해당 강좌배정코드 존재(삭제 가능)
+			int courseAssignResult =
+					courseMapper.deleteCourseRoomAssignment(courseAssignmentNo);
+			// 해당 강좌배정 삭제 처리
+			
+			if(courseAssignResult == 1) { // 해당 강좌 삭제 성공
+				resultMessage = "deleteCourseAssignmentSuccess";
+				// 강좌배정 삭제 성공 메세지
+			}
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	
 	
 	
 	// 관리자 : 강좌 강의실 배정 및 강사 강좌 배정 수정 처리
@@ -210,6 +321,8 @@ public class CourseService {
 		if(teacher.getTeacherIsChanged().equals("유")) {
 			// 강사테이블에 변경사항이 존재한다면 (강사 담당 강좌코드가 바뀌었다면)
 			
+			System.out.println("강좌 서비스 강사 수정처리 진입");
+			
 			int teacherResult = teacherInfoMapper.updateTeacher(teacher);
 			// 강사 수정 처리
 			
@@ -220,95 +333,5 @@ public class CourseService {
 		}
 		
 		return changeCheck;
-	}
-	
-	
-	
-	
-	
-	
-	
-	// 관리자 : 과목 리스트에서 과목코드 선택시 자동으로
-	//			해당 과목코드에 맞는 강좌 나오게 하기
-	public List<Course> courseListBySubjectNo(String subjectNo) {
-		return courseMapper.courseListBySubjectNo(subjectNo);
-	}
-	
-	
-	// 관리자 : 강사가 배정이 안된 강좌목록 간단히 가져오기
-	// 강좌코드, 강좌명, 과목명, 강좌등록일
-	public List<Map<String, Object>> courseNotAssignmentTeacherSimpleList() {
-		return courseMapper.courseNotAssignmentTeacherSimpleList();
-	}
-	
-	
-	// 관리자 : 강사가 배정이 안된 강좌 강의실 배정 목록 상세하게 가져오기
-	// 관리자 : 강사가 배정이 안된 강좌의 상세 정보 가져오기
-	public List<Map<String, Object>> courseNotAssignTeacherOneOrList(Map<String, Object> map) {
-		return courseMapper.courseNotAssignTeacherOneOrList(map);
-	}
-	
-	
-	// 관리자 : 강사가 배정이 안된 강좌 수정 처리
-	public int updateCourseNotAssignTeacher(CourseRoomAssignment assignment, Course course) {
-		
-		int changeCheck = 0;
-		// 수정 사항이 아무 것도 없다는 것으로 초기화
-		
-		System.out.println(assignment.getCourseAssignmentIsChanged()
-				+ " <- assignment.getCourseAssignmentIsChanged()   updateCourseNotAssignTeacher()   CourseService.java");
-		
-		System.out.println(course.getCourseIsChanged()
-				+ " <- course.getCourseIsChanged()   updateCourseNotAssignTeacher()   CourseService.java");
-		
-		if(assignment.getCourseAssignmentIsChanged().equals("유")) {
-			// 강좌 강의실 배정테이블에 변경사항이 존재한다면
-			
-			int courseAssignmentResult = courseMapper.updateCourseAssignment(assignment);
-			// 강좌 강의실 배정 수정 처리
-			
-			if(courseAssignmentResult == 1) { // 강좌 강의실 배정 수정 성공시
-				changeCheck++;
-				// 한개 수정되었다.
-			}
-		}
-		
-		if(course.getCourseIsChanged().equals("유")) {
-			// 강좌테이블에 변경사항이 존재한다면
-			
-			int courseResult = courseMapper.updateCourse(course);
-			// 강좌 수정 처리
-			
-			if(courseResult == 1) { // 강좌 수정 성공시
-				changeCheck++;
-				// 한개 수정되었다.
-			}
-		}
-		
-		return changeCheck;
-	}
-	
-	
-	// 관리자 : 강사가 배정이 안된 강좌배정만 삭제 처리
-	public String deleteCourseAssign(String courseAssignmentNo) {
-		
-		String existChk = courseRoomAssignByCourseAssignmentNo(courseAssignmentNo);
-		// 삭제하기 전 해당 강좌배정코드로된 강좌배정이 존재하는지 확인
-		
-		String resultMessage = "deleteCourseAssignmentFail";
-		// 강좌 삭제 실패로 초기화
-		
-		if(existChk != null) { // 해당 강좌배정코드 존재(삭제 가능)
-			int courseAssignResult =
-					courseMapper.deleteCourseRoomAssignment(courseAssignmentNo);
-			// 해당 강좌배정 삭제 처리
-			
-			if(courseAssignResult == 1) { // 해당 강좌 삭제 성공
-				resultMessage = "deleteCourseAssignmentSuccess";
-				// 강좌배정 삭제 성공 메세지
-			}
-		}
-		
-		return resultMessage;
 	}
 }

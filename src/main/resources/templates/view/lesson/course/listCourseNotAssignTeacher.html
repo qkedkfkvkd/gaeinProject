@@ -32,7 +32,7 @@
 			<div class="form-group">
 				<label class="sr-only" for="inputCourseName">강좌명</label>
 				<input type="text" class="form-control" id="inputCourseName"
-					   name="courseName">
+					   name="courseName" placeholder="강좌명을 입력하세요.">
 			</div>
 			
 			<button type="submit" class="btn btn-success">검색</button>
@@ -59,41 +59,39 @@
 			<thead>
 				<tr>
 					<th>번호</th>
-					<th>배정코드</th>
+					<th>코드</th>
 					<th>강좌</th>
 					<th>과목</th>
-					<th>강의실</th>
-					<th>층수</th>
+					<th>변경</th>
 					<th>등록일</th>
 					<th>강사 배정</th>
-					<th>상세</th>
+					<th>수정</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="course, lists : ${courseNotAssignmentTeacherList}"
-					th:if="${courseNotAssignmentTeacherListSize != 0}">
+				<tr th:each="course, lists : ${courseNotAssignList}"
+					th:if="${courseNotAssignListSize != 0}">
 					<td th:text="${lists.count}"></td>
-					<td th:text="${course.courseAssignmentNo}"></td>
+					<td th:text="${course.courseNo}"></td>
 					<td th:text="${course.courseName}"></td>
 					<td th:text="${course.subjectName}"></td>
-					<td th:text="${course.roomNumber + '호'}"></td>
-					<td th:text="${course.foomFloor + '층'}"></td>
+					<td th:text="${course.courseIsChanged}"></td>
 					<td th:text="${#calendars.format(course.courseRegisteredDate,'yyyy-MM-dd')}"></td>
 					<td>
 						<button type="button" class="btn btn-success btn-sm"
-								th:onclick="'window.location.href = \'' + @{/addCourseTeacherAssign(courseNo=${course.courseNo})} + '\''">
+								th:onclick="'window.location.href = \'' + @{/updateCourseAssignTeacher(courseNo=${course.courseNo}, memberLevel='강사')} + '\''">
 							강사 배정
 						</button>
 					</td>
 					<td>
 						<button type="button" class="btn btn-success btn-sm"
-								th:onclick="'window.location.href = \'' + @{/updateCourseNotAssignTeacher(courseAssignmentNo=${course.courseAssignmentNo}, courseNo=${course.courseNo})} + '\''">
-							상세
+								th:onclick="'window.location.href = \'' + @{/updateCourse(courseNo=${course.courseNo})} + '\''">
+							수정
 						</button>
 					</td>
 				</tr>
 				
-				<tr th:unless="${courseNotAssignmentTeacherListSize != 0}">
+				<tr th:unless="${courseNotAssignListSize != 0}">
 					<td colspan="5">강사 배정이 필요한 강좌목록이 없습니다.</td>
 				</tr>
 			</tbody>

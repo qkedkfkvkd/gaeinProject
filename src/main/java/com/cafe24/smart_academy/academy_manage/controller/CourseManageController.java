@@ -110,8 +110,15 @@ public class CourseManageController {
 		Subject subject = courseManageService.detailSubjectBySubjectNo(searchVO.getSubjectNo());
 		// 과목 수정을 위해 해당 과목코드의 모든 데이터 가져오기
 		
-		List<Map<String, Object>> courseAssignmentList =
-				courseService.courseAssignmentOneOrList(searchVO);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("subjectNo", searchVO.getSubjectNo());
+		// 해당 과목 코드를 참조하는 모든 강좌 리스트를 가져오기 위해 검색 키워드를 넣어준다.
+		
+		List<Map<String, Object>> courseList = courseService.courseOneOrList(map);
+		// 해당 과목코드를 참조하는 모든 강좌 리스트를 가져온다.
+		
+		//List<Map<String, Object>> courseAssignmentList =
+		//		courseService.courseAssignmentOneOrList(searchVO);
 		// 강좌 테이블에서 강좌코드와 강좌명,
 		// 과목 테이블에서 과목코드와 과목명,
 		// 강의실 테이블에서 강의실코드와 호실번호, 층수,
@@ -120,10 +127,15 @@ public class CourseManageController {
 		// 여러 개의 테이블을 조인하므로 맵 형태의 리스트로 가져온다.
 		
 			
-		model.addAttribute("courseAssignmentList", courseAssignmentList);
-		model.addAttribute("courseAssignmentListSize", courseAssignmentList.size());
+		//model.addAttribute("courseAssignmentList", courseAssignmentList);
+		//model.addAttribute("courseAssignmentListSize", courseAssignmentList.size());
 		// 강좌강의실 배정리스트의 사이즈를 보고 강좌를 뿌려줄 것인지,
 		// '등록된 강좌배정목록이 없습니다.'메세지를 뿌려줄 것인지 판단한다.
+		
+		model.addAttribute("courseList", courseList);
+		model.addAttribute("courseListSize", courseList.size());
+		// 강좌 리스트의 사이즈를 보고 강좌를 뿌려줄 것인지,
+		// '등록된 강좌목록이 없습니다.'메세지를 뿌려줄 것인지 판단한다.
 		
 		model.addAttribute("subject", subject);
 		
@@ -326,9 +338,16 @@ public class CourseManageController {
 		AcademyRoom room = courseManageService.detailRoomByRoomNo(searchVO.getRoomNo());
 		// 강의실 수정을 위해 해당 강의실코드의 모든 데이터 가져오기
 		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("roomNo", searchVO.getRoomNo());
+		// 해당 강의실을 참조하는 강좌강의실 배정 목록을 가져오기위해 검색키워드를 넣어준다.
 		
 		List<Map<String, Object>> courseAssignmentList =
-				courseService.courseAssignmentOneOrList(searchVO);
+				courseService.courseNotAssignTeacherOneOrList(map);
+		// 해당 강의실코드를 참조하는 모든 강좌강의실 배정목록을 가져온다.
+		
+		//List<Map<String, Object>> courseAssignmentList =
+		//		courseService.courseAssignmentOneOrList(searchVO);
 		// 강좌 테이블에서 강좌코드와 강좌명,
 		// 과목 테이블에서 과목코드와 과목명,
 		// 강의실 테이블에서 강의실코드와 호실번호, 층수,

@@ -6,6 +6,50 @@
 
 <mapper namespace="com.cafe24.smart_academy.academy_manage.course.mapper.ScheduleMapper">
 	
-	<!--  -->
+	<!-- 전체 강좌 시간표 가져오기 -->
+	<select id="scheduleList" resultType="map">
+		select
+			 cs.schedule_no					AS scheduleNo
+			,cs.day							AS day
+			,cs.period						AS period
+			,cs.schedule_registered_date	AS scheduleRegisteredDate
+			,co.course_name					AS courseName
+			,sub.subject_name				AS subjectName
+			,aro.room_number				AS roomNumber
+			,aro.room_floor					AS roomFloor
+			,aro.room_usage					AS roomUsage
+			,tea.member_id					AS memberId
+			,mem.member_name				AS memberName
+		from
+			 course_schedule			AS cs
+			,course_room_assignment		AS cra
+			,course						AS co
+			,subject					AS sub
+			,academy_room				AS aro
+			,teacher					AS tea
+			,member_login				AS login
+			,member						AS mem
+		where
+			cs.course_assignment_no	= cra.course_assignment_no
+		and
+			cra.course_no			= co.course_no
+		and
+			co.subject_no			= sub.subject_no
+		and
+			cra.room_no				= aro.room_no
+		and
+			tea.course_no			= co.course_no
+		and
+			tea.member_id			= login.member_id
+		and
+			login.member_id			= mem.member_id
+		and
+			login.member_level		= '강사'
+		order by
+			cs.period
+		asc
+	</select>
+	
+	
 	
 </mapper>

@@ -20,7 +20,7 @@
 				<label class="sr-only" for="subjectList">과목명</label>
 				<!-- <div class="input-group"> -->
 				<select id="subjectList" name="subjectNo"
-						onchange="courseSelect(this.value)" class="form-control">
+						class="form-control">
 					<option value="not">과목명</option>
 					<option th:each="subject : ${subjectList}"
 							th:value="${subject.subjectNo}"
@@ -31,13 +31,8 @@
 			
 			<div class="form-group">
 				<label class="sr-only" for="courseList">강좌명</label>
-				<!-- <div class="input-group"> -->
-				<select id="courseList" name="courseNo"
-						class="form-control">
-				<!-- 보통 검색을 할때는 '이름'으로 검색하므로 디비에서 샐렉트시 %강좌명%으로 검색하면 좋을 것이다. -->
-					<option value="">강좌명</option>
-				</select>
-				<!-- </div> -->
+				<input type="text" class="form-control" id="inputCourseName"
+					   name="courseName" placeholder="강좌명을 입력하세요.">
 			</div>
 			
 			<button type="submit" class="btn btn-success">검색</button>
@@ -45,14 +40,20 @@
 		
 		
 		<div class="row">
-			<div class="col-md-4" >
+			<div class="col-md-5" >
 				<table class="table">
 					<tbody>
 						<tr>
 							<td>
 								<button type="button" class="btn btn-primary btn-sm btn-block"
-										th:onclick="'window.location.href = \'' + @{/courseNotAssignmentTeacherList} + '\''">
-									강사가 배정안된 강좌목록
+										th:onclick="'window.location.href = \'' + @{/notTeacherCourseAssignList} + '\''">
+									강사가 배정안된 강좌배정목록
+								</button>
+							</td>
+							<td>
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/addCourseAssign} + '\''">
+									강좌배정추가
 								</button>
 							</td>
 						</tr>
@@ -105,32 +106,6 @@
 </th:block>
 
 <th:block layout:fragment="customScript">
-	<script type="text/javascript">
-		function courseSelect(subjectNo) {
-			console.log(`subjectNo:${subjectNo}`);
-			
-			$.ajax({
-				 type: "POST"
-				,url: "/courseSelect"
-				,dataType:"json"
-				,data: subjectNo
-				,contentType: "application/json; charset=UTF-8"
-				,success: function(result){
-					//SELECT BOX 초기화           
-					$("#courseList").find("option").remove().end().append("<option value=''>강좌명</option>");
-					
-					//배열 개수 만큼 option 추가
-					$.each(result, function(i){
-						console.log(`넘어온 강좌코드:${result}`);
-						$("#courseList").append("<option value='"+result[i].courseNo+"'>"+result[i].courseName+"</option>");
-					});    
-				}
-				,error: function (jqXHR, textStatus, errorThrown) {
-					alert("오류가 발생하였습니다.");
-				}
-			});
-		}
-	</script>
 </th:block>
 
 </html>

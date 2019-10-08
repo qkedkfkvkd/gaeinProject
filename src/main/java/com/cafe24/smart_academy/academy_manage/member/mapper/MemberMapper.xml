@@ -148,6 +148,12 @@
 		and
 			m.member_level = #{memberLevel}
 		
+		<!-- 강사 테이블의 정보를 수정할 경우 -->
+		<if test="memberId != null and memberId neq ''.toString()">
+		and
+			m.member_id = #{memberId}
+		</if>
+		
 		<!-- 이름을 입력했을 경우 -->
 		<if test="memberName != null and memberName neq ''.toString()">
 		and

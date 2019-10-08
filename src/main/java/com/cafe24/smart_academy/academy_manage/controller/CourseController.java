@@ -22,6 +22,9 @@ import com.cafe24.smart_academy.academy_manage.course.service.CourseService;
 import com.cafe24.smart_academy.academy_manage.course.vo.Course;
 import com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomAssignment;
 import com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO;
+import com.cafe24.smart_academy.academy_manage.member.service.MemberService;
+import com.cafe24.smart_academy.academy_manage.member.service.TeacherInfoService;
+import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
 import com.cafe24.smart_academy.academy_manage.member.vo.Teacher;
 
 @Controller
@@ -35,6 +38,15 @@ public class CourseController {
 	
 	@Autowired
 	CourseService courseService;
+	// 강좌 및 강좌강의실 배정 정보 관리
+	
+	@Autowired
+	MemberService memberService;
+	// 학생 및 강사의 공통된 정보를 관리
+	
+	@Autowired
+	TeacherInfoService teacherInfoService;
+	// 강사 정보 관리 
 	
 	
 	// 관리자 : 강좌 추가 폼 이동
@@ -150,10 +162,10 @@ public class CourseController {
 	// 관리자 : 강좌 상세 화면 이동
 	@GetMapping("/updateCourse")
 	public String updateCourse(
-			@RequestParam(value = "courseNo") String courseNo, Model model) {
+			Course course, Model model) {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("courseNo", courseNo);
+		map.put("courseNo", course.getCourseNo());
 		// 강좌 테이블의 검색 키워드를 넣어준다.
 		// 해당 강좌코드를 참조하는 강좌 강의실목록 상세정보 리스트의 검색 키워드를 넣어준다.
 		
@@ -182,9 +194,13 @@ public class CourseController {
 				courseService.courseNotAssignTeacherOneOrList(map);
 		// 검색키워드를 매개변수로 넣어서 해당 강좌코드를 참조하는 강좌강의실 배정목록을 가져온다.
 		
-		
 		System.out.println(courseAssignList.toString()
 				+ " <- courseAssignList.toString()   updateCourse()   CourseController.java");
+		
+		List<Map<String, Object>> courseTeacherList =
+				courseService.courseAssignTeacherList(course);
+		// 해당 강좌 코드를 참조하는 강좌 강사 리스트 가져오기
+		
 		
 		model.addAttribute("course", courseInfo);
 		// 화면에 보여줄 해당 강좌 상세정보
@@ -197,6 +213,12 @@ public class CourseController {
 		
 		model.addAttribute("courseAssignListSize", courseAssignList.size());
 		// 리스트의 존재 여부를 판단할 강좌강의실 배정 리스트 사이즈
+		
+		model.addAttribute("courseTeacherList", courseTeacherList);
+		// 화면에 보여줄 강좌 강사 리스트
+		
+		model.addAttribute("courseTeacherListSize", courseTeacherList.size());
+		// 리스트의 존재 여부를 판단할 강좌 강사 리스트 사이즈
 		
 		return "/view/lesson/course/detailCourse";
 	}
@@ -245,6 +267,169 @@ public class CourseController {
 		
 		return "redirect:/courseList";
 	}
+	
+	
+	
+	
+	
+	// 관리자 : 강사가 배정안된 강좌 리스트
+	@GetMapping("/courseNotAssignTeacherList")
+	public String courseNotAssignTeacherList(Model model) {
+		
+		List<Map<String, Object>> courseNotAssignList =
+				courseService.courseNotAssignmentTeacherSimpleList();
+		// 강좌 테이블과 강사 테이블을 서로 조인하여
+		// 강사가 배정되지 않은 강좌 목록을 가지고 온다. (간단한 정보만 가져온다.)
+		// 강좌코드, 강좌명, 과목명, 변경여부, 강좌등록일
+		
+		List<Subject> subjectList = courseManageService.subjectList();
+		// 샐렉트박스에 넣어줄 과목 리스트를 가져온다.
+		
+		
+		model.addAttribute("courseNotAssignList", courseNotAssignList);
+		// 강사가 배정되지않은 강좌 리스트
+		
+		model.addAttribute("courseNotAssignListSize", courseNotAssignList.size());
+		// 강사가 배정되지않은 강좌의 존재여부를 판단할 리스트 사이즈
+		
+		model.addAttribute("subjectList", subjectList);
+		// 샐랙트박스에 넣어줄 과목리스트
+		
+		return "/view/lesson/course/listCourseNotAssignTeacher";
+	}
+	
+	
+	// 강사가 배정안된 강좌 검색결과 리스트
+	@GetMapping("/searchCourseNotAssignTeacherList")
+	public String searchCourseNotAssignTeacherList(Course course, Model model) {
+		
+		System.out.println(course.getSubjectNo()
+				+ " <- course.getSubjectNo()   searchCourseNotAssignTeacherList()   CourseController.java");
+		
+		System.out.println(course.getCourseName()
+				+ " <- course.getCourseName()   searchCourseNotAssignTeacherList()   CourseController.java");
+		
+		List<Map<String, Object>> courseNotAssignList =
+				courseService.courseNotAssignmentTeacherSimpleList(course);
+		// 강좌 테이블과 강사 테이블을 서로 조인하여
+		// 강사가 배정되지 않은 강좌 목록을 가지고 온다. (간단한 정보만 가져온다.)
+		// 강좌코드, 강좌명, 과목명, 변경여부, 강좌등록일
+		
+		List<Subject> subjectList = courseManageService.subjectList();
+		// 샐렉트박스에 넣어줄 과목 리스트를 가져온다.
+		
+		
+		model.addAttribute("courseNotAssignList", courseNotAssignList);
+		// 강사가 배정되지않은 강좌 리스트
+		
+		model.addAttribute("courseNotAssignListSize", courseNotAssignList.size());
+		// 강사가 배정되지않은 강좌의 존재여부를 판단할 리스트 사이즈
+		
+		model.addAttribute("subjectList", subjectList);
+		// 샐랙트박스에 넣어줄 과목리스트
+		
+		return "/view/lesson/course/listCourseNotAssignTeacher";
+	}
+	
+	
+	// 관리자 : 강사 배정안된 강좌 강사 배정폼 이동
+	@GetMapping("/updateCourseAssignTeacher")
+	public String updateCourseAssignTeacher(
+			 Teacher teacher
+			,MemberSearchVO memberSearchVO
+			,Model model) {
+		
+		List<Map<String, Object>> courseList = courseService.courseOneOrList();
+		// 전체 강좌 리스트를 가져온다.
+		
+		List<Map<String, Object>> teacherList = memberService.memberInfoList(memberSearchVO);
+		// 샐랙트박스에 넣어줄 강사 리스트
+		
+		model.addAttribute("courseList", courseList);
+		// 샐랙트박스에 넣어줄 강좌 리스트를 넣어준다.
+		
+		model.addAttribute("teacherList", teacherList);
+		// 샐랙트박스에 넣어줄 강사 리스트를 넣어준다.
+		
+		if(teacher.getCourseNo() != null) {
+			// 강사 배정안된 강좌리스트에서 강사배정버튼을 눌러 이동한 것이라면
+			
+			model.addAttribute("courseNo", teacher.getCourseNo());
+			// 모델객체에 강좌코드를 넣어준다.
+		}
+		
+		return "/view/lesson/course/addCourseAssignTeacher";
+	}
+	
+	
+	// 강좌 강사 배정 처리
+	@PostMapping("/updateCourseAssignTeacher")
+	public String updateCourseAssignTeacher(
+			 Teacher teacher
+			,Model model
+			,RedirectAttributes redirectAttributes) {
+		
+		String message = teacherInfoService.updateTeacher(teacher);
+		// 강사 테이블에 강좌 강사 추가처리 후 메세지 반환
+		
+		String path = "/view/lesson/course/addCourseAssignTeacher";
+		// 강사테이블에 강좌 강사 배정 추가에 실패했을 경우
+		// 다시 강좌 강사 배정 처리하는 폼으로 이동하게 초기화한다.
+		
+		if(message != null) {
+			// 리턴받은 메세지에 값이 있다면 강좌 강사 배정추가에 실패했다는 뜻이다.
+			
+			redirectAttributes.addAttribute("memberLevel", "강사");
+			// 회원 로그인 테이블에서 권한이 강사인 사람들만 가져오기 위해서 검색 키워드를 넣어준다.
+			
+		} else {
+			// 리턴받은 메세지가 널이라면 강좌 강사 배정추가에 성공했다는 뜻이다.
+			path = "redirect:/courseAssignTeacherList";
+			// 강사가 배정된 강좌 리스트로 이동한다.
+		} 
+		
+		return path;
+	}
+	
+	
+	
+	
+	
+	// 관리자 : 강사가 배정된 강좌 리스트
+	@GetMapping("/courseAssignTeacherList")
+	public String courseAssignTeacherList(Model model) {
+		
+		List<Map<String, Object>> courseTeacherList = 
+				courseService.courseAssignTeacherList();
+		// 강사가 배정된 강좌리스트 가져오기
+		
+		model.addAttribute("courseTeacherList", courseTeacherList);
+		// 화면에 뿌려줄 강좌 강사 배정 리스트 
+		
+		return "/view/lesson/course/listCourseTeacher";
+	}
+	
+	
+	// 관리자 : 강사가 배정된 강좌 검색결과 리스트
+	@GetMapping("/searchCourseAssignTeacherList")
+	public String searchCourseAssignTeacherList(Course course, Model model) {
+		
+		System.out.println(course.getSubjectNo()
+				+ " <- course.getSubjectNo()   searchCourseAssignTeacherList   CourseController.java");
+		
+		System.out.println(course.getCourseName()
+				+ " <- course.getCourseName()   searchCourseAssignTeacherList   CourseController.java");
+		
+		
+		List<Map<String, Object>> searchCourseTeacherList =
+				courseService.courseAssignTeacherList(course);
+		// 입력한 검색 키워드로 강좌 검색결과리스트 가져오기
+		
+		model.addAttribute("courseTeacherList", searchCourseTeacherList);
+		
+		return "/view/lesson/course/listCourseTeacher";
+	}
+	
 	
 	
 	
@@ -300,18 +485,21 @@ public class CourseController {
 		
 		if(message == null) {
 			// 리턴받은 메세지가 널이라면 강좌강의실 배정 추가에 성공했다는 뜻이다.
-			path = "redirect:/courseNotAssignmentTeacherList";
-			// 강좌강의실 배정코드를 처음 추가할 경우 강사가 배정이 안되어 있으므로
-			// 강사가 배정이 안된 강좌 목록으로 이동해야 한다.
+			
+			path = "redirect:/courseAssignList";
+			// 강사가 배정된 강좌강의실 리스트로 이동
 		}
 		
 		return path;
 	}
 	
 	
-	// 관리자 : 강사가 배정이 안된 강좌목록
-	@GetMapping("/courseNotAssignmentTeacherList")
-	public String courseNotAssignmentTeacherList(Model model) {
+	
+	
+	
+	// 관리자 : 강사가 배정이 안된 강좌강의실 배정 리스트
+	@GetMapping("/notTeacherCourseAssignList")
+	public String notTeacherCourseAssignList(Model model) {
 		
 		List<Map<String, Object>> courseNotAssignList =
 				courseService.courseNotAssignmentTeacherSimpleList();
@@ -362,14 +550,14 @@ public class CourseController {
 		
 		model.addAttribute("subjectList", subjectList);
 		
-		return "/view/lesson/courseAssign/listCourseNotAssignTeacher";
+		return "/view/lesson/courseAssign/listNotTeacherCourseAssign";
 	}
 	
 	
-	// 관리자 : 강사가 배정이 안된 강좌를 과목코드나 강좌명으로 검색한 결과 리스트
-	@GetMapping("/searchCourseNotAssignTeacherList")
-	public String searchCourseNotAssignTeacherList(Course course, Model model) {
-		
+	// 관리자 : 강사가 배정이 안된 강좌배정에서 과목코드나 강좌명으로 검색한 결과 리스트
+	@GetMapping("/searchNotTeacherCourseAssignList")
+	public String searchNotTeacherCourseAssignList(Course course, Model model) {
+				  
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("subjectNo", course.getSubjectNo());
 		map.put("courseName", course.getCourseName());
@@ -396,7 +584,7 @@ public class CourseController {
 		model.addAttribute("subjectList", subjectList);
 		// 검색하기위해 사용될 과목리스트를 넣어준다.
 		
-		return "/view/lesson/courseAssign/listCourseNotAssignTeacher";
+		return "/view/lesson/courseAssign/listNotTeacherCourseAssign";
 	}
 	
 	
@@ -462,7 +650,7 @@ public class CourseController {
 		int result = courseService.updateCourseNotAssignTeacher(assignment, course);
 		// 해당 강좌 수정 처리 후 수정 처리된 숫자
 		
-		String path = "redirect:/courseNotAssignmentTeacherList";
+		String path = "redirect:/notTeacherCourseAssignList";
 		// 강좌 수정에 성공했을 경우 강사가 배정이 안된 강좌목록 리스트로 이동한다.
 		
 		if((assignment.getCourseAssignmentIsChanged().equals("유") || course.getCourseIsChanged().equals("유"))
@@ -488,7 +676,7 @@ public class CourseController {
 	}
 	
 	
-	// 관리자 : 강사 배정안된 강좌배정만 삭제 처리
+	// 관리자 : 강좌배정 삭제 처리
 	@GetMapping("/deleteCourseAssign")
 	public String deleteCourseAssign(
 			 @RequestParam(value = "courseAssignmentNo") String courseAssignmentNo) {
@@ -498,7 +686,8 @@ public class CourseController {
 		
 		System.out.println(message + " <- message   deleteCourseNotAssignTeacher()   CourseController.java");
 		
-		return "redirect:/courseNotAssignmentTeacherList";
+		return "redirect:/courseAssignList";
+		// 강의실과 강사가 배정된 강좌 리스트로 이동한다.
 	}
 	
 	
@@ -577,7 +766,7 @@ public class CourseController {
 	
 	// 관리자 : 강좌 강의실 배정 및 강사 강좌 배정 수정 상세화면 (강좌상세화면)
 	@GetMapping("/updateCourseAssign")
-	public String updateCourse(CourseRoomSearchVO courseRoomSearchVO, Model model) {
+	public String updateCourseAssign(CourseRoomSearchVO courseRoomSearchVO, Model model) {
 		
 		System.out.println(courseRoomSearchVO.getCourseAssignmentNo() + " <- updateCourse()   CourseController.java");
 		System.out.println(courseRoomSearchVO.getMemberId() + " <- updateCourse()   CourseController.java");
@@ -664,7 +853,7 @@ public class CourseController {
 	
 	// 관리자 : 강좌 강의실 배정 및 강사 강좌 배정 수정 처리
 	@PostMapping("updateCourseAssign")
-	public String updateCourse(
+	public String updateCourseAssign(
 			 CourseRoomAssignment assignment
 			,Course course
 			,Teacher teacher

@@ -43,6 +43,7 @@
 			 login.member_id				AS memberId
 			,login.member_level				AS memberLevel
 			,mem.member_name				AS memberName
+			,mem.member_birth				AS memberBirth
 			,mem.member_email				AS memberEmail
 			,mem.member_phone				AS memberPhone
 			,tea.course_no					AS courseNo
@@ -73,9 +74,12 @@
 			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Teacher">
 		update
 			teacher
-		<trim prefix="set">
+		<trim prefix="set" prefixOverrides=",">
 			<if test="courseNo != null and courseNo neq ''.toString()">
 				 course_no					= #{courseNo}
+			</if>
+			<if test="teacherReasonForChange != null and teacherReasonForChange neq ''.toString()">
+				,teacher_reason_for_change	= #{teacherReasonForChange}
 			</if>
 				,teacher_is_changed			= #{teacherIsChanged}
 				,teacher_changed_date		= curdate()
