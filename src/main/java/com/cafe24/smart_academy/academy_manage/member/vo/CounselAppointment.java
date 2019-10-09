@@ -12,6 +12,12 @@ public class CounselAppointment {
 	private String		counselAppointmentWhether;			// 예약여부
 	private Date		counselAppointmentRegisteredDate;	// 상담예약 등록일
 	
+	
+	////////////////////////////////////////////////////
+	// 검색 키워드 변수 선언
+	private String counselTypeNo;		// 상담구분테이블의 상담구분코드(기본키)
+	
+	
 	public String getCounselHistoryNo() {
 		return counselHistoryNo;
 	}
@@ -66,4 +72,12 @@ public class CounselAppointment {
 				" <- counselAppointmentRegisteredDate   setCounselAppointmentRegisteredDate()   Counsel.java");
 		this.counselAppointmentRegisteredDate = counselAppointmentRegisteredDate;
 	}
+	public String getCounselTypeNo() {
+		return counselTypeNo;
+	}
+	public void setCounselTypeNo(String counselTypeNo) {
+		System.out.println(counselTypeNo + " <- counselTypeNo   setCounselTypeNo()   Counsel.java");
+		this.counselTypeNo = counselTypeNo;
+	}
+	
 }

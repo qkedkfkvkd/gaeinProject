@@ -1,6 +1,6 @@
 package com.cafe24.smart_academy.academy_manage.course.vo;
 
-// 강좌강의실배정 리스트 검색 객체
+// 강좌강의실배정, 시간표 리스트 검색 객체
 public class CourseRoomSearchVO {
 	private String	subjectNo;			// 과목테이블의 과목코드(기본키)
 	private String	courseNo;			// 강좌테이블의 강좌코드(기본키)
@@ -8,6 +8,7 @@ public class CourseRoomSearchVO {
 	private String	courseAssignmentNo;	// 강좌 강의실 배정 테이블의 강좌배정코드(기본키)
 	private String	memberId;
 	// 로그인, 회원신상정보, 강사, 강사개인정보 테이블들의 회원아이디(기본키)
+	private String scheduleApprovalStatus;	// 시간표테이블의 관리자 승인여부
 	
 	public String getSubjectNo() {
 		return subjectNo;
@@ -45,4 +46,13 @@ public class CourseRoomSearchVO {
 		System.out.println(memberId + " <- memberId   setMemberId()   CourseSearchVO.java");
 		this.memberId = memberId;
 	}
+	public String getScheduleApprovalStatus() {
+		return scheduleApprovalStatus;
+	}
+	public void setScheduleApprovalStatus(String scheduleApprovalStatus) {
+		System.out.println(scheduleApprovalStatus
+				+ " <- scheduleApprovalStatus   setScheduleApprovalStatus()   CourseSearchVO.java");
+		this.scheduleApprovalStatus = scheduleApprovalStatus;
+	}
+	
 }

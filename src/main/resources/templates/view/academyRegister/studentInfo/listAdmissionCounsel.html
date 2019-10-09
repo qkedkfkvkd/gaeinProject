@@ -4,20 +4,21 @@
       layout:decorate="~{layout/default}">
 
 <th:block layout:fragment="customTitle">
-	<title>미납현황 목록</title>
+	<title>신입생 목록</title>
 </th:block>
 
 <th:block layout:fragment="customContents">
 	<div class="page-header">
-		<div class="col-md-10 col-md-offset-3">
-			<h3>미납현황 목록</h3>
+		<div class="col-md-11 col-md-offset-3">
+			<h3>신입생 목록</h3>
 		</div>
 	</div>
 	
 	<div class="col-sm-11 col-md-offset-3">
 		<div class="row">
 			<div class="col-md-6">
-				<form action="/searchStudentInfoNotPaymentState" method="post">
+				<form action="/searchAdmissionCounselList" method="post">
+					<input type="hidden" name="memberLevel" value="학생">
 					<div class="form-group">
 						<label class="sr-only" for="searchMemberName">학생명</label>
 						<input type="text" class="form-control" id="searchMemberName"
@@ -43,37 +44,39 @@
 			</div>
 		</div>
 		
-		
 		<table class="table table-striped">
 			<thead>
 				<tr>
 					<th>번호</th>
-					<th>아이디</th><!-- 아이디에 a태그 링크 걸어서 결제정보 수정화면 이동하게하기. -->
+					<th>아이디</th>
 					<th>학생명</th>
-					<th>납부일자</th>
-					<th>결제수단</th>
-					<th>내용</th>
-					<th>납부예정액</th>
-					<th>실납부액</th>
-					<th>마지막결제일</th>
+					<th>생년월일</th>
+					<th>이메일</th>
+					<th>휴대폰</th>
+					<th>등록일</th>
+					<th>상담하기</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="payment, lists : ${notPaymentStateList}"
-					th:if="${notPaymentStateListSize != 0}">
+				<tr th:each="member, lists : ${admissionCounselList}"
+					th:if="${admissionCounselListSize != 0}">
 					<td th:text="${lists.count}"></td>
-					<td th:text="${payment.memberId}"></td>
-					<td th:text="${payment.memberName}"></td>
-					<td th:text="${payment.paymentDay}"></td>
-					<td th:text="${payment.paymentWay}"></td>
-					<td th:text="${payment.paymentContent}"></td>
-					<td th:text="${payment.paymentScheduleMoney}"></td>
-					<td th:text="${payment.actualityPaymentMoney}"></td>
-					<td th:text="${#calendars.format(payment.paymentModificationDate,'yyyy-MM-dd')}"></td>
+					<td th:text="${member.memberId}"></td>
+					<td th:text="${member.memberName}"></td>
+					<td th:text="${member.memberBirth}"></td>
+					<td th:text="${member.memberEmail}"></td>
+					<td th:text="${member.memberPhone}"></td>
+					<td th:text="${#calendars.format(member.memberRegisteredDate,'yyyy-MM-dd')}"></td>
+					<td>
+						<button type="button" class="btn btn-success btn-sm"
+								th:onclick="'window.location.href = \'' + @{/addAdmissionCounsel(memberId=${member.memberId})} + '\''">
+							입학상담
+						</button>
+					</td>
 				</tr>
 				
-				<tr th:unless="${notPaymentStateListSize != 0}">
-					<td colspan="7">미납된 학생이 없습니다.</td>
+				<tr th:unless="${admissionCounselListSize != 0}">
+					<td colspan="8">새로 등록된 신입생이 없습니다.</td>
 				</tr>
 			</tbody>
 		</table>

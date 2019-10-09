@@ -143,6 +143,12 @@ public class MemberService {
 	}
 	
 	
+	// 관리자 : 상담구분코드 검색결과 리스트 가져오기
+	public List<CounselType> counselTypeList(String counselTypeNo) {
+		return memberMapper.counselTypeList(counselTypeNo);
+	}
+	
+	
 	// 관리자 : 상담구분코드 상세 보기
 	public CounselType detailCounselTypeByCounselTypeNo(String counselTypeNo) {
 		return memberMapper.detailCounselTypeByCounselTypeNo(counselTypeNo);

@@ -8,7 +8,7 @@ public class CourseSchedule {
 	private String	courseAssignmentNo;			// 강좌배정코드(강좌 강의실 배정 테이블 참조 외래키 1:다 대응)
 	private String	day;						// 요일
 	private String	period;						// 교시
-	private String	scheduleApprovalStatus;		// 승인여부
+	private String	scheduleApprovalStatus;		// 승인여부 -> ENUM('유','무')
 	private Date	scheduleRegisteredDate;		// 등록일
 	private Date	scheduleModificationDate;	// 최종수정일자
 	

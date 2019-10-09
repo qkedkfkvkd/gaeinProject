@@ -7,7 +7,7 @@ public class MemberSearchVO {
 	private String	memberName;					// 이름 검색
 	private String	startJoinDate;				// 가입기간 검색 (시작 날짜)
 	private String	endJoinDate;				// 가입기간 검색 (마지막 날짜)
-	
+	private String	keyWord;					// 검색 키워드 문자열
 	
 	public String getMemberId() {
 		return memberId;
@@ -43,5 +43,12 @@ public class MemberSearchVO {
 	public void setEndJoinDate(String endJoinDate) {
 		System.out.println(endJoinDate + " <- endJoinDate   setEndJoinDate()   MemberSearchVO.java");
 		this.endJoinDate = endJoinDate;
+	}
+	public String getKeyWord() {
+		return keyWord;
+	}
+	public void setKeyWord(String keyWord) {
+		System.out.println(keyWord + " <- keyWord   setKeyWord()   MemberSearchVO.java");
+		this.keyWord = keyWord;
 	}
 }

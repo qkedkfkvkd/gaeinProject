@@ -157,7 +157,7 @@
 		<!-- 이름을 입력했을 경우 -->
 		<if test="memberName != null and memberName neq ''.toString()">
 		and
-			me.member_name = #{memberName}
+			me.member_name like CONCAT('%',#{memberName},'%')
 		</if>
 		
 		<!-- 시작 가입기간만 입력했을 경우 -->
@@ -283,7 +283,9 @@
 	
 	
 	<!-- 관리자 : 상담구분코드 리스트 가져오기 -->
+	<!-- 관리자 : 상담구분코드 검색결과 리스트 가져오기 -->
 	<select id="counselTypeList"
+			parameterType="String"
 			resultType="com.cafe24.smart_academy.academy_manage.member.vo.CounselType">
 		select
 			 counsel_type_no				AS counselTypeNo
@@ -291,7 +293,11 @@
 			,counsel_type_is_changed		AS counselTypeIsChanged
 			,counsel_type_registered_date	AS counselTypeRegisteredDate
 		from
-			 counsel_type
+			counsel_type
+		<if test="counselTypeNo != null and counselTypeNo neq ''.toString()">
+		where
+			counsel_type_no = #{counselTypeNo}
+		</if>
 	</select>
 	
 	

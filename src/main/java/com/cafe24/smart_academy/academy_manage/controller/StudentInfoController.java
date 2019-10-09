@@ -279,6 +279,31 @@ public class StudentInfoController {
 	}
 	
 	
+	// 관리자 : 수납현황 리스트
+	// (결제 테이블에서 납부예정금액이 0이고 실납부금액이 0보다 큰 리스트)
+	@GetMapping("/paymentStateList")
+	public String paymentStateList(Model model) {
+		
+		List<Map<String, Object>> paymentStateList =
+				studentInfoService.paymentStateList();
+		// 납부예정금액이 0보다 큰 값을 가진 모든 리스트를 가져온다.
+		
+		model.addAttribute("paymentStateList", paymentStateList);
+		// 화면에 뿌려주기위해 모델 객체에 넣는다.
+		
+		model.addAttribute("paymentStateListSize", paymentStateList.size());
+		// 내용의 존재여부를 판단하기 위한 리스트의 사이즈
+		
+		model.addAttribute("title", "수납현황 목록");
+		// 화면의 제목부분에 뿌려줄 문자열 입력
+		
+		model.addAttribute("paymentStateListSizeZeroMessage", "수납한 학생이 없습니다.");
+		// 리스트의 사이즈가 제로일 때 화면에 뿌려줄 메세지
+		
+		return "/view/academyRegister/studentInfo/listPaymentState";
+	}
+	
+	
 	// 관리자 : 미납현황 리스트(결제 테이블에서 납부예정금액이 0보다 큰 리스트)
 	@GetMapping("/notPaymentStateList")
 	public String notPaymentStateList(Model model) {
@@ -287,14 +312,56 @@ public class StudentInfoController {
 				studentInfoService.notPaymentStateList();
 		// 납부예정금액이 0보다 큰 값을 가진 모든 리스트를 가져온다.
 		
-		model.addAttribute("notPaymentStateList", notPaymentStateList);
+		model.addAttribute("paymentStateList", notPaymentStateList);
 		// 화면에 뿌려주기위해 모델 객체에 넣는다.
 		
-		model.addAttribute("notPaymentStateListSize", notPaymentStateList.size());
+		model.addAttribute("paymentStateListSize", notPaymentStateList.size());
 		// 내용의 존재여부를 판단하기 위한 리스트의 사이즈
 		
-		return "/view/academyRegister/studentInfo/listNotPaymentState";
+		model.addAttribute("title", "미납현황 목록");
+		// 화면의 제목부분에 뿌려줄 문자열 입력
+		
+		model.addAttribute("paymentStateListSizeZeroMessage", "미납된 학생이 없습니다.");
+		// 리스트의 사이즈가 제로일 때 화면에 뿌려줄 메세지
+		
+		return "/view/academyRegister/studentInfo/listPaymentState";
 	}
+	
+	
+	// 관리자 : 수납현황 혹은 미납현황 검색결과 리스트
+	@GetMapping("/searchStudentInfoPaymentState")
+	public String searchStudentInfoPaymentState(
+			 @RequestParam(value = "title") String title
+			,@RequestParam(value = "paymentStateListSizeZeroMessage") String paymentStateListSizeZeroMessage
+			,MemberSearchVO memberSearchVO
+			,Model model) {
+		
+		if(title.contains("수납")) { // 수납현황에서 검색했을 경우
+			memberSearchVO.setKeyWord("payment");
+			
+		} else { // 미납현황에서 검색했을 경우
+			memberSearchVO.setKeyWord("notPayment");
+		}
+		
+		List<Map<String, Object>> paymentStateList =
+				studentInfoService.paymentStateList(memberSearchVO);
+		// 입력한 회원명 혹은 가입기간과 일치하는 모든 리스트를 가져온다.
+		
+		model.addAttribute("paymentStateList", paymentStateList);
+		// 화면에 뿌려주기위해 모델 객체에 넣는다.
+		
+		model.addAttribute("paymentStateListSize", paymentStateList.size());
+		// 내용의 존재여부를 판단하기 위한 리스트의 사이즈
+		
+		model.addAttribute("title", title);
+		// 화면의 제목부분에 뿌려줄 문자열 입력
+		
+		model.addAttribute("paymentStateListSizeZeroMessage", paymentStateListSizeZeroMessage);
+		// 리스트의 사이즈가 제로일 때 화면에 뿌려줄 메세지
+		
+		return "/view/academyRegister/studentInfo/listPaymentState";
+	}
+	
 	
 	
 	
@@ -373,6 +440,65 @@ public class StudentInfoController {
 	}
 	
 	
+	// 관리자 : 학생 한명의 상담관리 페이지 검색 결과 리스트
+	@PostMapping("/searchStudentInfoCounselManage")
+	public String searchStudentInfoCounselManage(CounselAppointment counselAppointment, Model model) {
+		
+		List<Map<String, Object>> counselHistoryList = 
+				studentInfoService.oneStudentCounselHistoryOneOrList(counselAppointment);
+		// 화면에 보여줄 해당 학생 상담 내역 리스트
+		
+//		if(counselHistoryList.size() == 0) { // 해당 학생의 상담 내역이 존재하지 않는다면
+//			counselHistoryList = null; // 객체참조변수에 할당된 주소값을 날려버린다.
+//		}
+		
+		System.out.println(counselHistoryList + " <- counselHistoryList   oneStudentCounselManage()   StudentInfoController.java");
+	
+		System.out.println("상담내역리스트 크기 : " + counselHistoryList.size());
+		
+		counselAppointment.setCounselWhether("무");
+		// 상담 여부 '무' 조건쿼리를 넣기위한 글자
+		
+		List<Map<String, Object>> counselAppointmentList = 
+				studentInfoService.counselAppointmentOneOrList(counselAppointment);
+		// 화면에 보여줄 해당 학생 상담예약현황 리스트
+		
+		
+//		if(counselAppointmentList.size() == 0) { // 해당 학생의 상담예약현황이 존재하지 않는다면
+//			counselAppointmentList = null; // 객체참조변수에 할당된 주소값을 날려버린다.
+//		}
+		
+		System.out.println(counselAppointmentList + " <- counselAppointmentList   oneStudentCounselManage()   StudentInfoController.java");
+		
+		System.out.println("상담예약현황리스트 크기 : " + counselAppointmentList.size());
+		
+		
+		model.addAttribute("studentInfo", studentInfoService.studentInfoIdNameBirthById(counselAppointment.getMemberId()));
+		// 서비스에서 아이디로 해당 학생의 아이디, 이름과 생년월일만 가져와서 바로 모델에 넣어준다.
+		
+		model.addAttribute("counselTypeList", memberService.counselTypeList());
+		// 검색할때 사용할 상담구분테이블에 있는 모든 객체 가져오기
+		
+		//model.addAttribute("counselResultList", memberService.counselResultList());
+		// 검색할때 사용할 상담결과테이블에 있는 모든 객체 가져오기.
+		
+		model.addAttribute("counselHistoryList", counselHistoryList);
+		// 화면에 보여줄 해당 학생 상담내역 리스트
+		
+		model.addAttribute("counselHistoryListSize", counselHistoryList.size());
+		// 상담 내역을 뿌려줄 것인지, 상담내역이 없다는 메세지를 뿌려줄 것인지 판단용
+		
+		model.addAttribute("counselAppointmentList", counselAppointmentList);
+		// 화면에 보여줄 해당 학생 상담예약현황 리스트
+		
+		model.addAttribute("counselAppointmentListSize", counselAppointmentList.size());
+		// 상담예약현황을 뿌려줄 것인지, 상담예약현황이 없다는 메세지를 뿌려줄 것인지 판단용
+		
+		return "/view/academyRegister/studentInfo/counselManage";
+	}
+	
+	
+	
 	
 	
 	// 학생 : 상담내역코드 중복확인
@@ -402,6 +528,136 @@ public class StudentInfoController {
 		
 		return map;
 	}
+	
+	
+	// 관리자 : 신입생상담 리스트 이동
+	@GetMapping("/admissionCounselList")
+	public String admissionCounselList(Model model) {
+		// MemberSearchVO 객체는 검색폼에서 입력후 검색버튼을 눌렀다면 이 객체에 값이 담긴다.
+		
+		List<Member> admissionCounselList =
+				studentInfoService.admissionCounselList();
+		// 학원에 입학하면서 처음 받는 상담이 입학상담이므로
+		// 상담예약 테이블에 해당 회원의 레코드가 존재하지 않으면
+		// 전부 신입생으로 간주한다.
+		
+		System.out.println(admissionCounselList.toString()
+				+ " <- admissionCounselList.toString()   admissionCounselList()   StudentInfoController.java");
+		
+		System.out.println(admissionCounselList.size()
+				+ " <- admissionCounselList.size()   admissionCounselList()   StudentInfoController.java");
+		
+		
+		model.addAttribute("admissionCounselList", admissionCounselList);
+		// 화면에 보여줄 신입생 리스트를 넣어준다.
+		
+		model.addAttribute("admissionCounselListSize", admissionCounselList.size());
+		// 리스트의 길이로 신입생의 존재 여부를 판단한다.
+		
+		return "/view/academyRegister/studentInfo/listAdmissionCounsel";
+	}
+	
+	
+	// 관리자 : 신입생상담 검색결과 리스트
+	@PostMapping("/searchAdmissionCounselList")
+	public String searchAdmissionCounselList(MemberSearchVO memberSearchVO, Model model) {
+		// MemberSearchVO 객체는 검색폼에서 입력후 검색버튼을 눌렀다면 이 객체에 값이 담긴다.
+		
+		List<Member> admissionCounselList =
+				studentInfoService.admissionCounselList(memberSearchVO);
+		// 학원에 입학하면서 처음 받는 상담이 입학상담이므로
+		// 상담예약 테이블에 해당 회원의 레코드가 존재하지 않으면
+		// 전부 신입생으로 간주한다.
+		
+		System.out.println(admissionCounselList.toString()
+				+ " <- admissionCounselList.toString()   admissionCounselList()   StudentInfoController.java");
+		
+		System.out.println(admissionCounselList.size()
+				+ " <- admissionCounselList.size()   admissionCounselList()   StudentInfoController.java");
+		
+		
+		model.addAttribute("admissionCounselList", admissionCounselList);
+		// 화면에 보여줄 신입생 리스트를 넣어준다.
+		
+		model.addAttribute("admissionCounselListSize", admissionCounselList.size());
+		// 리스트의 길이로 신입생의 존재 여부를 판단한다.
+		
+		return "/view/academyRegister/studentInfo/listAdmissionCounsel";
+	}
+	
+	
+	// 관리자 : 입학상담 입력 폼 이동
+	@GetMapping("/addAdmissionCounsel")
+	public String addAdmissionCounsel(
+			 @RequestParam(value = "memberId") String memberId
+			,Model model) {
+		
+		Member member = memberService.memberSimpleInfo(memberId);
+		// 해당 학생의 간단한 정보를 가져온다.
+		// 아이디, 이름, 생년월일
+		
+		List<CounselType> counselTypeList = memberService.counselTypeList();
+		// 샐랙트 박스에 넣어줄 전체 상담구분코드 리스트 가져오기
+		// (기본키 - 상담구분코드)와 상담구분명만 가져온다.
+		
+		model.addAttribute("member", member);
+		// 학생의 정보를 넣어준다.
+		
+		model.addAttribute("counselTypeList", counselTypeList);
+		// 상담구분코드 리스트를 넣어준다.
+		
+		return "/view/academyRegister/studentInfo/addAdmissionCounsel";
+	}
+	
+	
+	// 관리자 : 입학상담생 상담내역 입력 처리
+	@PostMapping("/addAdmissionCounsel")
+	public String addAdmissionCounsel(
+			 CounselAppointment appointment
+			,Counsel counsel
+			,Model model
+			,RedirectAttributes redirectAttributes) {
+		
+		String appointmentMessage = studentInfoService.addCounselAppointment(appointment);
+		// 상담예약 테이블 추가 처리
+		
+		String counselMessage = studentInfoService.addCounsel(counsel);
+		// 상담 테이블 추가 처리
+		
+		System.out.println(appointmentMessage + " <- appointmentMessage   addAdmissionCounsel()   StudentInfoController.java");
+		
+		System.out.println(counselMessage + " <- counselMessage   addAdmissionCounsel()   StudentInfoController.java");
+		
+		String path = "redirect:/counselManage";
+		// 입력 성공시 해당 학생 상담 관리 페이지로 이동한다.
+		
+		if(counselMessage != null) {
+			// 메세지가 널이 아니다. 메세지에 값이 존재한다면 입력 실패이다.
+			
+			path = "/view/academyRegister/studentInfo/addAdmissionCounsel";
+			// 상담내역을 다시 입력해야한다.
+		}
+		
+		redirectAttributes.addAttribute("memberId", appointment.getMemberId());
+		// 입력 성공 시 학생 상담관리 페이지로 리다이렉트하면서 회원 아이디를 같이 넘겨준다.
+		// 입력 실패 시 입학상담내역을 다시 입력하는 폼으로 리다이렉트하면서 회원 아이디를 넘겨준다.
+		
+		return path;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	// 관리자 : 상담예약현황 리스트 이동

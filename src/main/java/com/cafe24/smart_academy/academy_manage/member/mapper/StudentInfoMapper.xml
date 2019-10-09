@@ -177,8 +177,14 @@
 	</update>
 	
 	
+	<!-- 관리자 : 수납현황 리스트 -->
+	<!-- (결제 테이블에서 납부예정금액이 0이고 실납부금액이 0보다 큰 리스트) -->
 	<!-- 관리자 : 미납현황 리스트(결제 테이블에서 납부예정금액이 0보다 큰 리스트) -->
-	<select id="notPaymentStateList" resultType="map">
+	<!-- 관리자 : 수납 혹은 미납 현황 검색결과 리스트 -->
+	<!-- (키워드: 이름, 시작가입기간, 마지막가입기간) -->
+	<select id="paymentStateList"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO"
+			resultType="map">
 		select
 			 login.member_id				AS memberId
 			,login.member_level				AS memberLevel
@@ -200,9 +206,42 @@
 			login.member_id = mem.member_id
 		and
 			login.member_id = pay.member_id
+		<if test="keyWord != null and keyWord eq 'payment'.toString()">
 		and
-			payment_schedule_money > 0
+			pay.payment_schedule_money = 0
+		and
+			pay.actuality_payment_money > 0
+		</if>
+		<if test="keyWord != null and keyWord eq 'notPayment'.toString()">
+		and
+			pay.payment_schedule_money > 0
+		</if>
+		
+		<!-- 회원 이름을 입력했을 경우 -->
+		<if test="memberName != null and memberName neq ''.toString()">
+		and
+			mem.member_name like CONCAT('%',#{memberName},'%')
+		</if>
+		
+		<!-- 시작 가입기간만 입력했을 경우 -->
+		<if test="startJoinDate != null and startJoinDate neq ''.toString() and
+				  (endJoinDate == null or endJoinDate eq ''.toString())">
+		and
+			mem.member_registered_date >= #{startJoinDate}
+		</if>
+		
+		<!-- 시작 가입기간부터 마지막 가입기간까지 입력했을 경우 -->
+		<if test="startJoinDate != null and startJoinDate neq ''.toString() and
+				  endJoinDate != null and endJoinDate neq ''.toString()">
+		and
+			mem.member_registered_date
+		between
+			#{startJoinDate}
+		and
+			#{endJoinDate}
+		</if>
 	</select>
+	
 	
 	
 	
@@ -234,6 +273,78 @@
 		where
 			counsel_history_no = #{counselHistoryNo}
 	</select>
+	
+	
+	
+	
+	
+	<!-- 관리자 : 신입생상담 리스트 가져오기 -->
+	<!-- 학원에 입학하면서 처음 받는 상담이 입학상담이므로 -->
+	<!-- 상담예약 테이블에 해당 회원의 레코드가 존재하지 않으면 -->
+	<!-- 전부 신입생으로 간주한다. -->
+	<select id="admissionCounselMemberIdList" resultType="String">
+		select
+			login.member_id		AS memberId
+		from
+			member_login			AS login
+		left outer join
+			counsel_appointment		AS ca
+		on
+			login.member_id = ca.member_id
+		where
+			ca.counsel_history_no is null
+		and
+			login.member_level = '학생'
+	</select>
+	
+	
+	<!-- 관리자: 입학 상담해야할 신입생 리스트 가져오기 -->
+	<select id="admissionCounselList"
+			parameterType="map"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.Member">
+		select
+			 member_id					AS memberId
+			,member_name				AS memberName
+			,member_birth				AS memberBirth
+			,member_email				AS memberEmail
+			,member_phone				AS memberPhone
+			,member_registered_date		AS memberRegisteredDate
+		from
+			member
+		where
+			member_id in
+		<if test="memberIdList != null">
+			<foreach collection="memberIdList" item="item" open="(" close=")" separator=",">
+			#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<!-- 회원 이름을 입력했을 경우 -->
+		<if test="memberName != null and memberName neq ''.toString()">
+		and
+			member_name like CONCAT('%',#{memberName},'%')
+		</if>
+		
+		<!-- 시작 가입기간만 입력했을 경우 -->
+		<if test="startJoinDate != null and startJoinDate neq ''.toString() and
+				  (endJoinDate == null or endJoinDate eq ''.toString())">
+		and
+			member_registered_date >= #{startJoinDate}
+		</if>
+		
+		<!-- 시작 가입기간부터 마지막 가입기간까지 입력했을 경우 -->
+		<if test="startJoinDate != null and startJoinDate neq ''.toString() and
+				  endJoinDate != null and endJoinDate neq ''.toString()">
+		and
+			member_registered_date
+		between
+			#{startJoinDate}
+		and
+			#{endJoinDate}
+		</if>
+	</select>
+	
+	
+	
 	
 	
 	<!-- 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담내역 리스트 -->
@@ -281,6 +392,14 @@
 		<if test="memberId != null and memberId neq ''.toString()">
 		and
 			login.member_id = #{memberId}
+		</if>
+		<if test="counselTypeNo != null and counselTypeNo neq ''.toString()">
+		and
+			ct.counsel_type_no = #{counselTypeNo}
+		</if>
+		<if test="counselResultNo != null and counselResultNo neq ''.toString()">
+		and
+			cr.counsel_result_no = #{counselResultNo}
 		</if>
 	</select>
 	

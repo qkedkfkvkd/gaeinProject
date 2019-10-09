@@ -68,13 +68,13 @@
 						</li>
 						
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/scheduleList(memberLevel='강사')}">전체시간표</a>
+							<a class="nav-link" th:href="@{/scheduleList(scheduleApprovalStatus='유', memberLevel='강사')}">전체시간표</a>
 							<!-- 시간표 오름차순으로 강좌별 시간표를 조회한다. -->
 							<!-- 강사권한의 시간표 작성할 때 참고하면서 작성한다. -->
 						</li>
 						
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/scheduleApprovalRequestList}">강좌시간표승인</a>
+							<a class="nav-link" th:href="@{/scheduleApprovalRequestList(scheduleApprovalStatus='무', memberLevel='강사')}">강좌시간표승인</a>
 							<!-- 시간표 오름차순으로 강좌별 시간표를 조회한다. -->
 							<!-- 강사권한의 시간표 작성할 때 참고하면서 작성한다. -->
 						</li>
@@ -111,7 +111,7 @@
 						</li>
 						
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/goodsList}">신입생상담</a>
+							<a class="nav-link" th:href="@{/admissionCounselList}">신입생상담</a>
 						</li>
 					</ul>
 				</div>
@@ -125,7 +125,7 @@
 				<div class="collapse" id="ui-payment">
 					<ul class="nav flex-column sub-menu">
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/addGoods}">수납현황</a>
+							<a class="nav-link" th:href="@{/paymentStateList}">수납현황</a>
 						</li>
 						
 						<li class="nav-item">

@@ -7,7 +7,9 @@
 <mapper namespace="com.cafe24.smart_academy.academy_manage.course.mapper.ScheduleMapper">
 	
 	<!-- 전체 강좌 시간표 가져오기 -->
-	<select id="scheduleList" resultType="map">
+	<select id="scheduleList"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO"
+			resultType="map">
 		select
 			 cs.schedule_no					AS scheduleNo
 			,cs.day							AS day
@@ -30,21 +32,46 @@
 			,member_login				AS login
 			,member						AS mem
 		where
-			cs.course_assignment_no	= cra.course_assignment_no
+			cs.course_assignment_no		= cra.course_assignment_no
 		and
-			cra.course_no			= co.course_no
+			cra.course_no				= co.course_no
 		and
-			co.subject_no			= sub.subject_no
+			co.subject_no				= sub.subject_no
 		and
-			cra.room_no				= aro.room_no
+			cra.room_no					= aro.room_no
 		and
-			tea.course_no			= co.course_no
+			tea.course_no				= co.course_no
 		and
-			tea.member_id			= login.member_id
+			tea.member_id				= login.member_id
 		and
-			login.member_id			= mem.member_id
+			login.member_id				= mem.member_id
 		and
-			login.member_level		= '강사'
+			login.member_level			= '강사'
+		and
+			cs.schedule_approval_status	= #{scheduleApprovalStatus}
+		<!-- 과목을 선택했을 경우 -->
+		<if test="subjectNo != null and subjectNo neq ''.toString()">
+		and
+			co.subject_no = #{subjectNo}
+		</if>
+		
+		<!-- 강좌를 선택했을 경우 -->
+		<if test="courseNo != null and courseNo neq ''.toString()">
+		and
+			cra.course_no = #{courseNo}
+		</if>
+		
+		<!-- 강의실을 선택했을 경우 -->
+		<if test="roomNo != null and roomNo neq ''.toString()">
+		and
+			cra.room_no = #{roomNo}
+		</if>
+		
+		<!-- 강사를 선택했을 경우 -->
+		<if test="memberId != null and memberId neq ''.toString()">
+		and
+			tea.member_id = #{memberId}
+		</if>
 		order by
 			cs.period
 		asc

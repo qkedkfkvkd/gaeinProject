@@ -240,6 +240,26 @@ public class MemberController {
 	}
 	
 	
+	// 관리자 : 상담구분코드 검색결과 리스트
+	@PostMapping("/searchCounselType")
+	public String searchCounselType(
+			 @RequestParam(value = "counselTypeNo") String counselTypeNo
+			,Model model) {
+		
+		List<CounselType> counselTypeList = memberService.counselTypeList(counselTypeNo);
+		//TODO 검색결과 리스트 수정
+		// 상담구분코드 검색결과 리스트 가져오기
+		
+		model.addAttribute("counselTypeList", counselTypeList);
+		// 화면에 보여줄 상담구분코드 리스트
+		
+		model.addAttribute("counselTypeListSize", counselTypeList.size());
+		// 화면에 리스트의 존재 여부를 알려줄 리스트 사이즈
+		
+		return "/view/academyRegister/academyRegisterCode/listCounselType";
+	}
+	
+	
 	// 관리자 : 상담구분코드 추가폼 이동
 	@GetMapping("/addCounselType")
 	public String addCounselType() {

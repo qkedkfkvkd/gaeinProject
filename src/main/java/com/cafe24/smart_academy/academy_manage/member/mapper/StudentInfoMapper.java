@@ -12,6 +12,7 @@ import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
 import com.cafe24.smart_academy.academy_manage.member.vo.GetCounselResultNo;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
+import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
 import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 
@@ -40,8 +41,9 @@ public interface StudentInfoMapper {
 	public int updatePaymentInfo(PaymentInfo paymentInfo);
 	// 관리자 : 특정학생 결제정보 수정 처리
 	
-	public List<Map<String, Object>> notPaymentStateList();
-	// 관리자 : 미납현황 리스트(결제 테이블에서 납부예정금액이 0보다 큰 리스트)
+	public List<Map<String, Object>> paymentStateList(MemberSearchVO memberSearchVO);
+	// 관리자 : 수납현황 리스트
+	// (결제 테이블에서 납부예정금액이 0이고 실납부금액이 0보다 큰 리스트)
 	
 	
 	
@@ -74,6 +76,17 @@ public interface StudentInfoMapper {
 	
 	public String counselAppointmentByCounselHistoryNo(String counselHistoryNo);
 	// 학생 : 상담예약신청 시 상담내역코드 중복 확인
+	
+	
+	
+	public List<String> admissionCounselMemberIdList();
+	// 관리자 : 신입생상담 학생아이디 리스트 가져오기
+	// 학원에 입학하면서 처음 받는 상담이 입학상담이므로
+	// 상담예약 테이블에 해당 회원의 레코드가 존재하지 않으면
+	// 전부 신입생으로 간주한다.
+	
+	public List<Member> admissionCounselList(Map<String, Object> map);
+	// 관리자 : 신입생상담 학생아이디를 넣고 해당 학생 리스트 가져오기
 	
 	
 	

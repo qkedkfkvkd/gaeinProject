@@ -72,6 +72,9 @@ public interface MemberMapper {
 	public List<CounselType> counselTypeList();
 	// 관리자 : 상담구분코드 리스트 가져오기
 	
+	public List<CounselType> counselTypeList(String counselTypeNo);
+	// 관리자 : 상담구분코드 검색결과 리스트 가져오기
+	
 	public int counselTypeListSize();
 	// 관리자 : 상담구분테이블에 레코드가 존재하는지 확인
 	

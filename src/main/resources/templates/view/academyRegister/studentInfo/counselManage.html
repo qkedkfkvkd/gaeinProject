@@ -17,7 +17,7 @@
 	
 	
 	<div class="col-sm-12 col-md-offset-3">
-		<form class="form-inline mx-auto" action="/searchStudentInfo" method="post">
+		<form class="form-inline mx-auto" action="/searchStudentInfoCounselManage" method="post">
 			<input type="hidden" th:value="${studentInfo.memberId}" name="memberId">
 			
 			<div class="form-group">
@@ -56,7 +56,7 @@
 						<tr>
 							<td>
 								<button type="button" class="btn btn-primary btn-sm btn-block"
-										th:onclick="'window.location.href = \'' + @{/addCounselHistory(memberId=${studentInfo.memberId})} + '\''">
+										th:onclick="'window.location.href = \'' + @{/addAdmissionCounsel(memberId=${studentInfo.memberId})} + '\''">
 									입학상담
 								</button>
 							</td>

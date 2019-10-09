@@ -1,5 +1,6 @@
 package com.cafe24.smart_academy.academy_manage.member.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
 import com.cafe24.smart_academy.academy_manage.member.vo.GetCounselResultNo;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
+import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
 import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 
@@ -216,10 +218,33 @@ public class StudentInfoService {
 	}
 	
 	
+	// 관리자 : 수납현황 리스트
+	// (결제 테이블에서 납부예정금액이 0이고 실납부금액이 0보다 큰 리스트)
+	public List<Map<String, Object>> paymentStateList() {
+		MemberSearchVO memberSearchVO = new MemberSearchVO();
+		memberSearchVO.setKeyWord("payment");
+		// 수납 현황을 리스트로 얻기 위해 검색 키워드를 넣어준다.
+		
+		return studentInfoMapper.paymentStateList(memberSearchVO);
+	}
+	
+	
 	// 관리자 : 미납현황 리스트(결제 테이블에서 납부예정금액이 0보다 큰 리스트)
 	public List<Map<String, Object>> notPaymentStateList() {
-		return studentInfoMapper.notPaymentStateList();
+		MemberSearchVO memberSearchVO = new MemberSearchVO();
+		memberSearchVO.setKeyWord("notPayment");
+		// 미납 현황을 리스트로 얻기 위해 검색 키워드를 넣어준다.
+		
+		return studentInfoMapper.paymentStateList(memberSearchVO);
 	}
+	
+	
+	// 관리자 : 수납현황 혹은 미납현황 검색결과 리스트
+	// 입력한 회원명 혹은 가입기간과 일치하는 모든 결제정보 리스트를 가져온다.
+	public List<Map<String, Object>> paymentStateList(MemberSearchVO memberSearchVO) {
+		return studentInfoMapper.paymentStateList(memberSearchVO);
+	}
+	
 	
 	
 	
@@ -232,6 +257,7 @@ public class StudentInfoService {
 	
 	// 관리자가 학생목록에서 특정 학생의 상담 관리 클릭했을 시 보여줄 해당 학생 상담내역 리스트
 	// 관리자 : 상담내용 수정 화면 이동
+	// TODO 수정해야됨
 	public List<Map<String, Object>> oneStudentCounselHistoryOneOrList(CounselAppointment counselAppointment) {
 		System.out.println(counselAppointment + " <- counselAppointment   oneStudentCounselHistoryOneOrList()   MemberService.java");
 		return studentInfoMapper.oneStudentCounselHistoryOneOrList(counselAppointment);
@@ -297,6 +323,67 @@ public class StudentInfoService {
 	public String counselAppointmentByCounselHistoryNo(String counselHistoryNo) {
 		return studentInfoMapper.counselAppointmentByCounselHistoryNo(counselHistoryNo);
 	}
+	
+	
+	
+	
+	
+	// 관리자 : 신입생상담 리스트 가져오기
+	// 학원에 입학하면서 처음 받는 상담이 입학상담이므로
+	// 상담예약 테이블에 해당 회원의 레코드가 존재하지 않으면
+	// 전부 신입생으로 간주한다.
+	public List<Member> admissionCounselList() {
+		List<String> memberIdList = studentInfoMapper.admissionCounselMemberIdList();
+		// 신입생 학생 아이디를 가져온다.
+		
+		List<Member> admissionCounselList = null;
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		// 검색할 키워드를 넣어줄 맵 객체를 선언한다.
+		
+		map.put("memberIdList", memberIdList);
+		// 신입생의 회원 아이디 리스트 검색 키워드를 넣어준다.
+		
+		admissionCounselList = studentInfoMapper.admissionCounselList(map);
+		// 가져온 학생 아이디리스트를 넣어서 해당 학생의 회원신상정보 리스트를 얻어온다.
+		
+		return admissionCounselList;
+	}
+	
+	
+	// 관리자 : 신입생상담 검색결과 리스트 가져오기
+	// 학원에 입학하면서 처음 받는 상담이 입학상담이므로
+	// 상담예약 테이블에 해당 회원의 레코드가 존재하지 않으면
+	// 전부 신입생으로 간주한다.
+	public List<Member> admissionCounselList(MemberSearchVO memberSearchVO) {
+		List<String> memberIdList = studentInfoMapper.admissionCounselMemberIdList();
+		// 신입생 학생 아이디를 가져온다.
+		
+		List<Member> admissionCounselList = null;
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		// 검색할 키워드를 넣어줄 맵 객체를 선언한다.
+		
+		map.put("memberIdList", memberIdList);
+		// 신입생의 회원 아이디는 항상 필요하므로 조건문 밖에 두었다.
+		
+		map.put("memberName", memberSearchVO.getMemberName());
+		// 검색할 키워드 회원 이름을 넣어준다.
+		
+		map.put("startJoinDate", memberSearchVO.getStartJoinDate());
+		// 검색할 키워드 가입 시작기간을 넣어준다.
+		
+		map.put("endJoinDate", memberSearchVO.getEndJoinDate());
+		// 검색할 키워드 가입 마지막기간을 넣어준다.
+		
+		admissionCounselList = studentInfoMapper.admissionCounselList(map);
+		// 가져온 학생 아이디리스트를 넣어서 해당 학생의 회원신상정보 리스트를 얻어온다.
+		
+		return admissionCounselList;
+	}
+	
+	
+	
 	
 	
 	// 관리자 : 예약 현황 리스트 가져오기
