@@ -27,10 +27,15 @@ public class CourseEnrollee {
 	public String getCourseNo() {
 		return courseNo;
 	}
-	public void setCourseAssignmentNo(String courseNo) {
+	public void setCourseNo(String courseNo) {
 		System.out.println(courseNo + " <- courseNo   setCourseNo()   CourseEnrollee.java");
 		this.courseNo = courseNo;
 	}
+	// 셋터의 메소드명도 전역변수명과 일치해야한다. 일치하지 않으면 값이 안들어간다.
+//	public void setCourseAssignmentNo(String courseNo) {
+//		System.out.println(courseNo + " <- courseNo   setCourseNo()   CourseEnrollee.java");
+//		this.courseNo = courseNo;
+//	}
 	public Date getCourseEnrolleeRegisteredDate() {
 		return courseEnrolleeRegisteredDate;
 	}

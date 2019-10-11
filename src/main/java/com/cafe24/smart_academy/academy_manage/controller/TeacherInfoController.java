@@ -89,12 +89,10 @@ public class TeacherInfoController {
 	
 	// 강사 목록 보기
 	@GetMapping("/teacherList")
-	public String teacherList(MemberSearchVO memberSearchVO, Model model) {
-		System.out.println(memberSearchVO.getMemberLevel()
-				+ " <- memberLevel   teacherList()   TeacherInfoController.java");
+	public String teacherList(Model model) {
 		
 		List<Map<String, Object>> teacherInfoList =
-				teacherInfoService.teacherInfoList(memberSearchVO);
+				teacherInfoService.teacherInfoOneOrList();
 		// 강사 정보 목록 가져오기
 		// 아이디, 권한, 이름, 이메일, 휴대폰번호, 담당 강좌코드, 과목명, 강좌명, 강사 등록일
 		

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>수강 등록</title>
+</th:block>
+
+<!-- 하나의 강좌에 관한 전체 학생 성적 리스트 -->
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>수강 등록</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-7 col-md-offset-3">
+		<form role="form" id="courseEnrolleeJoinFrm"
+			  action="/addCourseEnrollee" method="post">
+			<div class="form-group">
+				<label for="inputCourseEnrolleeNo">수강신청코드</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="inputCourseEnrolleeNo"
+						   name="courseEnrolleeNo">
+					<span class="input-group-btn">
+						<button type="button" class="btn btn-primary btn-sm"
+								id="courseEnrolleeNoOverlapBtn">중복확인</button>
+						<input type="hidden" id="courseEnrolleeNoOverlapClickChk" value="0">
+						<!-- 처음엔 버튼을 누르지 않았다고 체크한다. 0:안누름 / 1:누름 -->
+					</span>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label for="inputStudentName">학생명</label>
+				<input type="text" class="form-control" id="inputStudentName"
+					   th:value="${studentInfo.memberName}"
+					   readonly="readonly">
+				<input type="hidden" name="memberId" th:value="${studentInfo.memberId}">
+			</div>
+			
+			<div class="form-group">
+				<label for="inputStudentBirth">생년월일</label>
+				<input type="date" class="form-control" id="inputStudentBirth"
+					   th:value="${studentInfo.memberBirth}"
+					   readonly="readonly">
+			</div>
+			
+			<div class="form-group">
+				<label for="inputEmail">이메일</label>
+				<div class="input-group">
+					<input type="email" class="form-control" id="inputEmail"
+						   th:value="${studentInfo.memberEmail}"
+						   readonly="readonly">
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label for="subjectList">과목명</label>
+				<!-- <div class="input-group"> -->
+				<select id="subjectList" class="form-control"
+						onchange="courseSelect(this.value)">
+					<option value="">선택</option>
+					<option th:each="subject : ${subjectList}"
+							th:value="${subject.subjectNo}"
+							th:text="${subject.subjectName}"></option>
+				</select>
+				<!-- </div> -->
+			</div>
+			
+			<div class="form-group">
+				<label for="courseList">강좌명</label>
+				<!-- <div class="input-group"> -->
+				<select id="courseList" name="courseNo"
+						class="form-control">
+					<option value="">선택</option>
+				</select>
+				<!-- </div> -->
+				<!-- <input type="hidden" class="form-control"
+					   id="inputCourseNo"> -->
+				<!-- 수강신청VO의 셋터에 값이 안들어가서 조금 수정해보았다. -->
+			</div>
+			
+			<div class="form-group">
+				<div class="row"> <!-- style="vertical-align: bottom;" -->
+					<div class="col-md-6">
+						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+					</div>
+					<div class="col-md-6">
+						<button type="button" id="courseEnrolleeJoinFrmBtn"
+								class="btn btn-primary btn-sm btn-block">입력</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		
+		// 과목명을 선택하면 해당 과목코드를 참조하는 강좌 리스트가 나온다.
+		function courseSelect(subjectNo) {
+			console.log(`subjectNo:${subjectNo}`);
+			
+			$.ajax({
+				 type: "POST"
+				,url: "/courseSelect"
+				,dataType:"json"
+				,data: subjectNo
+				,contentType: "application/json; charset=UTF-8"
+				,success: function(result){
+					//SELECT BOX 초기화           
+					$("#courseList").find("option").remove().end().append("<option value=''>선택</option>");
+					
+					//배열 개수 만큼 option 추가
+					$.each(result, function(i){
+						console.log(`넘어온 강좌코드:${result}`);
+						$("#courseList").append('<option value="'+result[i].courseNo+'">'+result[i].courseName+'</option>');
+					});
+					
+					// 강좌 선택박스에서 특정 값을 선택했을 경우
+				 	/*$("#courseList").on('change', function(e) {
+						e.preventDefault();
+						
+						// 강좌 선택박스에서 선택한 값이 공백이 아니라면
+						if($("#courseList").val() !='') {
+							var test = $("#courseList option:selected").val();
+							console.log(test);
+							
+							$('#inputCourseNo').val(test);
+							// 숨겨둔 입력박스에 강좌코드를 넣어준다.
+						}
+					}); */
+				}
+				,error: function (jqXHR, textStatus, errorThrown) {
+					alert("오류가 발생하였습니다.");
+				}
+			});
+		}
+		
+		
+		// 수강신청코드 중복확인
+		$('#courseEnrolleeNoOverlapBtn').on('click', function(e){
+			e.preventDefault();
+			
+			var courseEnrolleeNo = $('#inputCourseEnrolleeNo').val();
+			console.log(`courseEnrolleeNo:${courseEnrolleeNo}`);
+			
+			if($("#inputCourseEnrolleeNo").val() ==''){
+	            alert('수강신청코드를 입력하세요');
+	            $("#inputCourseEnrolleeNo").focus();
+	            return false;
+	        }
+			
+			$.ajax({
+	            url: '/courseEnrolleeNoOverlapChk',
+	            type: 'POST',
+	            data: courseEnrolleeNo,
+	            dataType: 'json',
+	            contentType: "application/json; charset=UTF-8",
+	            success: function (response) {
+	                if(response.result == 1){
+	                	alert('사용 가능한 코드 입니다.');
+	                    $('#courseEnrolleeNoOverlapClickChk').val(1);
+	                } else if(response.result == 0){
+	                	alert('이미 등록된 코드 입니다');
+	                } else {
+	                    alert('검사 중 에러가 발생했습니다');
+	                }
+	            },
+	            error: function(jqXHR, textStatus, errorThrown){
+	                alert("arjax error : " + textStatus + "\n" + errorThrown);
+	            }
+	        });
+		});
+		
+		// 값을 바꿨을 경우 중복확인 버튼을 다시 눌러야함 (중복확인 버튼 눌럿는지 체크하는 값을 0으로 셋팅) 0:안누름 / 1:누름
+		$("#inputCourseEnrolleeNo").on('change', function(e) {
+			e.preventDefault();
+			$('#courseEnrolleeNoOverlapClickChk').val(0);
+		});
+		
+		
+		
+		// 수강신청 등록 처리 전 공백 및 중복확인버튼 눌렀는지 유효성 검사
+		$('#courseEnrolleeJoinFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+			var courseEnrolleeNoOverlapClickChk = $('#courseEnrolleeNoOverlapClickChk').val();
+			
+			console.log(`courseEnrolleeNoOverlapClickChk:${courseEnrolleeNoOverlapClickChk}`);
+			console.log('0이면 사용 중, 1이면 사용 가능');
+			
+	        if($("#inputCourseEnrolleeNo").val() ==''){
+	            alert('수강신청코드를 입력하세요');
+	            $('#courseEnrolleeNoOverlapClickChk').val(0);
+	            // 만약 수강신청코드를 입력하고 중복확인 버튼을 눌러서
+	            // 사용가능한 코드라고 나오면 중복확인 버튼 체크값이 1로 바뀐다.
+	            // 재입력하고자 값을 지웠을 경우 다시 눌러줘야한다.
+	            $("#inputCourseEnrolleeNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#courseEnrolleeNoOverlapClickChk").val() == 0){
+	            alert('수강신청코드 중복확인을 해주세요');
+	            $("#inputCourseEnrolleeNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#subjectList").val() ==''){
+	            alert('과목명을 선택하세요');
+	            $("#subjectList").focus();
+	            return false;
+	        }
+	        
+	        // 히든으로 숨겨진 입력박스에 강좌코드가 없다면
+	        /* if($("#inputCourseNo").val() ==''){
+	            alert('강좌명을 선택하세요');
+	            $("#courseList").focus();
+	            return false;
+	        } */
+	        
+	        if($("#courseList").val() ==''){
+	            alert('강좌명을 선택하세요');
+	            $("#courseList").focus();
+	            return false;
+	        }
+	        
+	        $('#courseEnrolleeJoinFrm').submit();
+	    });
+	</script>
+</th:block>
+
+</html>

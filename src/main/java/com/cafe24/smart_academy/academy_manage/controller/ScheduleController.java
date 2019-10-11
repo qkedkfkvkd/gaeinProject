@@ -38,7 +38,6 @@ public class ScheduleController {
 	@GetMapping("/scheduleList")
 	public String scheduleList(
 			 CourseRoomSearchVO searchVO
-			,MemberSearchVO memberSearchVO
 			,Model model) {
 		
 		List<Map<String, Object>> scheduleList = scheduleService.scheduleList(searchVO);
@@ -50,7 +49,7 @@ public class ScheduleController {
 		List<AcademyRoom> roomList = courseManageService.academyRoomList();
 		// 전체 강의실 리스트를 가져온다.
 		
-		List<Map<String, Object>> teacherList = teacherInfoService.teacherInfoList(memberSearchVO);
+		List<Map<String, Object>> teacherList = teacherInfoService.teacherInfoOneOrList();
 		// 전체 강사 리스트를 가져온다.
 		
 		
@@ -77,7 +76,6 @@ public class ScheduleController {
 	@PostMapping("/searchSchedule")
 	public String searchSchedule(
 			 CourseRoomSearchVO searchVO
-			,MemberSearchVO memberSearchVO
 			,Model model) {
 		
 		List<Map<String, Object>> scheduleList = scheduleService.scheduleList(searchVO);
@@ -90,7 +88,7 @@ public class ScheduleController {
 		List<AcademyRoom> roomList = courseManageService.academyRoomList();
 		// 전체 강의실 리스트를 가져온다.
 		
-		List<Map<String, Object>> teacherList = teacherInfoService.teacherInfoList(memberSearchVO);
+		List<Map<String, Object>> teacherList = teacherInfoService.teacherInfoOneOrList();
 		// 전체 강사 리스트를 가져온다.
 		
 		
@@ -117,7 +115,6 @@ public class ScheduleController {
 	@GetMapping("/scheduleApprovalRequestList")
 	public String scheduleApprovalRequestList(
 			 CourseRoomSearchVO searchVO
-			,MemberSearchVO memberSearchVO
 			,Model model) {
 		
 		List<Map<String, Object>> scheduleList = scheduleService.scheduleList(searchVO);
@@ -129,7 +126,7 @@ public class ScheduleController {
 		List<AcademyRoom> roomList = courseManageService.academyRoomList();
 		// 전체 강의실 리스트를 가져온다.
 		
-		List<Map<String, Object>> teacherList = teacherInfoService.teacherInfoList(memberSearchVO);
+		List<Map<String, Object>> teacherList = teacherInfoService.teacherInfoOneOrList();
 		// 전체 강사 리스트를 가져온다.
 		
 		
@@ -156,7 +153,6 @@ public class ScheduleController {
 	@PostMapping("/searchScheduleApprovalRequest")
 	public String searchScheduleApprovalRequest(
 				 CourseRoomSearchVO searchVO
-				,MemberSearchVO memberSearchVO
 				,Model model) {
 		
 		List<Map<String, Object>> scheduleList = scheduleService.scheduleList(searchVO);
@@ -168,7 +164,7 @@ public class ScheduleController {
 		List<AcademyRoom> roomList = courseManageService.academyRoomList();
 		// 전체 강의실 리스트를 가져온다.
 		
-		List<Map<String, Object>> teacherList = teacherInfoService.teacherInfoList(memberSearchVO);
+		List<Map<String, Object>> teacherList = teacherInfoService.teacherInfoOneOrList();
 		// 전체 강사 리스트를 가져온다.
 		
 		

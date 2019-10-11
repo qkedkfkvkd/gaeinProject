@@ -16,7 +16,6 @@
 	
 	<div class="col-sm-11 col-md-offset-3">
 		<form class="form-inline" action="/searchSchedule" method="post">
-			<input type="hidden" name="memberLevel" value="강사">
 			<input type="hidden" name="scheduleApprovalStatus" value="유">
 			
 			<div class="form-group">
@@ -78,7 +77,7 @@
 						<tr>
 							<td>
 								<button type="button" class="btn btn-primary btn-sm btn-block"
-										th:onclick="'window.location.href = \'' + @{/scheduleApprovalRequestList(scheduleApprovalStatus='무', memberLevel='강사')} + '\''">
+										th:onclick="'window.location.href = \'' + @{/scheduleApprovalRequestList(scheduleApprovalStatus='무')} + '\''">
 									강좌시간표 승인요청 목록
 								</button>
 							</td>
@@ -99,7 +98,7 @@
 					<th>강좌</th>
 					<th>강사</th>
 					<th>강의실</th>
-					<th>수정</th>
+					<th th:if="${session.memberLevel == '관리자'.toString()}">수정</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -112,7 +111,7 @@
 					<td th:text="${schedule.courseName}"></td>
 					<td th:text="${schedule.memberName}"></td>
 					<td th:text="${schedule.roomFloor + '층 ' + schedule.roomNumber + '호'}"></td>
-					<td>
+					<td th:if="${session.memberLevel == '관리자'.toString()}">
 						<button type="button" class="btn btn-success btn-sm"
 								th:onclick="'window.location.href = \'' + @{/updateSchedule(scheduleNo=${schedule.scheduleNo})} + '\''">
 							수정

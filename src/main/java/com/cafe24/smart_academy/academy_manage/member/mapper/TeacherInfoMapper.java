@@ -17,8 +17,12 @@ public interface TeacherInfoMapper {
 	public int addTeacher(Teacher teacher);
 	// 관리자 : 강사 테이블에 강사 등록 처리
 	
-	public List<Map<String, Object>> teacherInfoList(MemberSearchVO memberSearchVO);
+	public List<Map<String, Object>> teacherInfoOneOrList();
 	// 관리자 : 강사 정보 목록 가져오기
+	
+	public List<Map<String, Object>> teacherInfoOneOrList(MemberSearchVO memberSearchVO);
+	// 관리자 : 강사 정보 검색결과 가져오기
+	// 특정 강사의 상세 신상정보 가져오기
 	// 강사 아이디, 이름, 휴대폰번호, 이메일, 담당 강좌코드, 강좌명
 	
 	public int updateTeacher(Teacher teacher);

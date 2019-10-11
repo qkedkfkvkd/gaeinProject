@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>수강신청 목록</title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3>수강신청 목록</h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-12 col-md-offset-3">
+		<form class="form-inline" action="/searchCourseList" method="post">
+			<div class="form-group">
+				<label class="sr-only" for="subjectList">과목명</label>
+				<!-- <div class="input-group"> -->
+				<select id="subjectList" name="subjectNo" class="form-control">
+					<option value="not">과목명</option>
+					<option th:each="subject : ${subjectList}"
+							th:value="${subject.subjectNo}"
+							th:text="${subject.subjectName}"></option>
+				</select>
+				<!-- </div> -->
+			</div>
+			
+			<div class="form-group">
+				<label class="sr-only" for="inputCourseName">강좌명</label>
+				<input type="text" class="form-control" id="inputCourseName"
+					   name="courseName" placeholder="강좌명을 입력하세요.">
+			</div>
+			
+			<button type="submit" class="btn btn-success">검색</button>
+		</form>
+		
+		
+		<div class="row">
+			<div class="col-md-4" >
+				<table class="table">
+					<tbody>
+						<tr>
+							<td>
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/addEnrolCourse} + '\''">
+									수강등록
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<div style="overflow: auto;">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>번호</th>
+						<th>아이디</th>
+						<th>이름</th>
+						<th>과목</th>
+						<th>강좌</th>
+						<th>강의실</th>
+						<th>첫수업</th>
+						<th>학부모명</th>
+						<th>학부모연락처</th>
+						<th>등록일</th>
+						<th>수강내역수정</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="enrol, lists : ${CourseEnrolleeList}"
+						th:if="${CourseEnrolleeListSize != 0}">
+						<td th:text="${lists.count}"></td>
+						<td th:text="${enrol.memberId}"></td>
+						<td th:text="${enrol.memberName}"></td>
+						<td th:text="${enrol.subjectName}"></td>
+						<td th:text="${enrol.courseName}"></td>
+						<td th:text="${enrol.roomFloor + '층 ' + enrol.roomNumber + '호'}"></td>
+						<td th:text="${#calendars.format(enrol.startCourseDay,'yyyy-MM-dd')}"></td>
+						<td th:text="${enrol.parentName}"></td>
+						<td th:text="${enrol.parentPhone}"></td>
+						<td th:text="${#calendars.format(enrol.courseEnrolleeRegisteredDate,'yyyy-MM-dd')}"></td>
+						<td>
+							<button type="button" class="btn btn-success btn-sm"
+									th:onclick="'window.location.href = \'' + @{/updateCourseEnrollee(courseEnrolleeNo=${enrol.courseEnrolleeNo})} + '\''">
+								수정
+							</button>
+						</td>
+					</tr>
+					
+					<tr th:unless="${CourseEnrolleeListSize != 0}">
+						<td colspan="5">등록된 수강목록이 없습니다.</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+</th:block>
+
+</html>

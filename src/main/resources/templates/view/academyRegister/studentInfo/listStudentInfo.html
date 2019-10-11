@@ -55,6 +55,7 @@
 					<th>생년월일</th>
 					<th>가입일</th>
 					<th>신상정보</th>
+					<th>수강등록</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -108,6 +109,12 @@
 						<button type="button" class="btn btn-success btn-sm"
 								th:onclick="'window.location.href = \'' + @{/updateStudentInfo(memberId=${student.memberId})} + '\''">
 							상세
+						</button>
+					</td>
+					<td>
+						<button type="button" class="btn btn-success btn-sm"
+								th:onclick="'window.location.href = \'' + @{/addCourseEnrollee(memberId=${student.memberId})} + '\''">
+							수강등록
 						</button>
 					</td>
 				</tr>

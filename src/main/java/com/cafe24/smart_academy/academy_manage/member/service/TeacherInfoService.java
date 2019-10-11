@@ -108,8 +108,17 @@ public class TeacherInfoService {
 	
 	// 관리자 : 강사 정보 목록 가져오기
 	// 아이디, 권한, 이름, 이메일, 휴대폰번호, 담당 강좌코드, 과목명, 강좌명, 강사 등록일
-	public List<Map<String, Object>> teacherInfoList(MemberSearchVO memberSearchVO) {
-		return teacherInfoMapper.teacherInfoList(memberSearchVO);
+	public List<Map<String, Object>> teacherInfoOneOrList() {
+		return teacherInfoMapper.teacherInfoOneOrList();
+	}
+	
+	
+	
+	// 관리자 : 강사 정보 검색결과 리스트 가져오기
+	// 특정 강사의 상세 신상정보 가져오기
+	// 아이디, 권한, 이름, 이메일, 휴대폰번호, 담당 강좌코드, 과목명, 강좌명, 강사 등록일
+	public List<Map<String, Object>> teacherInfoOneOrList(MemberSearchVO memberSearchVO) {
+		return teacherInfoMapper.teacherInfoOneOrList(memberSearchVO);
 	}
 	
 	

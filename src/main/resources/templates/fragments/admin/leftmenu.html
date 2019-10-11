@@ -45,6 +45,12 @@
 							<!-- 권한이 학생인 사람들만 검색한다. -->
 							<!-- 학생신상정보디테일에서 하단에 버튼을 줘서 결제 정보 등을 볼 수 있게 한다. -->
 						</li>
+						
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/CourseEnrolleeList}">수강신청 목록</a>
+							<!-- 권한이 학생인 사람들만 검색한다. -->
+							<!-- 수강신청 리스트를 볼 수 있게 해서 상단에 수강등록 버튼을 준다. -->
+						</li>
 					</ul>
 				</div>
 			</li>
@@ -68,13 +74,13 @@
 						</li>
 						
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/scheduleList(scheduleApprovalStatus='유', memberLevel='강사')}">전체시간표</a>
+							<a class="nav-link" th:href="@{/scheduleList(scheduleApprovalStatus='유')}">전체시간표</a>
 							<!-- 시간표 오름차순으로 강좌별 시간표를 조회한다. -->
 							<!-- 강사권한의 시간표 작성할 때 참고하면서 작성한다. -->
 						</li>
 						
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/scheduleApprovalRequestList(scheduleApprovalStatus='무', memberLevel='강사')}">강좌시간표승인</a>
+							<a class="nav-link" th:href="@{/scheduleApprovalRequestList(scheduleApprovalStatus='무')}">강좌시간표승인</a>
 							<!-- 시간표 오름차순으로 강좌별 시간표를 조회한다. -->
 							<!-- 강사권한의 시간표 작성할 때 참고하면서 작성한다. -->
 						</li>
@@ -93,7 +99,7 @@
 							<a class="nav-link" th:href="@{/addTeacher}">강사등록</a>
 						</li>
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/teacherList(memberLevel='강사')}">강사목록</a>
+							<a class="nav-link" th:href="@{/teacherList}">강사목록</a>
 						</li>
 					</ul>
 				</div>

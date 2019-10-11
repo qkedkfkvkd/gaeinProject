@@ -10,29 +10,34 @@
 			<th:block th:replace="fragments/admin/header :: headerFragment"></th:block>
 		</span>
 		
-		<span th:if="${session.memberLevel eq '선생님'.toString()}">
+		<span th:if="${session.memberLevel eq '강사'.toString()}">
 			<th:block th:replace="fragments/teacher/header :: headerFragment"></th:block>
 		</span>
 		
-		<span th:if="${session.memberLevel eq '학생'.toString() || session.memberLevel eq null}">
+		<span th:if="${session.memberLevel eq '학생'.toString()}">
+			<th:block th:replace="fragments/student/header :: headerFragment"></th:block>
+		</span>
+		
+		<span th:if="${session.memberLevel eq null}">
 			<th:block th:replace="fragments/header :: headerFragment"></th:block>
 		</span>
 		
 		<!-- partial -->
 		<div class="container-fluid page-body-wrapper">
 			<span th:if="${session.memberLevel eq '관리자'.toString()}">
-				<th:block th:replace="fragments/admin/leftmenu :: leftmenuFragment">
-				</th:block>
+				<th:block th:replace="fragments/admin/leftmenu :: leftmenuFragment"></th:block>
 			</span>
 			
-			<span th:if="${session.memberLevel eq '선생님'.toString()}">
-				<th:block th:replace="fragments/teacher/leftmenu :: leftmenuFragment">
-				</th:block>
+			<span th:if="${session.memberLevel eq '강사'.toString()}">
+				<th:block th:replace="fragments/teacher/leftmenu :: leftmenuFragment"></th:block>
 			</span>
 			
-			<span th:if="${session.memberLevel eq '학생'.toString() || session.memberLevel eq null}">
-				<th:block th:replace="fragments/leftmenu :: leftmenuFragment">
-				</th:block>
+			<span th:if="${session.memberLevel eq '학생'.toString()}">
+				<th:block th:replace="fragments/student/leftmenu :: leftmenuFragment"></th:block>
+			</span>
+			
+			<span th:if="${session.memberLevel eq null}">
+				<th:block th:replace="fragments/leftmenu :: leftmenuFragment"></th:block>
 			</span>
 			
 			<div class="main-panel">

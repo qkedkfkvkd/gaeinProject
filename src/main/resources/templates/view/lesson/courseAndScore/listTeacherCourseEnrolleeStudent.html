@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title th:text="${teacherInfo.courseName + ' 수강학생 목록'}"></title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3 th:text="${'강사명 :' + teacherInfo.memberName + ', ' + teacherInfo.courseName + ' 수강학생 목록'}"></h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-12 col-md-offset-3">
+		<div class="row">
+			<div class="col-md-5">
+				<form id="searchTeacherCourseEnrolleeStudentFrm"
+					action="/searchTeacherCourseEnrolleeStudentList" method="post">
+					<div class="form-group">
+						<label class="sr-only" for="searchMemberName">학생명</label>
+						<input type="text" class="form-control" id="searchMemberName"
+								   name="memberName" placeholder="학생 이름을 입력하세요.">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputJoinDate">가입기간</label>
+						<div class="input-group">
+							<input type="date" class="form-control" id="inputJoinDate"
+								   name="startJoinDate" placeholder="시작 가입일을 선택하세요.">
+							
+							<span class="label">
+								<label><i class="mdi mdi-dots-horizontal"></i></label>
+							</span> 
+							
+							<input type="date" class="form-control" id="inputEndJoinDate"
+								   name="endJoinDate" placeholder="마지막 가입일을 선택하세요.">  
+						</div>
+					</div>
+					<button type="button" id="/searchTeacherCourseEnrolleeStudentFrmBtn"
+							class="btn btn-success">검색</button>
+				</form>
+			</div>
+		</div>
+		
+		
+		<div style="overflow: auto;">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>번호</th>
+						<th>아이디</th>
+						<th>이름</th>
+						<th>생년월일</th>
+						<th>이메일</th>
+						<th>연락처</th>
+						<th>첫수업</th>
+						<th>학부모명</th>
+						<th>학부모연락처</th>
+						<th>수강등록일</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="enrol, lists : ${teacherCourseEnrolleeStudentList}"
+						th:if="${teacherCourseEnrolleeStudentListSize != 0}">
+						<td th:text="${lists.count}"></td>
+						<td th:text="${enrol.memberId}"></td>
+						<td th:text="${enrol.memberName}"></td>
+						<td th:text="${#calendars.format(enrol.memberBirth,'yyyy-MM-dd')}"></td>
+						<td th:text="${enrol.memberEmail}"></td>
+						<td th:text="${enrol.memberPhone}"></td>
+						<td th:text="${#calendars.format(enrol.startCourseDay,'yyyy-MM-dd')}"></td>
+						<td th:text="${enrol.parentName}"></td>
+						<td th:text="${enrol.parentPhone}"></td>
+						<td th:text="${#calendars.format(enrol.courseEnrolleeRegisteredDate,'yyyy-MM-dd')}"></td>
+					</tr>
+					
+					<tr th:unless="${teacherCourseEnrolleeStudentListSize != 0}">
+						<td colspan="5">등록된 수강목록이 없습니다.</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+</th:block>
+
+</html>

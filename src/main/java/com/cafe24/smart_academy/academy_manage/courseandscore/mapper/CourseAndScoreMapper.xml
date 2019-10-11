@@ -15,7 +15,7 @@
 			,aro.room_number							AS roomNumber
 			,aro.room_floor								AS roomFloor
 			,ed.examination_name						AS examinationName
-			,ed.examination_day							AS examinationDay
+			,ed.day										AS Day
 			,(select member_name from member where mem.member_id = cen.member_id) AS studentName
 			,si.score_input_no							AS scoreInputNo
 			,si.score_input_test_score					AS scoreInputTestScore
@@ -61,5 +61,130 @@
 		and
 			gcr.grading_criteria_rating	= #{gradingCriteriaRating}
 		</if>
+		
 	</select>
+	
+	
+	<!-- 관리자 : 전체 학생 수강신청 리스트 -->
+	<!-- 관리자 : 학생 수강신청 상세보기 -->
+	<!-- 특정 강좌에 수강신청한 학생들 리스트 -->
+	<select id="courseEnrolleeOneOrList"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO"
+			resultType="map">
+		select
+			 ce.course_enrollee_no					AS courseEnrolleeNo
+			,ce.member_id							AS memberId
+			,ce.course_enrollee_registered_date		AS courseEnrolleeRegisteredDate
+			,mem.member_name						AS memberName
+			,mem.member_birth						AS memberBirth
+			,mem.member_email						AS memberEmail
+			,mem.member_phone						AS memberPhone
+			,sub.subject_no							AS subjectNo
+			,sub.subject_name						AS subjectName
+			,ce.course_no							AS courseNo
+			,co.course_name							AS courseName
+			,aro.room_number						AS roomNumber
+			,aro.room_floor							AS roomFloor
+			,pay.start_course_day					AS startCourseDay
+			,pay.end_course_day						AS endCourseDay
+			,par.parent_name						AS parentName
+			,par.parent_phone						AS parentPhone
+		from
+			 course_enrollee			AS ce
+			,course						AS co
+			,subject					AS sub
+			,course_room_assignment		AS cra
+			,academy_room				AS aro
+			,member_login				AS login
+			,member						AS mem
+			,payment_info				AS pay
+			,parent						AS par
+		where
+			ce.course_no		= co.course_no
+		and
+			ce.member_id		= login.member_id
+		and
+			co.subject_no		= sub.subject_no
+		and
+			cra.course_no		= co.course_no
+		and
+			cra.room_no			= aro.room_no
+		and
+			login.member_id		= mem.member_id
+		and
+			login.member_id		= pay.member_id
+		and
+			login.member_id		= par.member_id
+		and
+			login.member_level	= '학생'
+		<!-- 수강신청 상세보기 진입 시 실행 -->
+		<if test="courseEnrolleeNo != null and courseEnrolleeNo neq ''.toString()">
+		and
+			ce.course_enrollee_no	= #{courseEnrolleeNo}
+		</if>
+		<!-- 특정 강좌에 수강신청한 학생들 목록 조회시 실행 -->
+		<if test="courseNo != null and courseNo neq ''.toString()">
+		and	
+			co.course_no		= #{courseNo}
+		</if>
+		order by
+			co.course_no asc, mem.member_name asc
+	</select>
+	
+	
+	<!-- 관리자 : 수강신청코드 중복확인 -->
+	<select id="courseEnrolleeByCourseEnrolleeNo"
+			parameterType="String"
+			resultType="String">
+		select
+			course_enrollee_no
+		from
+			course_enrollee
+		where
+			course_enrollee_no = #{courseEnrolleeNo}
+	</select>
+	
+	
+	<!-- 관리자 : 수강신청 추가 처리 -->
+	<insert id="addCourseEnrollee"
+			parameterType="com.cafe24.smart_academy.academy_manage.courseandscore.vo.CourseEnrollee">
+		insert into course_enrollee (
+			 course_enrollee_no
+			,member_id
+			,course_no
+			,course_enrollee_registered_date
+		) values (
+			 #{courseEnrolleeNo}
+			,#{memberId}
+			,#{courseNo}
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자 : 수강신청 수정처리 -->
+	<update id="updateCourseEnrollee"
+			parameterType="com.cafe24.smart_academy.academy_manage.courseandscore.vo.CourseEnrollee">
+		update
+			course_enrollee
+		<trim prefix="set" prefixOverrides=",">
+			<if test="courseNo != null and courseNo neq ''.toString()">
+				 course_no		= #{courseNo}
+			</if>
+		</trim>
+		where
+			course_enrollee_no	= #{courseEnrolleeNo}
+	</update>
+	
+	
+	<!-- 관리자 : 수강신청 삭제처리 -->
+	<delete id="deleteCourseEnrollee" parameterType="String">
+		delete from
+			course_enrollee
+		where
+			course_enrollee_no = #{courseEnrolleeNo}
+	</delete>
+	
+	
+	
 </mapper>

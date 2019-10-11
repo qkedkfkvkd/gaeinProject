@@ -5,84 +5,82 @@
 	<nav class="sidebar sidebar-offcanvas" id="sidebar">
 		<ul class="nav">
 			<li class="nav-item">
-				<a class="nav-link" th:href="@{/addMember}"> <!-- 회원가입 링크 -->
-					<i class="mdi mdi-account-plus menu-icon"></i><span class="menu-title">회원가입</span>
+				<a class="nav-link" th:href="@{/teacherCourseEnrolleeStudentList(memberId=${session.memberId})}">
+					<i class="mdi mdi-account-multiple menu-icon"></i><span class="menu-title">학생명단</span>
 				</a>
 			</li>
+			
 			<li class="nav-item">
-				<a class="nav-link" data-toggle="collapse" href="#ui-member" aria-expanded="false" aria-controls="ui-basic">
-					<i class="mdi mdi-account-multiple menu-icon"></i> 
-					<span class="menu-title">회원관리</span> <i class="menu-arrow"></i>
-				</a>
-				<div class="collapse" id="ui-member">
-					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!-- 회원 전체 리스트 보기 -->
-							<a class="nav-link" th:href="@{/memberList}">회원전체목록</a>
-						</li>
-						<li class="nav-item"> <!-- 회원 리스트에 검색 메뉴가 있으므로.. -->
-							<a class="nav-link" href="/memberList">회원검색</a>
-						</li>
-					</ul>
-				</div>
-			</li>
-			<li class="nav-item"
-				th:if="${session.memLevel eq '관리자'.toString() || session.memLevel == '판매자'}">
-				<!-- 상품 등록은 권한이 관리자 혹은 판매자여야만 할 수 있게 권한 조정 하였다. -->
-				
-				<a class="nav-link" data-toggle="collapse" href="#ui-goods" aria-expanded="false" aria-controls="ui-basic">
+				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-class" aria-expanded="false" aria-controls="ui-class">
 					<i class="mdi mdi-package-variant menu-icon"></i> 
-					<span class="menu-title">상품관리</span> <i class="menu-arrow"></i>
+					<span class="menu-title">강좌관리</span> <i class="menu-arrow"></i>
 				</a>
-				<div class="collapse" id="ui-goods">
-					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!-- 상품 등록 폼 이동 -->
-							<a class="nav-link" th:href="@{/addGoods}">상품등록</a>
+				<div class="collapse" id="ui-class">
+					<ul class="nav flex-column sub-menu" style="">
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/teacherCourseScheduleList(scheduleApprovalStatus='유', memberId=${session.memberId})}">내강좌시간표</a>
 						</li>
-						<li class="nav-item"> <!-- 상품 리스트에 상품 검색 폼이 있다. -->
-							<a class="nav-link" th:href="@{/goodsList}">상품검색</a>
+						
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/scheduleList(scheduleApprovalStatus='유')}">전체시간표</a>
+							<!-- 시간표 오름차순으로 강좌별 시간표를 조회한다. -->
+							<!-- 강사권한의 시간표 작성할 때 참고하면서 작성한다. -->
 						</li>
-					</ul>
-				</div>
-			</li>
-			
-			<li th:if="${session.memLevel eq '관리자'.toString()}" class="nav-item">
-				<!-- 권한이 관리자 이여야만 관리자 메뉴를 볼 수 있게 조정한다. -->
-				
-				<a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth"> 
-					<i class="mdi mdi-account menu-icon"></i> 
-					<span class="menu-title">관리자 페이지</span> 
-					<i class="menu-arrow"></i>
-				</a>
-				<div class="collapse" id="auth">
-					<ul class="nav flex-column sub-menu">
-						<li class="nav-item">
-							<a class="nav-link" href="pages/samples/login.html"> Login </a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="pages/samples/register.html"> Register </a>
+						
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/addSchedule}">시간표작성</a>
+							<!-- 강사가 시간표를 작성하면 관리자의 강좌시간표 승인요청 목록에 올라간다. -->
+							<!-- scheduleApprovalStatus(승인여부) : 무 -->
 						</li>
 					</ul>
 				</div>
 			</li>
 			
 			<li class="nav-item">
-				<a class="nav-link" data-toggle="collapse" href="#ui-board" aria-expanded="false" aria-controls="ui-basic">
-					<i class="mdi mdi-bulletin-board menu-icon"></i> 
-					<span class="menu-title">게시판관리</span> <i class="menu-arrow"></i>
+				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-test" aria-expanded="false" aria-controls="ui-test">
+					<i class="mdi mdi-package-variant menu-icon"></i> 
+					<span class="menu-title">시험관리</span> <i class="menu-arrow"></i>
 				</a>
-				<div class="collapse" id="ui-board">
-					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!-- 로그인 시에만 게시글 등록 폼 이동 -->
-							<a class="nav-link" th:href="@{/addBoard}"
-							   th:if="${session.memId ne null and session.member ne ''.toString()}">게시글 등록</a>
+				<div class="collapse" id="ui-test">
+					<ul class="nav flex-column sub-menu" style="">
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/examinationDayList(memberId=${session.memberId})}">시험일</a>
+							<!-- 시험날짜 리스트에서 해당 강좌 클릭시 자신의 강좌에 수강신청한 학생들 목록을 볼 수있게 한다. -->
+							<!-- 학생목록에서 점수를 입력할 수 있게 한다. -->
+							<!-- 학생의 점수를 입력하는 폼 우측에 해당 강좌의 학생 성적 리스트를 점수 내림차순으로 조회한다. -->
 						</li>
-						<li class="nav-item"> <!-- 게시판 리스트 이동 -->
-							<a class="nav-link" th:href="@{/boardList}">게시판</a>
+						
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/scoreRankInCourseList(memberId=${session.memberId})}">학생성적</a>
+							<!-- 강좌를 group by 하고 학생 점수를 내림차순하여 조회한다. -->
+						</li>
+						
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/scoreRankInCourseList(memberId=${session.memberId})}">성적입력</a>
+							<!-- 강좌를 group by 하고 학생 점수를 내림차순하여 조회한다. -->
 						</li>
 					</ul>
 				</div>
 			</li>
+			
+			<li class="nav-item">
+				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-teacher" aria-expanded="false" aria-controls="ui-teacher">
+					<i class="mdi mdi-package-variant menu-icon"></i> 
+					<span class="menu-title">내정보관리</span> <i class="menu-arrow"></i>
+				</a>
+				<div class="collapse" id="ui-teacher">
+					<ul class="nav flex-column sub-menu">
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/updateTeacherInfo(memberId=${session.memberId})}">정보수정</a>
+						</li>
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/updatePassword(memberId=${session.memberId})}">비밀번호수정</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+			
 		</ul>
 	</nav>
-</th:block>>
+</th:block>
 </html>
