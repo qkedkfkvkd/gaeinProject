@@ -113,7 +113,7 @@
 							<td th:text="${course.subjectName}"></td>
 							<td th:text="${course.roomNo}"></td>
 							<td th:text="${course.roomNumber + '호'}"></td>
-							<td th:text="${course.foomFloor + '층'}"></td>
+							<td th:text="${course.roomFloor + '층'}"></td>
 							<td>
 								<button type="button" class="btn btn-success btn-sm"
 										th:onclick="'window.location.href = \'' + @{/updateCourseNotAssignTeacher(courseAssignmentNo=${course.courseAssignmentNo}, courseNo=${course.courseNo})} + '\''">

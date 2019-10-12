@@ -1,5 +1,6 @@
 package com.cafe24.smart_academy.academy_manage.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,12 +9,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cafe24.smart_academy.academy_manage.course.manage.service.CourseManageService;
 import com.cafe24.smart_academy.academy_manage.course.manage.vo.AcademyRoom;
 import com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject;
+import com.cafe24.smart_academy.academy_manage.course.service.CourseService;
 import com.cafe24.smart_academy.academy_manage.course.service.ScheduleService;
+import com.cafe24.smart_academy.academy_manage.course.vo.Course;
 import com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO;
+import com.cafe24.smart_academy.academy_manage.course.vo.CourseSchedule;
 import com.cafe24.smart_academy.academy_manage.member.service.TeacherInfoService;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
 
@@ -33,14 +41,20 @@ public class ScheduleController {
 	TeacherInfoService teacherInfoService;
 	// 강사 정보 관리 서비스 객체
 	
+	@Autowired
+	CourseService courseService;
+	// 강좌 및 강좌강의실 배정 정보 관리 서비스 객체
 	
-	// 전체 강좌 시간표를 조회한다.
+	
+	// 관리자 승인된 전체 강좌 시간표를 조회한다.
+	// 관리자 승인된 전체 강좌 시간표 검색결과 조회
+	// 강사 : 강사 담당 강좌 시간표 조회
 	@GetMapping("/scheduleList")
 	public String scheduleList(
 			 CourseRoomSearchVO searchVO
 			,Model model) {
 		
-		List<Map<String, Object>> scheduleList = scheduleService.scheduleList(searchVO);
+		List<Map<String, Object>> scheduleList = scheduleService.scheduleOneOrList(searchVO);
 		// 전체 강좌 시간표를 얻어온다.
 		
 		List<Subject> subjectList = courseManageService.subjectList();
@@ -72,52 +86,23 @@ public class ScheduleController {
 	}
 	
 	
-	// 전체 강좌 시간표 검색결과 조회
-	@PostMapping("/searchSchedule")
-	public String searchSchedule(
-			 CourseRoomSearchVO searchVO
-			,Model model) {
-		
-		List<Map<String, Object>> scheduleList = scheduleService.scheduleList(searchVO);
-		// 선택한 값과 일치하는 전체 강좌 시간표를 얻어온다.
-		// 과목코드, 강좌코드, 강의실코드, 강사명(회원 아이디)
-		
-		List<Subject> subjectList = courseManageService.subjectList();
-		// 전체 과목 리스트를 가져온다.
-		
-		List<AcademyRoom> roomList = courseManageService.academyRoomList();
-		// 전체 강의실 리스트를 가져온다.
-		
-		List<Map<String, Object>> teacherList = teacherInfoService.teacherInfoOneOrList();
-		// 전체 강사 리스트를 가져온다.
-		
-		
-		model.addAttribute("subjectList", subjectList);
-		// 샐랙트 박스에 넣어줄 전체 과목 리스트
-		
-		model.addAttribute("roomList", roomList);
-		// 샐랙트박스에 넣어줄 전체 강의실 리스트
-		
-		model.addAttribute("teacherList", teacherList);
-		// 샐랙트박스에 넣어줄 전체 강사 리스트
-		
-		model.addAttribute("scheduleList", scheduleList);
-		// 화면에 보여줄 시간표 리스트
-		
-		model.addAttribute("scheduleListSize", scheduleList.size());
-		// 리스트의 사이즈를 보고 시간표 존재 여부를 판단한다.
-		
-		return "/view/lesson/schedule/listSchedule";
-	}
-	
-	
 	// 관리자 : 강사의 강좌 시간표 승인 요청 목록으로 이동
+	// 관리자 : 강사의 강좌 시간표 승인 요청 검색결과 리스트
+	// 강사 : 내 강좌시간표 승인요청 목록으로 이동
 	@GetMapping("/scheduleApprovalRequestList")
 	public String scheduleApprovalRequestList(
 			 CourseRoomSearchVO searchVO
 			,Model model) {
 		
-		List<Map<String, Object>> scheduleList = scheduleService.scheduleList(searchVO);
+		if(searchVO.getMemberId() != null) {
+			// 강사로 로그인하여 자신의 강좌시간표 승인요청 리스트로 이동할 경우
+			
+			System.out.println(searchVO.getMemberId()
+					+ " <- searchVO.getMemberId()   scheduleApprovalRequestList()   ScheduleController.java");
+			// 관리자의 경우 특정 강사의 아이디가 필요 없으나 강사의 경우 자신의 아이디값을 넘기게 된다.
+		}
+		
+		List<Map<String, Object>> scheduleList = scheduleService.scheduleOneOrList(searchVO);
 		// 승인여부가 '무'인 강좌 시간표를 얻어온다. (관리자 강좌시간표 승인 안됨)
 		
 		List<Subject> subjectList = courseManageService.subjectList();
@@ -149,45 +134,238 @@ public class ScheduleController {
 	}
 	
 	
-	// 관리자 : 관리자 : 강사의 강좌 시간표 승인 요청 검색결과 리스트
-	@PostMapping("/searchScheduleApprovalRequest")
-	public String searchScheduleApprovalRequest(
-				 CourseRoomSearchVO searchVO
-				,Model model) {
+	// 강사 : 시간표 작성 폼 이동
+	@GetMapping("/addSchedule")
+	public String addSchedule(MemberSearchVO memberSearchVO, Model model) {
+		System.out.println(memberSearchVO.getMemberId() + " <- memberId   addSchedule()   ScheduleController.java");
+		// 특정 강사의 정보만을 가져와야 하므로 검색 키워드에 특정 강사의 아이디를 넣어준다.
 		
-		List<Map<String, Object>> scheduleList = scheduleService.scheduleList(searchVO);
-		// 승인여부가 '무'인 강좌 시간표를 얻어온다. (관리자 강좌시간표 승인 안됨)
+		List<Map<String, Object>> oneMap = 
+				teacherInfoService.teacherInfoOneOrList(memberSearchVO);
+		// 리턴타입을 맞춰주기 위해 리스트로 받았을 뿐 로그인 테이블의 기본키인 회원아이디로
+		// 검색을 실시하므로 하나의 객체만 리턴될 것이다.
 		
-		List<Subject> subjectList = courseManageService.subjectList();
-		// 전체 과목 리스트를 가져온다.
+		System.out.println(oneMap.toString()
+				+ " <- oneMap.toString()   teacherCourseEnrolleeStudentList()   ScheduleController.java");
+		System.out.println(oneMap.size()
+				+ " <- oneMap.size()   teacherCourseEnrolleeStudentList()   ScheduleController.java");
 		
-		List<AcademyRoom> roomList = courseManageService.academyRoomList();
-		// 전체 강의실 리스트를 가져온다.
+		Map<String, Object> teacherInfo = oneMap.get(0);
+		// 하나의 객체 밖에 없으므로 맨 앞에있는 객체를 가져다가 맵에 넣어준다.
 		
-		List<Map<String, Object>> teacherList = teacherInfoService.teacherInfoOneOrList();
-		// 전체 강사 리스트를 가져온다.
+		CourseRoomSearchVO searchVO = new CourseRoomSearchVO();
+		searchVO.setMemberId(memberSearchVO.getMemberId());
+		// 강좌강의실 배정리스트를 특정 강사의 아이디를 검색 키워드로 넣어서 조회한다.
+		
+		List<Map<String, Object>> courseAssignList =
+				courseService.courseAssignmentOneOrList(searchVO);
+		// 특정 강사의 아이디를 참조하는 강좌강의실배정 리스트 가져오기
 		
 		
-		model.addAttribute("subjectList", subjectList);
-		// 샐랙트 박스에 넣어줄 전체 과목 리스트
+		List<Map<String, Object>> scheduleList = scheduleService.scheduleOneOrList();
+		// 관리자의 승인여부 상관없이 전체 강좌 시간표를 얻어온다.
 		
-		model.addAttribute("roomList", roomList);
-		// 샐랙트박스에 넣어줄 전체 강의실 리스트
+		model.addAttribute("teacherInfo", teacherInfo);
+		// 화면에 보여줄 특정 강사에 관한 정보 넣어주기
 		
-		model.addAttribute("teacherList", teacherList);
-		// 샐랙트박스에 넣어줄 전체 강사 리스트
+		model.addAttribute("courseAssignList", courseAssignList);
+		// 샐랙트박스에 넣어줄 강사 담당 강좌의 강좌강의실 배정 리스트
 		
 		model.addAttribute("scheduleList", scheduleList);
-		// 화면에 보여줄 시간표 리스트
+		// 화면에 보여줄 전체 강좌 시간표
 		
 		model.addAttribute("scheduleListSize", scheduleList.size());
-		// 리스트의 사이즈를 보고 시간표 존재 여부를 판단한다.
+		// 리스트의 사이즈를 보고 강좌시간표의 존재여부 판단
 		
-		return "/view/lesson/schedule/listScheduleApprovalRequest";
+		return "/view/lesson/schedule/addSchedule";
 	}
 	
 	
+	// 강사 : 요일 선택시 해당 요일을 참조하는 리스트 보여주기
+	@PostMapping("/getScheduleByDay")
+	@ResponseBody
+	public List<Map<String, Object>> getScheduleByDay(@RequestBody String day) {
+		System.out.println(day + "<- day   getScheduleByDay()   ScheduleController.java");
+		
+		List<Map<String, Object>> scheduleList = null;
+		
+		if(day.equals("all")) { // "선택"을 선택했을 경우
+			scheduleList = scheduleService.scheduleOneOrList();
+			// 요일 상관없이 모든 시간표를 가지고 온다.
+			
+		} else {
+			// 특정 요일을 선택했을 경우
+			CourseRoomSearchVO searchVO = new CourseRoomSearchVO();
+			searchVO.setDay(day);
+			// 해당 요일의 강좌 시간표를 가져와야하므로 검색 키워드로 요일을 넣어준다.
+			
+			scheduleList = scheduleService.scheduleOneOrList(searchVO);
+			// 해당 요일의 강좌 시간표 가져오기
+		}
+		
+		
+		return scheduleList;
+	}
 	
 	
+	// 강사 : 시간표코드 중복 확인
+	@PostMapping("/scheduleNoOverlapChk")
+	@ResponseBody
+	public Map<String, Object> scheduleNoOverlapChk(@RequestBody String scheduleNo) {
+		System.out.println(scheduleNo
+				+ " <- scheduleNo   scheduleNoOverlapChk()   ScheduleController.java");
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		String result = scheduleService.CourseScheduleByscheduleNo(scheduleNo);
+		// 강좌시간표 테이블에서 해당 시간표코드가 존재하는지 확인
+		
+		if(result == null) {	// 결과가 없다 : 해당 시간표코드가 존재하지 않는다.
+			map.put("result", 1);
+			// 강좌시간표 테이블에 해당 시간표코드값이 존재하지 않음 : 사용가능한 시간표코드
+		} else {
+			map.put("result", 0);
+			// 강좌시간표 테이블에 해당 시간표코드값이 존재함 : 이미 사용 중인 시간표코드
+		}
+		
+		return map;
+	}
 	
+	
+	// 강사 : 시간표 입력 처리
+	@PostMapping("/addSchedule")
+	public String addSchedule(
+			 CourseSchedule schedule
+			,@RequestParam(value = "memberId") String memberId
+			,RedirectAttributes redirectAttributes) {
+		
+		String message = scheduleService.addSchedule(schedule);
+		// 시간표 추가 처리 후 메세지를 반환받는다.
+		
+		String path = "redirect:/addSchedule";
+		// 강좌추가에 실패했을 경우 다시 강좌시간표를 추가하는 폼으로 이동하게 초기화한다.
+		
+		
+		if(message == null) {
+			// 리턴받은 메세지가 널이라면 시간표추가에 성공했다는 뜻이다.
+			
+			redirectAttributes.addAttribute("scheduleApprovalStatus", "무");
+			// 승인요청 목록으로 이동하므로 승인여부(유,무) 중 "무"를 넣어준다.
+			
+			path = "redirect:/scheduleApprovalRequestList";
+			// 강좌시간표 승인 요청 목록으로 이동한다.
+		}
+		
+		redirectAttributes.addFlashAttribute("memberId", memberId);
+		// 시간표 추가에 실패하여 추가폼으로 가든,
+		// 시간표 추가에 성공하여 시간표 리스트로 가든
+		// 강사 자신의 아이디는 항상 가지고 가야한다.
+		
+		return path;
+	}
+	
+	
+	// 관리자, 강사 : 시간표 상세 보기
+	@GetMapping("/updateSchedule")
+	public String updateSchedule(
+			 CourseRoomSearchVO searchVO
+			,Model model) {
+		System.out.println(searchVO.getScheduleNo()
+				+ " <- searchVO.getScheduleNo()   updateSchedule()   ScheduleController.java");
+		
+		List<Map<String, Object>> oneMap = scheduleService.scheduleOneOrList(searchVO);
+		// 시간표 테이블의 기본키인 시간표 코드로 값을 얻어올 것이기에 하나의 객체만 나온다.
+		
+		System.out.println(oneMap.toString() + " <- oneMap.toString()   updateSchedule()   ScheduleController.java");
+		System.out.println(oneMap.size() + " <- oneMap.size()   updateSchedule()   ScheduleController.java");
+		
+		Map<String, Object> scheduleInfo = oneMap.get(0);
+		// 하나의 객체밖에 없기에 그 객체를 꺼내서 담아준다.
+		
+		
+		searchVO.setScheduleNo(null);
+		searchVO.setMemberId((String)scheduleInfo.get("memberId"));
+		// 강좌강의실 배정리스트를 특정 강사의 아이디를 검색 키워드로 넣어서 조회한다.
+		
+		List<Map<String, Object>> courseAssignList =
+				courseService.courseAssignmentOneOrList(searchVO);
+		// 특정 강사의 아이디를 참조하는 강좌강의실배정 리스트 가져오기
+		
+		
+		List<Map<String, Object>> scheduleList = scheduleService.scheduleOneOrList();
+		// 관리자의 승인여부 상관없이 전체 강좌 시간표를 얻어온다.
+		
+		
+		model.addAttribute("scheduleInfo", scheduleInfo);
+		// 화면에 뿌려줄 객체를 담아준다.
+		
+		model.addAttribute("courseAssignList", courseAssignList);
+		// 샐랙트박스에 넣어줄 강사 담당 강좌의 강좌강의실 배정 리스트
+		
+		model.addAttribute("scheduleList", scheduleList);
+		// 화면에 보여줄 전체 강좌 시간표
+		
+		return "/view/lesson/schedule/detailSchedule";
+	}
+	
+	
+	// 관리자, 강사 : 시간표 수정처리
+	@PostMapping("/updateSchedule")
+	public String updateSchedule(
+			 CourseSchedule schedule
+			,@RequestParam(value = "memberId", required = false) String memberId
+			,RedirectAttributes redirectAttributes) {
+		
+		String message = scheduleService.updateSchedule(schedule);
+		// 시간표 수정처리 후 메세지를 리턴받는다.
+		
+		String path = "redirect:/scheduleApprovalRequestList";
+		// 시간표 수정에 성공했을 경우 강좌시간표 승인 요청 리스트로 이동하게 초기화한다.
+		
+		if(message != null) {
+			// 리턴받은 메세지가 널이 아니라면 시간표 수정에 실패했다는 뜻이다.
+			
+			System.out.println("시간표 수정 실패!!!!!!!!!!!!");
+			
+			redirectAttributes.addAttribute("scheduleNo", schedule.getScheduleNo());
+			// 시간표 상세 페이지로 리다이렉트하면서 시간표코드를 넘겨준다.
+			
+			path = "redirect:/updateSchedule";
+			// 시간표 상세 페이지로 이동
+		}
+		
+		if(memberId != null) { // 강사회원이 시간표를 수정한 것이라면
+			redirectAttributes.addAttribute("memberId", memberId);
+			// 강사의 아이디를 넣어준다.
+		}
+		
+		return path;
+	}
+	
+	
+	// 관리자, 강사 : 시간표 삭제 처리
+	@GetMapping("/deleteSchedule")
+	public String deleteSchedule(
+			 @RequestParam(value = "scheduleNo") String scheduleNo
+			,@RequestParam(value = "memberId", required = false) String memberId
+			,RedirectAttributes redirectAttributes) {
+		
+		System.out.println(scheduleNo + " <- scheduleNo   deleteSchedule()   ScheduleController.java");
+		
+		String message = scheduleService.deleteSchedule(scheduleNo);
+		// 해당 시간표 삭제 쿼리 실행 후 메세지 반환
+		
+		System.out.println(message + " <- message   deleteSchedule()   ScheduleController.java");
+		
+		redirectAttributes.addAttribute("scheduleApprovalStatus", "유");
+		// 시간표 리스트로 이동하므로 관리자 승인 키워드를 넣어준다.
+		
+		if(memberId != null) { // 강사회원이 로그인해서 자신의 강좌시간표를 삭제했다면
+			redirectAttributes.addAttribute("memberId", memberId);
+			// 해당 강사 담당 강좌를 보여줘야하므로 강사의 아이디를 넣어준다.
+		}
+		
+		return "redirect:/scheduleList";
+		
+	}
 }

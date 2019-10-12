@@ -7,7 +7,7 @@
 <mapper namespace="com.cafe24.smart_academy.academy_manage.course.mapper.ScheduleMapper">
 	
 	<!-- 전체 강좌 시간표 가져오기 -->
-	<select id="scheduleList"
+	<select id="scheduleOneOrList"
 			parameterType="com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO"
 			resultType="map">
 		select
@@ -15,8 +15,10 @@
 			,cs.day							AS day
 			,cs.period						AS period
 			,cs.schedule_registered_date	AS scheduleRegisteredDate
+			,cs.schedule_modification_date	AS scheduleModificationDate
 			,co.course_name					AS courseName
 			,sub.subject_name				AS subjectName
+			,cra.course_assignment_no		AS courseAssignmentNo
 			,aro.room_number				AS roomNumber
 			,aro.room_floor					AS roomFloor
 			,aro.room_usage					AS roomUsage
@@ -47,8 +49,18 @@
 			login.member_id				= mem.member_id
 		and
 			login.member_level			= '강사'
+		<!-- 강좌 시간표 상세보기 -->
+		<if test="scheduleNo != null and scheduleNo neq ''.toString()">
+		and
+			cs.schedule_no	= #{scheduleNo}
+		</if>
+		
+		<!-- 강사 시간표 추가폼에서 요일을 선택하여 시간표를 출력하는 경우 관리자의 승인여부는 필요없다. -->
+		<if test="scheduleApprovalStatus != null and scheduleApprovalStatus neq ''.toString()">
 		and
 			cs.schedule_approval_status	= #{scheduleApprovalStatus}
+		</if>
+		
 		<!-- 과목을 선택했을 경우 -->
 		<if test="subjectNo != null and subjectNo neq ''.toString()">
 		and
@@ -72,11 +84,80 @@
 		and
 			tea.member_id = #{memberId}
 		</if>
+		
+		<!-- 강좌시간표 추가폼에서 특정 요일을 선택했을 경우 -->
+		<if test="day != null and day neq ''.toString()">
+		and
+			cs.day = #{day}
+		</if>
 		order by
-			cs.period
-		asc
+			 cs.day			asc
+			,cs.period		asc
 	</select>
 	
 	
+	<!-- 강사 : 강좌 시간표코드 중복 확인 -->
+	<select id="CourseScheduleByscheduleNo"
+			parameterType="String"
+			resultType="String">
+		select
+			schedule_no
+		from
+			course_schedule
+		where
+			schedule_no = #{scheduleNo}
+	</select>
 	
+	
+	<!-- 강사 : 강좌 시간표 추가 처리 -->
+	<insert id="addSchedule"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.vo.CourseSchedule">
+		insert into course_schedule (
+			 schedule_no
+			,course_assignment_no
+			,day
+			,period
+			,schedule_approval_status
+			,schedule_registered_date
+			,schedule_modification_date
+		) values (
+			 #{scheduleNo}
+			,#{courseAssignmentNo}
+			,#{day}
+			,#{period}
+			,#{scheduleApprovalStatus}
+			,curdate()
+			,curdate()
+		)
+	</insert>
+	
+	
+	<!-- 관리자, 강사 : 시간표 수정처리 -->
+	<update id="updateSchedule"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.vo.CourseSchedule">
+		update
+			course_schedule
+		<trim prefix="set">
+				 course_assignment_no			= #{courseAssignmentNo}
+			<if test="day != null and day neq ''.toString()">
+				,day							= #{day}
+			</if>
+			<if test="period != null and period neq ''.toString()">
+				,period							= #{period}
+			</if>
+				,schedule_approval_status		= #{scheduleApprovalStatus}
+				,schedule_modification_date		= curdate()
+		</trim>
+		where
+			schedule_no = #{scheduleNo}
+	</update>
+	
+	
+	<!-- 관리자, 강사 : 시간표 삭제 처리 -->
+	<delete id="deleteSchedule" parameterType="String">
+		delete from
+			course_schedule
+		where
+			schedule_no = #{scheduleNo}
+	</delete>
 </mapper>

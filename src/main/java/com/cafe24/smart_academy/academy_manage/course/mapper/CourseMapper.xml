@@ -161,7 +161,7 @@
 	</select>
 	
 	
-	<!-- 관리자 : 강사가 배정된 강사 리스트 가져오기 -->
+	<!-- 관리자 : 강사가 배정된 강좌 리스트 가져오기 -->
 	<select id="courseAssignTeacherList"
 			parameterType="com.cafe24.smart_academy.academy_manage.course.vo.Course"
 			resultType="map">
@@ -322,7 +322,7 @@
 			,cra.course_assignment_registered_date		AS courseAssignmentRegisteredDate
 			,ro.room_no									AS roomNo
 			,ro.room_number								AS roomNumber
-			,ro.room_floor								AS foomFloor
+			,ro.room_floor								AS roomFloor
 			,tea.member_id								AS memberId
 			,tea.teacher_reason_for_change				AS teacherReasonForChange
 			,tea.teacher_changed_date					AS teacherChangedDate

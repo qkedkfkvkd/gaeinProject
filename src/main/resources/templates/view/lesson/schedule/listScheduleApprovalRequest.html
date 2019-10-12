@@ -15,7 +15,7 @@
 	</div>
 	
 	<div class="col-sm-11 col-md-offset-3">
-		<form class="form-inline" action="/searchScheduleApprovalRequest" method="post">
+		<form class="form-inline" action="/scheduleApprovalRequestList">
 			<input type="hidden" name="scheduleApprovalStatus" value="무">
 			
 			<div class="form-group">
@@ -82,7 +82,10 @@
 					<th>강좌</th>
 					<th>강사</th>
 					<th>강의실</th>
-					<th>승인</th>
+					<th>등록일</th>
+					<th>변경일</th>
+					<th>수정</th>
+					<th th:if="${session.memberLevel == '관리자'.toString()}">승인</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -95,7 +98,24 @@
 					<td th:text="${schedule.courseName}"></td>
 					<td th:text="${schedule.memberName}"></td>
 					<td th:text="${schedule.roomFloor + '층 ' + schedule.roomNumber + '호'}"></td>
-					<td>
+					<td th:text="${#calendars.format(schedule.scheduleRegisteredDate,'yyyy-MM-dd')}"></td>
+					<td th:text="${#calendars.format(schedule.scheduleModificationDate,'yyyy-MM-dd')}"></td>
+					<td><!-- 강사인 회원은 자신 담당 강좌만 수정할 수 있다. -->
+						<span th:if="${session.memberLevel == '관리자'.toString() || (session.memberLevel == '강사'.toString() && session.memberId == schedule.memberId)}">
+							<button type="button" class="btn btn-success btn-sm"
+									th:onclick="'window.location.href = \'' + @{/updateSchedule(scheduleNo=${schedule.scheduleNo})} + '\''">
+								수정
+							</button>
+						</span>
+						<!-- 강사회원으로 로그인을 했는데 자신 담당 강좌가 아닌 경우라면 수정하면 안된다. -->
+						<span th:if="${session.memberLevel == '강사'.toString() && session.memberId != schedule.memberId}">
+							<button type="button" class="btn btn-success btn-sm"
+									disabled="disabled">
+								수정불가
+							</button>
+						</span>
+					</td>
+					<td th:if="${session.memberLevel == '관리자'.toString()}">
 						<button type="button" class="btn btn-success btn-sm"
 								th:onclick="scheduleApproval([[${schedule.scheduleNo}]])">
 							승인

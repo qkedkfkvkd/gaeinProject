@@ -18,7 +18,13 @@
 				<div class="collapse" id="ui-class">
 					<ul class="nav flex-column sub-menu" style="">
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/teacherCourseScheduleList(scheduleApprovalStatus='유', memberId=${session.memberId})}">내강좌시간표</a>
+							<a class="nav-link" th:href="@{/scheduleList(scheduleApprovalStatus='유', memberId=${session.memberId})}">내강좌시간표</a>
+						</li>
+						
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/scheduleApprovalRequestList(scheduleApprovalStatus='무', memberId=${session.memberId})}">
+								시간표승인요청조회
+							</a>
 						</li>
 						
 						<li class="nav-item"> <!--  -->
@@ -28,7 +34,7 @@
 						</li>
 						
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/addSchedule}">시간표작성</a>
+							<a class="nav-link" th:href="@{/addSchedule(memberId=${session.memberId})}">시간표작성</a>
 							<!-- 강사가 시간표를 작성하면 관리자의 강좌시간표 승인요청 목록에 올라간다. -->
 							<!-- scheduleApprovalStatus(승인여부) : 무 -->
 						</li>

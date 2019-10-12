@@ -4,39 +4,40 @@
       layout:decorate="~{layout/default}">
 
 <th:block layout:fragment="customTitle">
-	<title th:text="${teacherInfo.courseName + ' 시간표 작성'}"></title>
+	<title th:text="${scheduleInfo.courseName + ' 시간표 상세'}"></title>
 </th:block>
 
 <th:block layout:fragment="customContents">
 	<div class="page-header">
 		<div class="col-md-6 col-md-offset-3">
-			<h3 th:text="${teacherInfo.memberName + ' : ' + teacherInfo.courseName + ' 시간표 작성'}"></h3>
+			<h3 th:text="${scheduleInfo.memberName + ' : ' + scheduleInfo.courseName + ' 시간표 상세'}"></h3>
 		</div>
 	</div>
 	
 	<div class="col-sm-12 col-md-offset-3">
 		<div class="row">
 			<div class="col-md-3">
-				<form role="form" id="scheduleJoinFrm"
-					  action="/addSchedule" method="post">
-					<input type="hidden" name="memberId" value="${teacherInfo.memberId}">
-					<!-- 추가처리 후 강좌시간표승인요청 리스트로 가든 -->
-					<!-- 추가실패하여 다시 추가폼으로 오든 강사의 아이디는 항상 가지고 가야한다. -->
+				<form role="form" id="updateScheduleJoinFrm"
+					  action="/updateSchedule" method="post">
+					<input type="hidden" name="memberId"
+						th:if="${session.memberLevel == '강사'.toString()}" value="${scheduleInfo.memberId}">
+					<!-- 강사회원이 수정처리 후 강좌시간표승인요청 리스트로 갈때 강사의 아이디를 가지고 가야한다. -->
 					
-					<input type="hidden" name="scheduleApprovalStatus" value="무">
-					<!-- 시간표를 등록하고 관리자에게 승인을 받아야하므로 승인여부 (유,무)를 '무'로 설정한다. -->
+					<input type="hidden" name="scheduleApprovalStatus" value="유"
+							th:if="${session.memberLevel == '관리자'.toString()}">
+					<!-- 관리자가 시간표를 수정했을 경우 관리자 승인여부가 필요없으므로 승인여부 (유,무)를 '유'로 설정한다. -->
+					
+					<input type="hidden" name="scheduleApprovalStatus" value="무"
+							th:if="${session.memberLevel == '강사'.toString()}">
+					<!-- 강사가 시간표를 수정했을 경우 관리자에게 승인을 받아야하므로 승인여부 (유,무)를 '무'로 설정한다. -->
 					
 					<div class="form-group">
 						<label for="inputScheduleNo">시간표코드</label>
 						<div class="input-group">
 							<input type="text" class="form-control" id="inputScheduleNo"
-								   name="scheduleNo">
-							<span class="input-group-btn">
-								<button type="button" class="btn btn-primary btn-sm"
-										id="scheduleNoOverlapBtn">중복확인</button>
-								<input type="hidden" id="scheduleNoOverlapClickChk" value="0">
-								<!-- 중복확인 버튼을 누르지 않음으로 설정한다. 0:안누름 / 1:누름 -->
-							</span>
+								   name="scheduleNo"
+								   th:value="${scheduleInfo.scheduleNo}"
+								   readonly="readonly">
 						</div>
 					</div>
 					
@@ -73,17 +74,32 @@
 					<div class="form-group">
 						<label for="inputPeriod">교시</label>
 						<input type="number" class="form-control" id="inputPeriod"
-							   name="period">
+							   name="period"
+							   th:value="${scheduleInfo.period}">
 					</div>
 					
 					<div class="form-group">
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
-							<div class="col-md-6">
+							<div class="col-md-4">
+								<span th:if="${session.memberLevel == '관리자'.toString()}">
+									<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/deleteSchedule(scheduleNo=${scheduleInfo.scheduleNo})} + '\''">
+										삭제
+									</button>
+								</span>
+								<span th:if="${session.memberLevel == '강사'.toString()}">
+									<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/deleteSchedule(scheduleNo=${scheduleInfo.scheduleNo}, memberId=${scheduleInfo.memberId})} + '\''">
+										삭제
+									</button>
+								</span>
+							</div>
+							<div class="col-md-4">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-6">
-								<button type="button" id="scheduleJoinFrmBtn"
-										class="btn btn-primary btn-sm btn-block">입력</button>
+							<div class="col-md-4">
+								<button type="button" id="updateScheduleJoinFrmBtn"
+										class="btn btn-primary btn-sm btn-block">수정</button>
 							</div>
 						</div>
 					</div>
@@ -128,6 +144,20 @@
 </th:block>
 
 <th:block layout:fragment="customScript">
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+			var courseAssignmentNo = /*[[ ${scheduleInfo.courseAssignmentNo} ]]*/;
+			var day = /*[[ ${scheduleInfo.day} ]]*/;
+		/*]]*/
+		
+		$(document).ready(function(){
+			console.log(`courseAssignmentNo:${courseAssignmentNo}`);
+			
+			$("#courseAssignmentList").val(courseAssignmentNo);
+			$("#dayList").val(day);
+		});
+	</script>
+	
 	<script type="text/javascript">
 		
 		// 요일을 변경했을 경우 해당 요일의 시간표를 보여준다.
@@ -174,7 +204,6 @@
 							contents += '</tr>';
 							
 							$('#scheduleDayList').append(contents);
-							
 						});
 					} else {  // 넘어온 시간표리스트의 사이즈가 0이다. 해당 요일에 등록된 시간표가 없다.
 						var contents = '';
@@ -184,20 +213,6 @@
 						
 						$('#scheduleDayList').append(contents);
 					}
-					
-					
-					/* var contents = '';
-					contents += '<tr th:each="schedule, lists : ${'+ result +'}" th:if="${'+ length +' != 0}">';
-			        contents +=		'<td th:text="${lists.count}"></td>';
-			        contents +=		'<td th:text="${schedule.period}"></td>';
-			        contents +=		'<td th:text="${schedule.day}"></td>';
-			        contents +=		'<td th:text="${schedule.subjectName}"></td>';
-			        contents +=		'<td th:text="${schedule.courseName}"></td>';
-			        contents +=		'<td th:text="${schedule.memberName}"></td>';
-			        contents +=		'<td th:text="${schedule.roomFloor + \'층 \' + schedule.roomNumber + \'호\'}"></td>';
-			        contents += '</tr>';
-			        
-			        $('#scheduleDayList').append(contents); // 추가기능 */
 				}
 				,error: function (jqXHR, textStatus, errorThrown) {
 					alert("오류가 발생하였습니다.");
@@ -206,73 +221,11 @@
 		}
 		
 		
-		// 시간표코드 중복 확인
-		$('#scheduleNoOverlapBtn').on('click', function(e){
-			e.preventDefault();
-			var scheduleNo = $('#inputScheduleNo').val();
-			console.log(`scheduleNo:${scheduleNo}`);
-			
-			if($("#inputScheduleNo").val() ==''){
-	            alert('시간표코드를 입력하세요');
-	            $("#inputScheduleNo").focus();
-	            return false;
-	        }
-			
-			$.ajax({
-	            url: '/scheduleNoOverlapChk',
-	            type: 'POST',
-	            data: scheduleNo,
-	            dataType: 'json',
-	            contentType: "application/json; charset=UTF-8",
-	            success: function (response) {
-	                if(response.result == 1){
-	                	alert('사용 가능한 코드 입니다.')
-	                    $('#scheduleNoOverlapClickChk').val(1);
-	                	// 중복확인 버튼 누름으로 변경 0:안누름 / 1:누름
-	                } else if(response.result == 0){
-	                	alert('이미 등록된 코드 입니다');
-	                } else {
-	                    alert('검사 중 에러가 발생했습니다');
-	                }
-	            },
-	            error: function(jqXHR, textStatus, errorThrown){
-	                alert("arjax error : " + textStatus + "\n" + errorThrown);
-	            }
-	        });
-		});
 		
-		// 값을 바꿨을 경우 중복확인 버튼을 다시 눌러야함 (중복확인 버튼 눌럿는지 체크하는 값을 0으로 셋팅) 0:안누름 / 1:누름
-		$("#inputScheduleNo").on('change', function(e) {
-			e.preventDefault();
-			$('#scheduleNoOverlapClickChk').val(0);
-		});
-		
-		
-		
-		// 강좌시간표 등록 처리 전 공백 및 중복확인버튼 눌렀는지 유효성 검사
-		$('#scheduleJoinFrmBtn').on('click', function(e){
+		// 강좌시간표 수정 처리 전 공백 유효성 검사
+		$('#updateScheduleJoinFrmBtn').on('click', function(e){
 			e.preventDefault();
 			
-			var scheduleNoOverlapClickChk = $('#scheduleNoOverlapClickChk').val();
-			
-			console.log(`scheduleNoOverlapClickChk:${scheduleNoOverlapClickChk}`);
-			console.log('0이면 사용 중, 1이면 사용 가능');
-			
-	        if($("#inputScheduleNo").val() ==''){
-	            alert('시간표코드를 입력하세요');
-	            $('#scheduleNoOverlapClickChk').val(0);
-	            // 만약 시간표코드를 입력하고 중복확인 버튼을 눌러서 사용가능한 코드라고 나오면 중복확인 버튼 체크값이 1로 바뀐다.
-	            // 재입력하고자 값을 지웠을 경우 다시 눌러줘야한다.
-	            $("#inputScheduleNo").focus();
-	            return false;
-	        }
-	        
-	        if($("#scheduleNoOverlapClickChk").val() == 0){
-	            alert('시간표코드 중복확인을 해주세요');
-	            $("#inputScheduleNo").focus();
-	            return false;
-	        }
-	        
 	        if($("#courseAssignmentList").val() ==''){
 	            alert('강좌강의실배정을 선택하세요');
 	            $("#courseAssignmentList").focus();
@@ -291,7 +244,7 @@
 	            return false;
 	        }
 	        
-	        $('#scheduleJoinFrm').submit();
+	        $('#updateScheduleJoinFrm').submit();
 	    });
 	</script>
 </th:block>

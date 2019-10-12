@@ -76,7 +76,7 @@
 					<td th:text="${course.courseName}"></td>
 					<td th:text="${course.subjectName}"></td>
 					<td th:text="${course.roomNumber + '호'}"></td>
-					<td th:text="${course.foomFloor + '층'}"></td>
+					<td th:text="${course.roomFloor + '층'}"></td>
 					<td th:text="${#calendars.format(course.courseRegisteredDate,'yyyy-MM-dd')}"></td>
 					<td>
 						<button type="button" class="btn btn-success btn-sm"
