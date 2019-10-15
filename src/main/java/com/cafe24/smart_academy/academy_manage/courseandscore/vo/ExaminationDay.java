@@ -5,7 +5,7 @@ import java.util.Date;
 // 시험날짜 테이블 VO 객체
 public class ExaminationDay {
 	private String	examinationDayNo;				// 시험날짜코드(기본키)
-	private String	courseAssignmentNo;				// 강좌배정코드(강좌 강의실 배정 테이블 참조 외래키 1:다 대응)
+	private String	scheduleNo;						// 시간표코드(강좌시간표 테이블 참조 외래키 1:다 대응)
 	private String	examinationDay;					// 시험일
 	private String	examinationName;				// 시험명
 	private String	examinationDayIsChanged;		// 코드변경유무 -> ENUM('유','무')
@@ -21,13 +21,12 @@ public class ExaminationDay {
 				+ " <- examinationDayNo   setExaminationDayNo()   ExaminationDay.java");
 		this.examinationDayNo = examinationDayNo;
 	}
-	public String getCourseAssignmentNo() {
-		return courseAssignmentNo;
+	public String getScheduleNo() {
+		return scheduleNo;
 	}
-	public void setCourseAssignmentNo(String courseAssignmentNo) {
-		System.out.println(courseAssignmentNo
-				+ " <- courseAssignmentNo   setCourseAssignmentNo()   ExaminationDay.java");
-		this.courseAssignmentNo = courseAssignmentNo;
+	public void setScheduleNo(String scheduleNo) {
+		System.out.println(scheduleNo + " <- scheduleNo   setScheduleNo()   ExaminationDay.java");
+		this.scheduleNo = scheduleNo;
 	}
 	public String getExaminationDay() {
 		return examinationDay;

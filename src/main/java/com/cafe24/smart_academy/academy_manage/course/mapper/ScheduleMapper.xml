@@ -12,8 +12,8 @@
 			resultType="map">
 		select
 			 cs.schedule_no					AS scheduleNo
-			,cs.day							AS day
-			,cs.period						AS period
+			,cs.schedule_day				AS scheduleDay
+			,cs.schedule_period				AS schedulePeriod
 			,cs.schedule_registered_date	AS scheduleRegisteredDate
 			,cs.schedule_modification_date	AS scheduleModificationDate
 			,co.course_name					AS courseName
@@ -86,14 +86,25 @@
 		</if>
 		
 		<!-- 강좌시간표 추가폼에서 특정 요일을 선택했을 경우 -->
-		<if test="day != null and day neq ''.toString()">
+		<if test="scheduleDay != null and scheduleDay neq ''.toString()">
 		and
-			cs.day = #{day}
+			cs.schedule_day = #{scheduleDay}
 		</if>
 		order by
-			 cs.day			asc
-			,cs.period		asc
+			 cs.schedule_day		asc
+			,cs.schedule_period		asc
 	</select>
+	
+	
+	<!-- 관리자 : 강사가 추가하거나 수정한 강좌시간표 승인 처리 -->
+	<update id="scheduleApproval" parameterType="String">
+		update
+			course_schedule
+		set
+			schedule_approval_status = '유'
+		where
+			schedule_no = #{scheduleNo}
+	</update>
 	
 	
 	<!-- 강사 : 강좌 시간표코드 중복 확인 -->
@@ -115,16 +126,16 @@
 		insert into course_schedule (
 			 schedule_no
 			,course_assignment_no
-			,day
-			,period
+			,schedule_day
+			,schedule_period
 			,schedule_approval_status
 			,schedule_registered_date
 			,schedule_modification_date
 		) values (
 			 #{scheduleNo}
 			,#{courseAssignmentNo}
-			,#{day}
-			,#{period}
+			,#{scheduleDay}
+			,#{schedulePeriod}
 			,#{scheduleApprovalStatus}
 			,curdate()
 			,curdate()
@@ -139,11 +150,11 @@
 			course_schedule
 		<trim prefix="set">
 				 course_assignment_no			= #{courseAssignmentNo}
-			<if test="day != null and day neq ''.toString()">
-				,day							= #{day}
+			<if test="scheduleDay != null and scheduleDay neq ''.toString()">
+				,schedule_day					= #{scheduleDay}
 			</if>
-			<if test="period != null and period neq ''.toString()">
-				,period							= #{period}
+			<if test="schedulePeriod != null and schedulePeriod neq ''.toString()">
+				,schedule_period				= #{schedulePeriod}
 			</if>
 				,schedule_approval_status		= #{scheduleApprovalStatus}
 				,schedule_modification_date		= curdate()

@@ -106,6 +106,27 @@
 			</li>
 			
 			<li class="nav-item">
+				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-test" aria-expanded="false" aria-controls="ui-test">
+					<i class="mdi mdi-package-variant menu-icon"></i> 
+					<span class="menu-title">시험관리</span> <i class="menu-arrow"></i>
+				</a>
+				<div class="collapse" id="ui-test">
+					<ul class="nav flex-column sub-menu" style="">
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/examinationDayList(testStandardDay='notTest')}">시험일</a>
+							<!-- 아직 시험을 치르지 않은 시험날짜 강좌리스트를 조회한다. -->
+						</li>
+						
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/examinationDayCompleteList(testStandardDay='testComplete')}">완료된시험목록</a>
+							<!-- 시험 완료된 강좌리스트를 보여주고 해당 강좌 클릭시 시험 상세정보를 조회한다. -->
+							<!-- 우측에 학생목록을 보여주고 점수를 내림차순하여 조회한다. -->
+						</li>
+					</ul>
+				</div>
+			</li>
+			
+			<li class="nav-item">
 				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-counsel" aria-expanded="false" aria-controls="ui-counsel">
 					<i class="mdi mdi-package-variant menu-icon"></i> 
 					<span class="menu-title">상담생관리</span> <i class="menu-arrow"></i>

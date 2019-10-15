@@ -491,24 +491,26 @@ public class CourseManageController {
 	// 관리자 : 성적기준 테이블 상세 보기
 	@GetMapping("/updateGradingCriteria")
 	public String updateGradingCriteria(
-			 @RequestParam(value = "gradingCriteriaRating") String gradingCriteriaRating
+			 /*@RequestParam(value = "gradingCriteriaRating") String gradingCriteriaRating*/
+			 CourseRoomSearchVO searchVO
 			,Model model) {
-		System.out.println(gradingCriteriaRating
+		System.out.println(searchVO.getGradingCriteriaRating()
 				+ " <- gradingCriteriaRating   updateGradingCriteria()   CourseManageController.java");
 		
 		GradingCriteria gradingCriteria =
-				courseManageService.detailGradingCriteriaByGradingCriteriaRating(gradingCriteriaRating);
+				courseManageService.detailGradingCriteriaByGradingCriteriaRating(searchVO.getGradingCriteriaRating());
 		// 성적기준의 상세화면을 보고 수정하기 위해 성적기준 테이블의 기본키가 되는 등급으로
 		// 해당 성적 기준의 모든 정보를 가지고 온다.
 		
-		Map<String, Object> map = new HashMap<String, Object>();
+		//Map<String, Object> map = new HashMap<String, Object>();
 		// totalGradeResultList() 메소드의 매개변수가 Map 이므로 검색내용을 저장하기 위한 맵 객체 선언
 		
-		map.put("gradingCriteriaRating", gradingCriteriaRating);
+		//map.put("gradingCriteriaRating", gradingCriteriaRating);
 		// 검색 내용 저장
 		
+		
 		List<Map<String, Object>> gradeReferenceInputScoreList =
-				courseAndScoreService.totalGradeResultList(map);
+				courseAndScoreService.totalGradeResultOneOrList(searchVO);
 		// 해당 등급을 참조하는 모든 성적 리스트 가져오기
 		
 		model.addAttribute("gradingCriteria", gradingCriteria);

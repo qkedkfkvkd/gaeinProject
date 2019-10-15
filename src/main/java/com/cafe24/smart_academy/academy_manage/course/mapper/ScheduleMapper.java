@@ -19,6 +19,9 @@ public interface ScheduleMapper {
 	// 전체 강좌 시간표 가져오기
 	// 관리자 : 강좌 승인요청된 강좌시간표를 가져온다.
 	
+	public int scheduleApproval(String scheduleNo);
+	// 관리자 : 강사가 추가하거나 수정한 강좌시간표 승인 처리
+	
 	public String CourseScheduleByscheduleNo(String scheduleNo);
 	// 강사 : 강좌 시간표코드 중복 확인
 	

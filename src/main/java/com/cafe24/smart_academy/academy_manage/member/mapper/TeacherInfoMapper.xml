@@ -43,11 +43,15 @@
 			resultType="map">
 		select
 			 login.member_id				AS memberId
+			,login.member_pw				AS memberPw
 			,login.member_level				AS memberLevel
 			,mem.member_name				AS memberName
 			,mem.member_birth				AS memberBirth
 			,mem.member_email				AS memberEmail
 			,mem.member_phone				AS memberPhone
+			,mem.member_tel					AS memberTel
+			,mem.member_address				AS memberAddress
+			,mem.member_registered_date		AS memberRegisteredDate
 			,tea.course_no					AS courseNo
 			,sub.subject_name				AS subjectName
 			,co.course_name					AS courseName

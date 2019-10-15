@@ -5,14 +5,21 @@ public class CourseRoomSearchVO {
 	private String	subjectNo;				// 과목테이블의 과목코드(기본키)
 	private String	courseNo;				// 강좌테이블의 강좌코드(기본키)
 	private String	roomNo;					// 강의실 테이블의 강의실코드(기본키)
+	private String	gradingCriteriaRating;	// 성적기준 테이블의 등급(기본키)
 	private String	courseAssignmentNo;		// 강좌 강의실 배정 테이블의 강좌배정코드(기본키)
 	private String	memberId;				// 로그인, 회원신상정보, 강사, 강사개인정보 테이블들의 회원아이디(기본키)
 	private String	courseEnrolleeNo;		// 수강신청 테이블의 수강신청코드(기본키)
 	private String	scheduleNo;				// 강좌 시간표 테이블의 시간표코드(기본키)
+	private String	examinationDayNo;		// 시험날짜 테이블의 시험일코드(기본키)
 	
-	////// 강의 시간표 검색 변수들
-	private String	day;					// 강좌시간표의 요일
+	////// 강좌 시간표 검색 변수들
+	private String	scheduleDay;			// 강좌시간표의 요일
 	private String	scheduleApprovalStatus;	// 강좌시간표의 관리자 승인여부
+	
+	////// 시험일 강좌시간표 검색 변수
+	private String	testStandardDay;
+	
+	
 	
 	public String getSubjectNo() {
 		return subjectNo;
@@ -34,6 +41,14 @@ public class CourseRoomSearchVO {
 	public void setRoomNo(String roomNo) {
 		System.out.println(roomNo + " <- roomNo   setRoomNo()   CourseRoomSearchVO.java");
 		this.roomNo = roomNo;
+	}
+	public String getGradingCriteriaRating() {
+		return gradingCriteriaRating;
+	}
+	public void setGradingCriteriaRating(String gradingCriteriaRating) {
+		System.out.println(gradingCriteriaRating
+				+ " <- gradingCriteriaRating   setGradingCriteriaRating()   CourseRoomSearchVO.java");
+		this.gradingCriteriaRating = gradingCriteriaRating;
 	}
 	public String getCourseAssignmentNo() {
 		return courseAssignmentNo;
@@ -58,12 +73,12 @@ public class CourseRoomSearchVO {
 				+ " <- courseEnrolleeNo   setCourseEnrolleeNo()   CourseRoomSearchVO.java");
 		this.courseEnrolleeNo = courseEnrolleeNo;
 	}
-	public String getDay() {
-		return day;
+	public String getScheduleDay() {
+		return scheduleDay;
 	}
-	public void setDay(String day) {
-		System.out.println(day + " <- day   setDay()   CourseRoomSearchVO.java");
-		this.day = day;
+	public void setScheduleDay(String scheduleDay) {
+		System.out.println(scheduleDay + " <- scheduleDay   setScheduleDay()   CourseRoomSearchVO.java");
+		this.scheduleDay = scheduleDay;
 	}
 	public String getScheduleApprovalStatus() {
 		return scheduleApprovalStatus;
@@ -79,5 +94,21 @@ public class CourseRoomSearchVO {
 	public void setScheduleNo(String scheduleNo) {
 		System.out.println(scheduleNo + " <- scheduleNo   setScheduleNo()   CourseRoomSearchVO.java");
 		this.scheduleNo = scheduleNo;
+	}
+	public String getExaminationDayNo() {
+		return examinationDayNo;
+	}
+	public void setExaminationDayNo(String examinationDayNo) {
+		System.out.println(examinationDayNo
+				+ " <- examinationDayNo   setExaminationDayNo()   CourseRoomSearchVO.java");
+		this.examinationDayNo = examinationDayNo;
+	}
+	public String getTestStandardDay() {
+		return testStandardDay;
+	}
+	public void setTestStandardDay(String testStandardDay) {
+		System.out.println(testStandardDay
+				+ " <- testStandardDay   setTestStandardDay()   CourseRoomSearchVO.java");
+		this.testStandardDay = testStandardDay;
 	}
 }

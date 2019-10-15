@@ -6,8 +6,8 @@ import java.util.Date;
 public class CourseSchedule {
 	private String	scheduleNo;					// 시간표코드(기본키)
 	private String	courseAssignmentNo;			// 강좌배정코드(강좌 강의실 배정 테이블 참조 외래키 1:다 대응)
-	private String	day;						// 요일
-	private String	period;						// 교시
+	private String	scheduleDay;				// 요일
+	private String	schedulePeriod;				// 교시
 	private String	scheduleApprovalStatus;		// 승인여부 -> ENUM('유','무')
 	private Date	scheduleRegisteredDate;		// 등록일
 	private Date	scheduleModificationDate;	// 최종수정일자
@@ -27,19 +27,19 @@ public class CourseSchedule {
 				+ " <- courseAssignmentNo   setCourseAssignmentNo()   CourseSchedule.java");
 		this.courseAssignmentNo = courseAssignmentNo;
 	}
-	public String getDay() {
-		return day;
+	public String getScheduleDay() {
+		return scheduleDay;
 	}
-	public void setDay(String day) {
-		System.out.println(day + " <- day   setDay()   CourseSchedule.java");
-		this.day = day;
+	public void setScheduleDay(String scheduleDay) {
+		System.out.println(scheduleDay + " <- scheduleDay   setScheduleDay()   CourseSchedule.java");
+		this.scheduleDay = scheduleDay;
 	}
-	public String getPeriod() {
-		return period;
+	public String getSchedulePeriod() {
+		return schedulePeriod;
 	}
-	public void setPeriod(String period) {
-		System.out.println(period + " <- period   setPeriod()   CourseSchedule.java");
-		this.period = period;
+	public void setSchedulePeriod(String schedulePeriod) {
+		System.out.println(schedulePeriod + " <- schedulePeriod   setSchedulePeriod()   CourseSchedule.java");
+		this.schedulePeriod = schedulePeriod;
 	}
 	public String getScheduleApprovalStatus() {
 		return scheduleApprovalStatus;

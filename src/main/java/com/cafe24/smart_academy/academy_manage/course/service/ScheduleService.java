@@ -33,6 +33,23 @@ public class ScheduleService {
 	}
 	
 	
+	// 관리자 : 강사가 추가하거나 수정한 강좌시간표 승인 처리
+	public String scheduleApproval(String scheduleNo) {
+		// TODO Auto-generated method stub
+		String resultMessage = "scheduleApprovalFail";
+		// 업데이트 실패로 초기화
+		
+		int result = scheduleMapper.scheduleApproval(scheduleNo);
+		// 승인 처리하기
+		
+		if(result == 1) { // 업데이트 성공(승인 성공)
+			resultMessage = null;
+		}
+		
+		return resultMessage;
+	}
+	
+	
 	// 강사 : 강좌 시간표코드 중복 확인
 	public String CourseScheduleByscheduleNo(String scheduleNo) {
 		return scheduleMapper.CourseScheduleByscheduleNo(scheduleNo);

@@ -105,8 +105,8 @@
 				<tr th:each="schedule, lists : ${scheduleList}"
 					th:if="${scheduleListSize != 0}">
 					<td th:text="${lists.count}"></td>
-					<td th:text="${schedule.period}"></td>
-					<td th:text="${schedule.day}"></td>
+					<td th:text="${schedule.schedulePeriod}"></td>
+					<td th:text="${schedule.scheduleDay}"></td>
 					<td th:text="${schedule.subjectName}"></td>
 					<td th:text="${schedule.courseName}"></td>
 					<td th:text="${schedule.memberName}"></td>

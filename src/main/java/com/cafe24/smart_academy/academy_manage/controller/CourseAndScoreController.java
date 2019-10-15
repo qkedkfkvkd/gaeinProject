@@ -15,10 +15,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cafe24.smart_academy.academy_manage.course.manage.service.CourseManageService;
+import com.cafe24.smart_academy.academy_manage.course.manage.vo.AcademyRoom;
 import com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject;
+import com.cafe24.smart_academy.academy_manage.course.service.ScheduleService;
 import com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO;
 import com.cafe24.smart_academy.academy_manage.courseandscore.service.CourseAndScoreService;
 import com.cafe24.smart_academy.academy_manage.courseandscore.vo.CourseEnrollee;
+import com.cafe24.smart_academy.academy_manage.courseandscore.vo.ExaminationDay;
 import com.cafe24.smart_academy.academy_manage.member.service.StudentInfoService;
 import com.cafe24.smart_academy.academy_manage.member.service.TeacherInfoService;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
@@ -34,6 +37,10 @@ public class CourseAndScoreController {
 	@Autowired
 	CourseAndScoreService courseAndScoreService;
 	// 수강 및 성적관리 서비스
+	
+	@Autowired
+	ScheduleService scheduleService;
+	// 강좌 시간표 관리 서비스
 	
 	@Autowired
 	StudentInfoService studentInfoService;
@@ -193,14 +200,14 @@ public class CourseAndScoreController {
 		// 전체 과목 리스트를 가져온다.
 		
 		
-		Map<String, Object> map = new HashMap<String, Object>();
+		//Map<String, Object> map = new HashMap<String, Object>();
 		// totalGradeResultList() 메소드의 매개변수가 Map 이므로 검색내용을 저장하기 위한 맵 객체 선언
 		
-		map.put("courseEnrolleeNo", searchVO.getCourseEnrolleeNo());
+		//map.put("courseEnrolleeNo", searchVO.getCourseEnrolleeNo());
 		// 검색 내용 저장
 		
 		List<Map<String, Object>> gradeReferenceInputScoreList =
-				courseAndScoreService.totalGradeResultList(map);
+				courseAndScoreService.totalGradeResultOneOrList(searchVO);
 		// 해당 수강신청코드를 참조하는 모든 성적 리스트 가져오기
 		
 		
@@ -311,5 +318,268 @@ public class CourseAndScoreController {
 		// 화면에 보여줄 특정 강사 담당 강좌에 수강신청한 학생 리스트
 		
 		return "/view/lesson/courseAndScore/listTeacherCourseEnrolleeStudent";
+	}
+	
+	
+	
+	
+	
+	// 관리자, 강사, 학생 : 아직 시험을 치르지 않은 시험일 조회
+	@GetMapping("/examinationDayList")
+	public String examinationDayList(
+			 CourseRoomSearchVO searchVO
+			,Model model) {
+		
+		 // 강사회원이 담당 강좌 시험일 조회시 아이디 보기
+		if(searchVO.getMemberId() != null) {
+			System.out.println(searchVO.getMemberId()
+					+ " <- searchVO.getMemberId()   examinationDayList()   CourseAndScoreController.java");
+		}
+		
+		List<Map<String, Object>> notTestDayCourseList =
+				courseAndScoreService.testDayCourseOneOrList(searchVO);
+		// 관리자 접근시 : 시험 날짜가 오늘보다 이후인 모든 시험일자 강좌 리스트를 얻어온다.
+		// 강사 접근시 : 시험 날짜가 오늘보다 이후인 강사 담당 강좌의 모든 시험일자 강좌 리스트를 얻어온다.
+		
+		
+		///// 학생 접근시 수강신청 테이블에서 강좌코드를 리스트로 뽑아내야한다. 
+		
+		
+		List<Subject> subjectList = courseManageService.subjectList();
+		// 전체 과목 리스트를 가져온다.
+		
+		List<AcademyRoom> roomList = courseManageService.academyRoomList();
+		// 전체 강의실 리스트를 가져온다.
+		
+		List<Map<String, Object>> teacherList = teacherInfoService.teacherInfoOneOrList();
+		// 전체 강사 리스트를 가져온다.
+		
+		
+		model.addAttribute("notTestDayCourseList", notTestDayCourseList);
+		// 화면에 보여줄 아직 시험을 치르지 않은 시험 강좌 리스트
+		
+		model.addAttribute("notTestDayCourseListSize", notTestDayCourseList.size());
+		// 리스트의 사이즈를 보고 시험일 목록의 존재 여부 판단
+		
+		model.addAttribute("subjectList", subjectList);
+		// 샐랙트 박스에 넣어줄 전체 과목 리스트
+		
+		model.addAttribute("roomList", roomList);
+		// 샐랙트박스에 넣어줄 전체 강의실 리스트
+		
+		model.addAttribute("teacherList", teacherList);
+		// 샐랙트박스에 넣어줄 전체 강사 리스트
+		
+		return "/view/lesson/courseAndScore/listExaminationDay";
+	}
+	
+	
+	// 강사 : 시험일 추가 폼 이동
+	@GetMapping("/addExaminationDay")
+	public String addExaminationDay(MemberSearchVO memberSearchVO, Model model) {
+		System.out.println(memberSearchVO.getMemberId() + " <- memberId   addExaminationDay()   CourseAndScoreController.java");
+		// 특정 강사의 정보만을 가져와야 하므로 검색 키워드에 특정 강사의 아이디를 넣어준다.
+		
+		List<Map<String, Object>> oneMap = 
+				teacherInfoService.teacherInfoOneOrList(memberSearchVO);
+		// 리턴타입을 맞춰주기 위해 리스트로 받았을 뿐 로그인 테이블의 기본키인 회원아이디로
+		// 검색을 실시하므로 하나의 객체만 리턴될 것이다.
+		
+		System.out.println(oneMap.toString()
+				+ " <- oneMap.toString()   addExaminationDay()   CourseAndScoreController.java");
+		System.out.println(oneMap.size()
+				+ " <- oneMap.size()   addExaminationDay()   CourseAndScoreController.java");
+		
+		Map<String, Object> teacherInfo = oneMap.get(0);
+		// 하나의 객체 밖에 없으므로 맨 앞에있는 객체를 가져다가 맵에 넣어준다.
+		
+		
+		CourseRoomSearchVO searchVO = new CourseRoomSearchVO();
+		searchVO.setMemberId(memberSearchVO.getMemberId());
+		// 해당 강사의 아이디를 검색 키워드로 넣어준다.
+		
+		List<Map<String, Object>> courseScheduleList =
+				scheduleService.scheduleOneOrList(searchVO);
+		// 해당 강사 담당 강좌의 시간표를 얻어온다.
+		
+		model.addAttribute("teacherInfo", teacherInfo);
+		// 화면에 보여줄 특정 강사에 관한 정보 넣어주기
+		
+		model.addAttribute("courseScheduleList", courseScheduleList);
+		// 샐랙트박스에 넣어줄 해당강좌시간표 리스트
+		
+		return "/view/lesson/courseAndScore/addExaminationDay";
+	}
+	
+	
+	// 강사 : 시험일코드 중복 확인
+	@PostMapping("/examinationDayNoOverlapChk")
+	@ResponseBody
+	public Map<String, Object> examinationDayNoOverlapChk(@RequestBody String examinationDayNo) {
+		System.out.println(examinationDayNo
+				+ " <- examinationDayNo   examinationDayNoOverlapChk()   CourseAndScoreController.java");
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		String result = courseAndScoreService.examinationDayByExaminationDayNo(examinationDayNo);
+		// 시험일 테이블에서 해당 시험일코드가 존재하는지 확인
+		
+		if(result == null) {	// 결과가 없다 : 해당 시험일코드가 존재하지 않는다.
+			map.put("result", 1);
+			// 시험일 테이블에 해당 시험일코드값이 존재하지 않음 : 사용가능한 시험일코드
+		} else {
+			map.put("result", 0);
+			// 시험일 테이블에 해당 시험일코드값이 존재함 : 이미 사용 중인 시험일코드
+		}
+		
+		return map;
+	}
+	
+	
+	// 강사 : 시험일 추가 처리
+	@PostMapping("/addExaminationDay")
+	public String addExaminationDay(
+			 ExaminationDay examinationDay
+			,@RequestParam(value = "memberId") String memberId
+			,RedirectAttributes redirectAttributes) {
+		String message = courseAndScoreService.addExaminationDay(examinationDay);
+		// 시험일 추가 처리 후 메세지를 리턴받는다.
+		
+		String path = "/view/lesson/courseAndScore/addExaminationDay";
+		// 시험일 추가에 실패했을 경우 다시 시험일을 추가하는 폼으로 이동한다.
+		
+		if(message == null) { // 리턴받은 메세지가 널이라면 시험일 추가에 성공했다는 뜻이다.
+			
+			path = "redirect:/examinationDayList";
+			// 시험일 리스트로 이동
+			
+			redirectAttributes.addAttribute("testStandardDay", "notTest");
+			// 쿼리문 실행시 아직 시험을 치르지 않은 날짜 리스트를 구해오기위한 검색 키워드
+		}
+		
+		redirectAttributes.addAttribute("memberId", memberId);
+		// 추가 성공 시 자신의 강좌 시험일 리스트를 가져와야하므로 강사의 아이디를 넣어준다.
+		// 추가 실패 시 시험일 추가 폼으로 이동할 때 자신의 정보와 강좌에 관련된 정보를
+		// 가져와야 하므로 강사의 아이디를 넣어준다.
+		
+		return path;
+	}
+	
+	
+	// 관리자, 강사 : 시험일 상세 화면 이동
+	@GetMapping("/updateExaminationDay")
+	public String updateExaminationDay(
+			 CourseRoomSearchVO searchVO
+			,Model model) {
+		
+		List<Map<String, Object>> oneMap =
+				courseAndScoreService.testDayCourseOneOrList(searchVO);
+		// 시험일 테이블의 기본키인 시험일코드로 값을 가지고 오므로 한개의 행만 나온다.
+		
+		System.out.println(oneMap.toString()
+				+ " <- oneMap.toString()   updateExaminationDay()   CourseAndScoreController.java");
+		System.out.println(oneMap.size()
+				+ " <- oneMap.size()   updateExaminationDay()   CourseAndScoreController.java");
+		
+		Map<String, Object> examInfo = oneMap.get(0);
+		// 가지고 온 한개의 객체를 맵에 담아준다.
+		
+		
+		searchVO.setMemberId((String)examInfo.get("memberId"));
+		// 해당 강사의 아이디를 검색 키워드로 넣어준다.
+		
+		List<Map<String, Object>> courseScheduleList =
+				scheduleService.scheduleOneOrList(searchVO);
+		// 해당 강사 담당 강좌의 시간표를 얻어온다.
+		
+		searchVO.setMemberId(null);
+		// 특정 강사의 강좌시험일로 검색이 되면 안되고
+		// 특정 시험일의 강좌시험일이 모두 출력되야 하므로 강사 아이디값을 제거한다. 
+		
+		List<Map<String, Object>> courseScoreList =
+				courseAndScoreService.totalGradeResultOneOrList(searchVO);
+		// 시험일 상세화면에서 해당 시험일코드를 참조하는 강좌시험성적 리스트 가져오기
+		
+		
+		model.addAttribute("examInfo", examInfo);
+		// 화면에 뿌려줄 시험일 상세 정보
+		
+		model.addAttribute("courseScheduleList", courseScheduleList);
+		// 샐랙트박스에 넣어줄 해당강좌시간표 리스트
+		
+		model.addAttribute("courseScoreList", courseScoreList);
+		// 화면에 뿌려줄 해당 시험일의 학생 성적 목록
+		
+		model.addAttribute("courseScoreListSize", courseScoreList.size());
+		// 리스트의 사이즈를 보고 해당 학생 성적목록 존재 여부 판단
+		
+		return "/view/lesson/courseAndScore/detailExaminationDay";
+	}
+	
+	
+	// 관리자, 강사 : 시험일 수정 처리
+	@PostMapping("/updateExaminationDay")
+	public String updateExaminationDay(
+			 ExaminationDay examinationDay
+			,@RequestParam(value = "memberId", required = false) String memberId
+			,RedirectAttributes redirectAttributes) {
+		String message = courseAndScoreService.updateExaminationDay(examinationDay);
+		// 시험일 수정 처리 후 메세지를 반환받는다.
+		
+		String path = "redirect:/examinationDayList";
+		// 시험일 수정에 성공했을 경우 시험일리스트로 이동하게 초기화한다.
+		
+		if(message == null) {
+			// 리턴받은 메세지가 널이라면 시험일 수정에 성공했다는 뜻이다.
+			
+			redirectAttributes.addAttribute("testStandardDay", "notTest");
+			// 아직 시험을 치르지 않은 리스트로 이동하므로 쿼리문 검색 키워드를 넣어준다.
+			
+			if(memberId != null) { // 강사 회원이 수정처리를 한 것이라면
+				redirectAttributes.addAttribute("memberId", memberId);
+				// 자신의 강좌 리스트가 보여져야 하므로 강사 아이디를 넣어준다.
+			}
+			
+		} else {
+			// 리턴받은 메세지가 널이 아니라면 시험일 수정에 실패했다는 뜻이다.
+			
+			System.out.println("시험일 수정 실패!!!!!!!!!!!!");
+			
+			redirectAttributes.addAttribute("examinationDayNo",
+					examinationDay.getExaminationDayNo());
+			// 시험일 상세 페이지로 리다이렉트하면서 시험일코드를 넘겨준다.
+			
+			path = "redirect:/updateExaminationDay";
+			// 시험일 상세 페이지로 이동
+		}
+		
+		return path;
+	}
+	
+	
+	// 관리자, 강사 : 시험일 삭제 처리
+	@GetMapping("/deleteExaminationDay")
+	public String deleteExaminationDay(
+			 @RequestParam(value = "examinationDayNo") String examinationDayNo
+			,@RequestParam(value = "memberId", required = false) String memberId
+			,RedirectAttributes redirectAttributes) {
+		
+		System.out.println(examinationDayNo
+				+ " <- examinationDayNo   deleteExaminationDay()   CourseAndScoreController.java");
+		
+		String message = courseAndScoreService.deleteExaminationDay(examinationDayNo);
+		// 해당 시험일 삭제 쿼리 실행 후 메세지 반환
+		
+		System.out.println(message + " <- message   deleteExaminationDay()   CourseAndScoreController.java");
+		
+		if(memberId != null) { // 강사 회원이 삭제처리를 한 것이라면
+			redirectAttributes.addAttribute("memberId", memberId);
+			// 자신의 강좌 리스트가 보여져야 하므로 강사 아이디를 넣어준다.
+		}
+		
+		redirectAttributes.addAttribute("testStandardDay", "notTest");
+		// 아직 시험을 치르지 않은 리스트로 이동하므로 쿼리문 검색 키워드를 넣어준다.
+		
+		return "redirect:/examinationDayList";
 	}
 }

@@ -259,7 +259,7 @@
 			,cra.course_assignment_registered_date		AS courseAssignmentRegisteredDate
 			,ro.room_no									AS roomNo
 			,ro.room_number								AS roomNumber
-			,ro.room_floor								AS foomFloor
+			,ro.room_floor								AS roomFloor
 		from
 			 course						AS co
 			,subject					AS sub
@@ -434,7 +434,7 @@
 			,cra.course_assignment_registered_date		AS courseAssignmentRegisteredDate
 			,ro.room_no									AS roomNo
 			,ro.room_number								AS roomNumber
-			,ro.room_floor								AS foomFloor
+			,ro.room_floor								AS roomFloor
 		from
 			 course						AS co
 			,subject					AS sub

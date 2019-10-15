@@ -4,50 +4,68 @@
       layout:decorate="~{layout/default}">
 
 <th:block layout:fragment="customTitle">
-	<title>강좌등록</title>
+	<title th:text="${teacherInfo.courseName + ' 시험일 등록'}"></title>
 </th:block>
 
-<!-- 하나의 강좌에 관한 전체 학생 성적 리스트 -->
 <th:block layout:fragment="customContents">
 	<div class="page-header">
 		<div class="col-md-6 col-md-offset-3">
-			<h3>강좌등록</h3>
+			<h3 th:text="${teacherInfo.memberName + ' : ' + teacherInfo.courseName + ' 시험일 등록'}"></h3>
 		</div>
 	</div>
 	
 	<div class="col-sm-7 col-md-offset-3">
-		<form role="form" action="/addCourseNo" method="post">
+		<form role="form" id="examinationDayJoinFrm"
+			  action="/addExaminationDay" method="post">
+			<input type="hidden" name="memberId" th:value="${teacherInfo.memberId}">
+			<!-- 시험일 추가에 실패하여 다시 추가폼으로 올때, 추가성공하여 시험일 리스트로 이동시 필요 -->
+			
+			<input type="hidden" name="examinationDayIsChanged" value="무">
+			<!-- 처음 추가시 변경사항이 없으므로 코드변경유무를 '무'로 지정한다. -->
+			
 			<div class="form-group">
-				<label for="inputCourseNo">강좌코드</label>
+				<label for="inputExaminationDayNo">시험일코드</label>
 				<div class="input-group">
-					<input type="text" class="form-control" id="inputCourseNo"
-						   name="courseNo">
+					<input type="text" class="form-control" id="inputExaminationDayNo"
+						   name="examinationDayNo">
 					<span class="input-group-btn">
 						<button type="button" class="btn btn-primary btn-sm"
-								id="courseNoOverlapBtn">중복확인</button>
-						<input type="hidden" id="courseNoOverlapClickChk" value="0">
+								id="examinationDayNoOverlapBtn">중복확인</button>
+						<input type="hidden" id="examinationDayNoOverlapClickChk" value="0">
 					</span>
 				</div>
 			</div>
 			
 			<div class="form-group">
-				<label class="sr-only" for="viewSubjectList">과목명</label>
+				<label for="inputCourseName">강좌명</label>
+				<input type="text" class="form-control" id="inputCourseName"
+					   th:value="${teacherInfo.courseName}"
+					   readonly="readonly">
+			</div>
+			
+			<div class="form-group">
+				<label for="courseScheduleList">강좌시간표</label>
 				<!-- <div class="input-group"> -->
-				<select id="viewSubjectList" name="SubjectNo"
-						class="form-control"><!-- th:each="subject : ${subjectList}" -->
-					<option  value="국어">국어</option>
-					<!-- th:value="${subject.subjectNo}" -->
-					<!-- th:text="${subject.subjectName}" -->
-					<option value="영어">영어</option>
-					<option value="수학">수학</option>
+				<select id="courseScheduleList" name="scheduleNo"
+						class="form-control">
+					<option value="">선택</option>
+					<option th:each="schedule : ${courseScheduleList}"
+							th:value="${schedule.scheduleNo}"
+							th:text="${schedule.courseName + ' : ' + schedule.roomFloor + '층 ' + schedule.roomNumber + '호 : ' + schedule.scheduleDay + '요일 ' + schedule.schedulePeriod  + '교시'}"></option>
 				</select>
 				<!-- </div> -->
 			</div>
 			
 			<div class="form-group">
-				<label for="inputCourseName">강좌명</label>
-				<input type="text" class="form-control" id="inputCourseName"
-					   name="courseName">
+				<label for="inputExaminationDay">시험일</label>
+				<input type="date" class="form-control" id="inputExaminationDay"
+					   name="examinationDay">
+			</div>
+			
+			<div class="form-group">
+				<label for="inputExaminationName">시험명</label>
+				<input type="text" class="form-control" id="inputExaminationName"
+					   name="examinationName">
 			</div>
 			
 			<div class="form-group">
@@ -56,7 +74,8 @@
 						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 					</div>
 					<div class="col-md-6">
-						<button type="submit" class="btn btn-primary btn-sm btn-block">입력</button>
+						<button type="button" id="examinationDayJoinFrmBtn"
+								class="btn btn-primary btn-sm btn-block">입력</button>
 					</div>
 				</div>
 			</div>
@@ -65,6 +84,97 @@
 </th:block>
 
 <th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		
+		// 시험일코드 중복 확인
+		$('#examinationDayNoOverlapBtn').on('click', function(e){
+			e.preventDefault();
+			
+			var examinationDayNo = $('#inputExaminationDayNo').val();
+			console.log(`examinationDayNo:${examinationDayNo}`);
+			
+			if($("#inputExaminationDayNo").val() ==''){
+	            alert('시험일코드를 입력하세요');
+	            $("#inputExaminationDayNo").focus();
+	            return false;
+	        }
+			
+			$.ajax({
+	            url: '/examinationDayNoOverlapChk',
+	            type: 'POST',
+	            data: examinationDayNo,
+	            dataType: 'json',
+	            contentType: "application/json; charset=UTF-8",
+	            success: function (response) {
+	                if(response.result == 1){
+	                	alert('사용 가능한 코드 입니다.')
+	                    $('#examinationDayNoOverlapClickChk').val(1);
+	                	// 중복확인 버튼 누름으로 변경 0:안누름 / 1:누름
+	                } else if(response.result == 0){
+	                	alert('이미 등록된 코드 입니다');
+	                } else {
+	                    alert('검사 중 에러가 발생했습니다');
+	                }
+	            },
+	            error: function(jqXHR, textStatus, errorThrown){
+	                alert("arjax error : " + textStatus + "\n" + errorThrown);
+	            }
+	        });
+		});
+		
+		// 값을 바꿨을 경우 중복확인 버튼을 다시 눌러야함 (중복확인 버튼 눌럿는지 체크하는 값을 0으로 셋팅) 0:안누름 / 1:누름
+		$("#inputExaminationDayNo").on('change', function(e) {
+			e.preventDefault();
+			$('#examinationDayNoOverlapClickChk').val(0);
+		});
+		
+		
+		
+		// 강좌시험일 등록 처리 전 공백 및 중복확인버튼 눌렀는지 유효성 검사
+		$('#examinationDayJoinFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+			var examinationDayNoOverlapClickChk = $('#examinationDayNoOverlapClickChk').val();
+			
+			console.log(`examinationDayNoOverlapClickChk:${examinationDayNoOverlapClickChk}`);
+			console.log('0이면 사용 중, 1이면 사용 가능');
+			
+	        if($("#inputExaminationDayNo").val() ==''){
+	            alert('시험일코드를 입력하세요');
+	            $('#examinationDayNoOverlapClickChk').val(0);
+	            // 만약 시험일코드를 입력하고 중복확인 버튼을 눌러서 사용가능한 코드라고 나오면 중복확인 버튼 체크값이 1로 바뀐다.
+	            // 재입력하고자 값을 지웠을 경우 다시 눌러줘야한다.
+	            $("#inputExaminationDayNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#examinationDayNoOverlapClickChk").val() == 0){
+	            alert('시험일코드 중복확인을 해주세요');
+	            $("#inputExaminationDayNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#courseScheduleList").val() ==''){
+	            alert('강좌시간표를 선택하세요');
+	            $("#courseScheduleList").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputExaminationDay").val() ==''){
+	            alert('시험일을 선택하세요');
+	            $("#inputExaminationDay").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputExaminationName").val() ==''){
+	            alert('시험명을 입력하세요');
+	            $("#inputExaminationName").focus();
+	            return false;
+	        }
+	        
+	        $('#examinationDayJoinFrm').submit();
+	    });
+	</script>
 </th:block>
 
 </html>

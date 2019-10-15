@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cafe24.smart_academy.academy_manage.course.service.CourseService;
@@ -104,5 +105,52 @@ public class TeacherInfoController {
 		// 강사 목록을 띄워줄 것인지 판단한다.
 		
 		return "/view/personnel/listTeacherInfo";
+	}
+	
+	
+	// 관리자, 강사 : 강사 상세 폼 이동
+	@GetMapping("/updateTeacherInfo")
+	public String updateTeacherInfo(
+			 MemberSearchVO memberSearchVO
+			,Model model) {
+		
+		List<Map<String, Object>> oneMap =
+				teacherInfoService.teacherInfoOneOrList(memberSearchVO);
+		// 강사의 아이디로 조회해서 가져오기에 하나의 객체만 나올 것이다.
+		
+		System.out.println(oneMap.toString()
+				+ " <- oneMap.toString()   updateTeacherInfo()   TeacherInfoController.java");
+		System.out.println(oneMap.size()
+				+ " <- oneMap.size()   updateTeacherInfo()   TeacherInfoController.java");
+		
+		Map<String, Object> teacherInfo = oneMap.get(0);
+		// 가져온 한개의 객체를 맵에 담는다.
+		
+		List<Map<String, Object>> courseList = courseService.courseOneOrList();
+		// 담당 강좌를 선택하게 하기 위해서 리스트를 가져온다.
+		// 강좌코드, 강좌명, 강좌 등록일, 과목코드, 과목명
+		
+		
+		model.addAttribute("teacherInfo", teacherInfo);
+		// 화면에 보여줄 담당강사 정보
+		
+		model.addAttribute("courseList", courseList);
+		// 화면에 보여줄 담당강좌 리스트 객체
+		
+		return "/view/personnel/detailTeacherInfo";
+	}
+	
+	
+	// 관리자, 강사 : 강사 상세정보 수정처리
+	@PostMapping("/updateTeacherInfo")
+	public String updateTeacherInfo(
+			 MemberLogin login
+			,Member member
+			,Teacher teacher
+			,RedirectAttributes redirectAttributes) {
+		
+		
+		
+		return "";
 	}
 }

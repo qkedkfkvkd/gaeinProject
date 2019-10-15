@@ -134,6 +134,32 @@ public class ScheduleController {
 	}
 	
 	
+	// 관리자 : 강사가 추가하거나 수정한 강좌시간표 승인 처리
+	@PostMapping("/scheduleApproval")
+	@ResponseBody
+	public Map<Object, Object> scheduleApproval(@RequestBody String scheduleNo) {
+		System.out.println(scheduleNo + "<- scheduleNo   scheduleApproval()   ScheduleController.java");
+		
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		
+		String message = scheduleService.scheduleApproval(scheduleNo);
+		// 해당 시간표 관리자 승인 처리 메소드 호출
+		
+		System.out.println(message + " <- message   scheduleApproval()   ScheduleController.java");
+		
+		if(message == null) {
+			map.put("result", 1);
+			// 메세지가 존재하지 않음 : 승인 성공
+			
+		} else {
+			map.put("result", 0);
+			//메세지가 존재함 : 승인 실패
+		}
+		
+		return map;
+	}
+	
+	
 	// 강사 : 시간표 작성 폼 이동
 	@GetMapping("/addSchedule")
 	public String addSchedule(MemberSearchVO memberSearchVO, Model model) {
@@ -184,19 +210,19 @@ public class ScheduleController {
 	// 강사 : 요일 선택시 해당 요일을 참조하는 리스트 보여주기
 	@PostMapping("/getScheduleByDay")
 	@ResponseBody
-	public List<Map<String, Object>> getScheduleByDay(@RequestBody String day) {
-		System.out.println(day + "<- day   getScheduleByDay()   ScheduleController.java");
+	public List<Map<String, Object>> getScheduleByDay(@RequestBody String scheduleDay) {
+		System.out.println(scheduleDay + "<- scheduleDay   getScheduleByDay()   ScheduleController.java");
 		
 		List<Map<String, Object>> scheduleList = null;
 		
-		if(day.equals("all")) { // "선택"을 선택했을 경우
+		if(scheduleDay.equals("all")) { // "선택"을 선택했을 경우
 			scheduleList = scheduleService.scheduleOneOrList();
 			// 요일 상관없이 모든 시간표를 가지고 온다.
 			
 		} else {
 			// 특정 요일을 선택했을 경우
 			CourseRoomSearchVO searchVO = new CourseRoomSearchVO();
-			searchVO.setDay(day);
+			searchVO.setScheduleDay(scheduleDay);
 			// 해당 요일의 강좌 시간표를 가져와야하므로 검색 키워드로 요일을 넣어준다.
 			
 			scheduleList = scheduleService.scheduleOneOrList(searchVO);

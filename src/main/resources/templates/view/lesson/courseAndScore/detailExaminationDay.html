@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title th:text="${examInfo.courseName + ' 시험일 상세'}"></title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3 th:text="${examInfo.memberName + ' : ' + examInfo.courseName + ' 시험일 상세'}"></h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-12 col-md-offset-3">
+		<div class="row">
+			<div class="col-md-3">
+				<form role="form" id="updateExaminationDayFrm"
+					  action="/updateExaminationDay" method="post">
+					
+					<input type="hidden" name="memberId"
+						   th:if="${session.memberLevel == '강사'.toString()}"
+						   th:value="${examInfo.memberId}">
+					<!-- 강사 권한으로 로그인 했을 때 수정의 실패 여부에 따라 -->
+					<!-- 수정폼으로 오든, 리스트로 가든 자신의 강좌에 대한 정보가 보여야 한다. -->
+					
+					<input type="hidden" name="examinationDayIsChanged" value="유">
+					<!-- 수정시 변경사항이 생기므로 코드변경유무를 '유'로 지정한다. -->
+					
+					<div class="form-group">
+						<label for="inputExaminationDayNo">시험일코드</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="inputExaminationDayNo"
+								   name="examinationDayNo"
+								   th:value="${examInfo.examinationDayNo}"
+								   readonly="readonly">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCourseName">강좌명</label>
+						<input type="text" class="form-control" id="inputCourseName"
+							   th:value="${examInfo.courseName}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<label for="courseScheduleList">강좌시간표</label>
+						<!-- <div class="input-group"> -->
+						<select id="courseScheduleList" name="scheduleNo"
+								class="form-control">
+							<option value="">선택</option>
+							<option th:each="schedule : ${courseScheduleList}"
+									th:value="${schedule.scheduleNo}"
+									th:text="${schedule.roomFloor + '층 ' + schedule.roomNumber + '호 : ' + schedule.scheduleDay + '요일 ' + schedule.schedulePeriod  + '교시'}"></option>
+						</select>
+						<!-- </div> -->
+					</div>
+					
+					<div class="form-group">
+						<label for="inputExaminationDay">시험일</label>
+						<input type="date" class="form-control" id="inputExaminationDay"
+							   name="examinationDay"
+							   th:value="${examInfo.examinationDay}">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputExaminationName">시험명</label>
+						<input type="text" class="form-control" id="inputExaminationName"
+							   name="examinationName"
+							   th:value="${examInfo.examinationName}">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputExaminationDayReasonForChange">시험변경사유</label>
+						<textarea class="form-control" rows="3"
+								  id="inputExaminationDayReasonForChange"
+								  name="examinationDayReasonForChange"
+								  th:text="${examInfo.examinationDayReasonForChange}"></textarea>
+					</div>
+					
+					
+					<div class="form-group">
+						<label for="inputExaminationDayChangedDate">시험변경일</label>
+						<input type="text" class="form-control"
+							   id="inputExaminationDayChangedDate"
+							   th:value="${#calendars.format(examInfo.examinationDayChangedDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
+					</div>
+					
+					
+					<div class="form-group">
+						<label for="inputExaminationDayRegisteredDate">등록일</label>
+						<input type="text" class="form-control"
+							   id="inputExaminationDayRegisteredDate"
+							   th:value="${#calendars.format(examInfo.examinationDayRegisteredDate,'yyyy-MM-dd')}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<div class="row"> <!-- style="vertical-align: bottom;" -->
+							<div class="col-md-4">
+								<span th:if="${session.memberLevel == '관리자'.toString()}">
+									<button type="button" class="btn btn-primary btn-sm btn-block"
+											th:onclick="'window.location.href = \'' + @{/deleteExaminationDay(examinationDayNo=${examInfo.examinationDayNo})} + '\''">
+										삭제
+									</button>
+								</span>
+								<span th:if="${session.memberLevel == '강사'.toString()}">
+									<button type="button" class="btn btn-primary btn-sm btn-block"
+											th:onclick="'window.location.href = \'' + @{/deleteExaminationDay(examinationDayNo=${examInfo.examinationDayNo}, memberId=${session.memberId})} + '\''">
+										삭제
+									</button>
+								</span>
+								<!-- 시험일을 삭제하기 전에 해당 시험일코드를 참조하는 강좌학생 성적목록을 참조한다.
+								참조한 후, 삭제해도 되겠다 싶으면 해당 시험일을 삭제하게되면 CASCADE로 해당 성적목록도 같이 지워진다. -->
+							</div>
+							<div class="col-md-4">
+								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+							</div>
+							<div class="col-md-4">
+								<button type="button" id="updateExaminationDayFrmBtn"
+										class="btn btn-primary btn-sm btn-block">입력</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-9">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>강좌</th>
+							<th>강사</th>
+							<th>강의실</th>
+							<th>시험</th>
+							<th>학생</th>
+							<th>점수</th>
+							<th>등록일</th>
+							<th>수정</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="score, lists : ${courseScoreList}"
+							th:if="${courseScoreListSize != 0}">
+							<td th:text="${lists.count}"></td>
+							<td th:text="${score.courseName}"></td>
+							<td th:text="${score.teacherName}"></td>
+							<td th:text="${score.roomFloor + '층 ' + score.roomNumber + '호'}"></td>
+							<td th:text="${score.examinationName}"></td>
+							<td th:text="${score.studentName}"></td>
+							<td th:text="${score.scoreInputTestScore}"></td>
+							<td th:text="${#calendars.format(score.scoreInputRegisteredDate,'yyyy-MM-dd')}"></td>
+							<td>
+								<span th:if="${session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()}">
+									<button type="button" class="btn btn-success btn-sm"
+											th:onclick="'window.location.href = \'' + @{/updateScoreInput(scoreInputNo=${score.scoreInputNo}, memberId=${session.memberId})} + '\''">
+										수정
+									</button>
+								</span>
+								
+								<span th:if="${session.memberLevel != '관리자'.toString() || session.memberLevel != '강사'.toString()}">
+									<button type="button" class="btn btn-success btn-sm"
+											disabled="disabled">
+										불가
+									</button>
+								</span>
+							</td>
+						</tr>
+						
+						<tr th:unless="${courseScoreListSize != 0}">
+							<td colspan="5">해당 시험일로 등록된 학생 성적목록이 없습니다.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+			var scheduleNo = /*[[ ${examInfo.scheduleNo} ]]*/;
+		/*]]*/
+		
+		$(document).ready(function(){
+			console.log(`scheduleNo:${scheduleNo}`);
+			
+			$("#courseScheduleList").val(scheduleNo);
+		});
+	</script>
+	
+	<script type="text/javascript">
+		// 강좌시험일 수정 처리 전 공백 유효성 검사
+		$('#updateExaminationDayFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+	        if($("#courseScheduleList").val() ==''){
+	            alert('강좌시간표를 선택하세요');
+	            $("#courseScheduleList").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputExaminationDay").val() ==''){
+	            alert('시험일을 선택하세요');
+	            $("#inputExaminationDay").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputExaminationName").val() ==''){
+	            alert('시험명을 입력하세요');
+	            $("#inputExaminationName").focus();
+	            return false;
+	        }
+	        
+	        $('#updateExaminationDayFrm').submit();
+	    });
+	</script>
+</th:block>
+
+</html>

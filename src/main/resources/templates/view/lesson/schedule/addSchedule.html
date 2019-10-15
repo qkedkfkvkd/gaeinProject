@@ -56,9 +56,9 @@
 					<!-- 요일 선택시 해당 요일로 등록된 시간표를 우측에 보여준다. -->
 					<!-- 우측에 표시된 시간표를 보고 비어있는 시간(교시)으로 시간표를 등록한다. -->
 					<div class="form-group">
-						<label for="dayList">요일</label>
+						<label for="scheduleDayList">요일</label>
 						<!-- <div class="input-group"> -->
-						<select id="dayList" name="day"
+						<select id="scheduleDayList" name="scheduleDay"
 								onchange="viewScheduleByDay(this.value)" class="form-control">
 							<option value="all">선택</option>
 							<option value="월">월</option>
@@ -71,9 +71,9 @@
 					</div>
 					
 					<div class="form-group">
-						<label for="inputPeriod">교시</label>
-						<input type="number" class="form-control" id="inputPeriod"
-							   name="period">
+						<label for="inputSchedulePeriod">교시</label>
+						<input type="number" class="form-control" id="inputSchedulePeriod"
+							   name="schedulePeriod">
 					</div>
 					
 					<div class="form-group">
@@ -108,8 +108,8 @@
 						<tr th:each="schedule, lists : ${scheduleList}"
 							th:if="${scheduleListSize != 0}">
 							<td th:text="${lists.count}"></td>
-							<td th:text="${schedule.period}"></td>
-							<td th:text="${schedule.day}"></td>
+							<td th:text="${schedule.schedulePeriod}"></td>
+							<td th:text="${schedule.scheduleDay}"></td>
 							<td th:text="${schedule.subjectName}"></td>
 							<td th:text="${schedule.courseName}"></td>
 							<td th:text="${schedule.memberName}"></td>
@@ -131,14 +131,14 @@
 	<script type="text/javascript">
 		
 		// 요일을 변경했을 경우 해당 요일의 시간표를 보여준다.
-		function viewScheduleByDay(day) {
-			console.log(`day:${day}`);
+		function viewScheduleByDay(scheduleDay) {
+			console.log(`scheduleDay:${scheduleDay}`);
 			
 			$.ajax({
 				 type: "POST"
 				,url: "/getScheduleByDay"
 				,dataType:"json"
-				,data: day
+				,data: scheduleDay
 				,contentType: "application/json; charset=UTF-8"
 				,success: function(result){
 					
@@ -164,8 +164,8 @@
 							var contents = '';
 							contents += '<tr>';
 							contents +=		'<td>'+ count +'</td>';
-					        contents +=		'<td>'+ result[i].period +'</td>';
-					        contents +=		'<td>'+ result[i].day +'</td>';
+					        contents +=		'<td>'+ result[i].schedulePeriod +'</td>';
+					        contents +=		'<td>'+ result[i].scheduleDay +'</td>';
 					        contents +=		'<td>'+ result[i].subjectName +'</td>';
 					        contents +=		'<td>'+ result[i].courseName +'</td>';
 					        contents +=		'<td>'+ result[i].memberName +'</td>';
@@ -189,8 +189,8 @@
 					/* var contents = '';
 					contents += '<tr th:each="schedule, lists : ${'+ result +'}" th:if="${'+ length +' != 0}">';
 			        contents +=		'<td th:text="${lists.count}"></td>';
-			        contents +=		'<td th:text="${schedule.period}"></td>';
-			        contents +=		'<td th:text="${schedule.day}"></td>';
+			        contents +=		'<td th:text="${schedule.schedulePeriod}"></td>';
+			        contents +=		'<td th:text="${schedule.scheduleDay}"></td>';
 			        contents +=		'<td th:text="${schedule.subjectName}"></td>';
 			        contents +=		'<td th:text="${schedule.courseName}"></td>';
 			        contents +=		'<td th:text="${schedule.memberName}"></td>';
@@ -279,15 +279,15 @@
 	            return false;
 	        }
 	        
-	        if($("#dayList").val() ==''){
+	        if($("#scheduleDayList").val() ==''){
 	            alert('요일을 선택하세요');
-	            $("#dayList").focus();
+	            $("#scheduleDayList").focus();
 	            return false;
 	        }
 	        
-	        if($("#inputPeriod").val() ==''){
+	        if($("#inputSchedulePeriod").val() ==''){
 	            alert('교시를 입력하세요');
-	            $("#inputPeriod").focus();
+	            $("#inputSchedulePeriod").focus();
 	            return false;
 	        }
 	        
