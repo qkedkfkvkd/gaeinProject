@@ -149,8 +149,42 @@ public class TeacherInfoController {
 			,Teacher teacher
 			,RedirectAttributes redirectAttributes) {
 		
+		int result = teacherInfoService.updateTeacherInfo(login, member, teacher);
+		// 강사 수정 처리 후 수정 처리된 숫자
 		
+		String path = "redirect:/";
+		// 강사 수정에 성공했을 경우 메인 인덱스 페이지로 이동한다.
 		
-		return "";
+		if(teacher.getTeacherIsChanged().equals("유") && result < 3) {
+			// 강사 담당 강좌의 변경사항이 있으면
+			// 반환되는 result값은 3이 나와야한다.
+			// 만약 강사 담당 강좌의 변경사항이 있음에도
+			// 반환된 result값이 3보다 작다면 강사 담당 강좌 수정에 실패했다는 뜻이다.
+			
+			System.out.println("강사 수정 실패!!!!!!!!!!!!");
+			
+			redirectAttributes.addAttribute("memberId", teacher.getMemberId());
+			// 강사 상세 페이지로 리다이렉트하면서 강사 아이디를 넘겨준다.
+			
+			path = "redirect:/updateTeacherInfo";
+			// 강사 상세 페이지로 이동
+		}
+		
+		return path;
+	}
+	
+	
+	// 관리자 : 강사 삭제 처리
+	@GetMapping("/deleteTeacher")
+	public String deleteTeacher(
+			@RequestParam(value = "memberId") String memberId) {
+		System.out.println(memberId + " <- memberId   deleteTeacher()   TeacherInfoController.java");
+		
+		String message = teacherInfoService.deleteTeacher(memberId);
+		// 해당 강사 삭제 처리 후 메세지 반환
+		
+		System.out.println(message + " <- message   deleteTeacher()   TeacherInfoController.java");
+		
+		return "redirect:/teacherList";
 	}
 }

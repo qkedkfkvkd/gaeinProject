@@ -141,4 +141,67 @@ public class TeacherInfoService {
 	}
 	
 	
+	// 관리자, 강사 : 강사 상세정보 수정처리
+	public int updateTeacherInfo(MemberLogin login, Member member, Teacher teacher) {
+		int changeCheck = 0;
+		// 수정 사항이 아무 것도 없다는 것으로 초기화
+		
+		System.out.println(teacher.getTeacherIsChanged()
+				+ " <- teacher.getTeacherIsChanged()   updateTeacherInfo()   TeacherInfoService.java");
+		
+		int loginResult = memberMapper.updateLoginPassword(login);
+		// 로그인 정보 수정 처리 (패스워드 수정처리)
+		
+		if(loginResult == 1) { // 로그인 정보 수정 성공시
+			changeCheck++;
+			// 한개 수정되었다.
+		}
+		
+		int memberResult = memberMapper.updateMemberInfo(member);
+		// 회원 신상정보 수정 처리
+		
+		if(memberResult == 1) { // 회원신상정보 수정 성공시
+			changeCheck++;
+			// 한개 수정되었다.
+		}
+		
+		if(teacher.getTeacherIsChanged().equals("유")) {
+			// 강사 담당 강좌에 변경사항이 존재한다면
+			
+			int teacherResult = teacherInfoMapper.updateTeacher(teacher);
+			// 강사 수정 처리
+			
+			if(teacherResult == 1) { // 강사 수정 성공시
+				changeCheck++;
+				// 한개 수정되었다.
+			}
+		}
+		
+		return changeCheck;
+	}
+	
+	
+	// 관리자 : 강사 삭제 처리
+	public String deleteTeacher(String memberId) {
+		
+		String existChk = teacherInfoMapper.teacherByMemberId(memberId);
+		// 삭제하기 전 해당 강사아이디로된 강사가 존재하는지 확인
+		
+		String resultMessage = "deleteTeacherFail";
+		// 강사 삭제 실패로 초기화
+		
+		if(existChk != null) { // 해당 강사아이디 존재(삭제 가능)
+			int result = memberMapper.deleteMemberLogin(memberId);
+			// 해당 강사 삭제 처리
+			// 로그인 테이블만 지우면 자동으로 CASCADE에 의해
+			// 회원 신상정보 테이블과 강사테이블의 해당 아이디 행이 삭제된다.
+			
+			if(result == 1) { // 해당 강사 삭제 성공
+				resultMessage = "deleteTeacherSuccess";
+				// 강사 삭제 성공 메세지
+			}
+		}
+		
+		return resultMessage;
+	}
 }

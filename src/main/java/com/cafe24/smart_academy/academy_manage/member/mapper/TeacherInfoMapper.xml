@@ -25,10 +25,12 @@
 		insert into teacher (
 			 member_id
 			,course_no
+			,teacher_is_changed
 			,teacher_registered_date
 		) values (
 			 #{memberId}
 			,#{courseNo}
+			,#{teacherIsChanged}
 			,curdate()
 		)
 	</insert>
@@ -53,6 +55,8 @@
 			,mem.member_address				AS memberAddress
 			,mem.member_registered_date		AS memberRegisteredDate
 			,tea.course_no					AS courseNo
+			,tea.teacher_reason_for_change	AS teacherReasonForChange
+			,tea.teacher_changed_date		AS teacherChangedDate
 			,sub.subject_name				AS subjectName
 			,co.course_name					AS courseName
 			,tea.teacher_registered_date	AS teacherRegisteredDate

@@ -16,12 +16,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cafe24.smart_academy.academy_manage.course.manage.service.CourseManageService;
 import com.cafe24.smart_academy.academy_manage.course.manage.vo.AcademyRoom;
+import com.cafe24.smart_academy.academy_manage.course.manage.vo.GradingCriteria;
 import com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject;
 import com.cafe24.smart_academy.academy_manage.course.service.ScheduleService;
 import com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO;
 import com.cafe24.smart_academy.academy_manage.courseandscore.service.CourseAndScoreService;
 import com.cafe24.smart_academy.academy_manage.courseandscore.vo.CourseEnrollee;
 import com.cafe24.smart_academy.academy_manage.courseandscore.vo.ExaminationDay;
+import com.cafe24.smart_academy.academy_manage.courseandscore.vo.ScoreInput;
 import com.cafe24.smart_academy.academy_manage.member.service.StudentInfoService;
 import com.cafe24.smart_academy.academy_manage.member.service.TeacherInfoService;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
@@ -82,17 +84,21 @@ public class CourseAndScoreController {
 	
 	
 	// 관리자 : 학생 전체 수강신청 리스트
-	@GetMapping("/CourseEnrolleeList")
-	public String CourseEnrolleeList(Model model) {
+	// 관리자 : 학생 전체 수강신청 검색결과 리스트
+	// 관리자, 강사 : 특정 강좌 수강신청한 학생 리스트
+	@GetMapping("/courseEnrolleeList")
+	public String courseEnrolleeList(
+			 CourseRoomSearchVO searchVO
+			,Model model) {
 		
-		List<Map<String, Object>> CourseEnrolleeList =
-				courseAndScoreService.courseEnrolleeOneOrList();
+		List<Map<String, Object>> courseEnrolleeList =
+				courseAndScoreService.courseEnrolleeOneOrList(searchVO);
 		// 학생 전체 수강신청 리스트를 가져온다.
 		
-		model.addAttribute("CourseEnrolleeList", CourseEnrolleeList);
+		model.addAttribute("courseEnrolleeList", courseEnrolleeList);
 		// 화면에 보여줄 학생 수강신청 리스트
 		
-		model.addAttribute("CourseEnrolleeListSize", CourseEnrolleeList.size());
+		model.addAttribute("courseEnrolleeListSize", courseEnrolleeList.size());
 		// 리스트의 사이즈로 학생 수강신청의 존재 여부를 판단한다.
 		
 		return "/view/lesson/courseAndScore/listCourseEnrollee";
@@ -168,7 +174,7 @@ public class CourseAndScoreController {
 			
 		} else {
 			// 리턴받은 메세지가 널이라면 수강신청 추가에 성공했다는 뜻이다.
-			path = "redirect:/CourseEnrolleeList";
+			path = "redirect:/courseEnrolleeList";
 			// 수강신청 목록으로 이동한다.
 		}
 		
@@ -236,7 +242,7 @@ public class CourseAndScoreController {
 		String message = courseAndScoreService.updateCourseEnrollee(courseEnrollee);
 		// 수강신청 수정 처리 후 메세지를 반환받는다.
 		
-		String path = "redirect:/CourseEnrolleeList";
+		String path = "redirect:/courseEnrolleeList";
 		// 수강신청 수정에 성공했을 경우 수강신청 리스트로 이동하게 초기화한다.
 		
 		if(message != null) {
@@ -267,7 +273,7 @@ public class CourseAndScoreController {
 		
 		System.out.println(message + " <- message   deleteCourseEnrollee()   CourseAndScoreController.java");
 		
-		return "redirect:/CourseEnrolleeList";
+		return "redirect:/courseEnrolleeList";
 	}
 	
 	
@@ -325,24 +331,33 @@ public class CourseAndScoreController {
 	
 	
 	// 관리자, 강사, 학생 : 아직 시험을 치르지 않은 시험일 조회
+	// 관리자, 강사, 학생 : 시험완료된 강좌 리스트
 	@GetMapping("/examinationDayList")
 	public String examinationDayList(
 			 CourseRoomSearchVO searchVO
+			,@RequestParam(value = "memberLevel", required = false) String memberLevel
 			,Model model) {
 		
-		 // 강사회원이 담당 강좌 시험일 조회시 아이디 보기
-		if(searchVO.getMemberId() != null) {
-			System.out.println(searchVO.getMemberId()
-					+ " <- searchVO.getMemberId()   examinationDayList()   CourseAndScoreController.java");
+		System.out.println(memberLevel
+				+ " <- memberLevel   examinationDayList()   CourseAndScoreController.java");
+		// 회원 권한 보기
+		
+		
+		if(memberLevel != null && memberLevel.equals("관리자")) {
+			// 관리자 회원이 시험일 리스트를 조회하는 것이라면 모든 강사의 아이디를 조회해야한다.
+			searchVO.setMemberId(null);
+			// 시험일은 강사만이 등록할 수 있는데 관리자 아이디가 들어있으므로 제대로 조회가 안될 것이다.
+			// 따라서 관리자 아이디가 들어있는 변수에 널값을 넣어줘야 값이 제대로 나온다.
 		}
 		
-		List<Map<String, Object>> notTestDayCourseList =
+		
+		List<Map<String, Object>> testDayCourseList =
 				courseAndScoreService.testDayCourseOneOrList(searchVO);
 		// 관리자 접근시 : 시험 날짜가 오늘보다 이후인 모든 시험일자 강좌 리스트를 얻어온다.
 		// 강사 접근시 : 시험 날짜가 오늘보다 이후인 강사 담당 강좌의 모든 시험일자 강좌 리스트를 얻어온다.
 		
 		
-		///// 학생 접근시 수강신청 테이블에서 강좌코드를 리스트로 뽑아내야한다. 
+		///// TODO 학생 접근시 수강신청 테이블에서 강좌코드를 리스트로 뽑아내야한다. 
 		
 		
 		List<Subject> subjectList = courseManageService.subjectList();
@@ -355,11 +370,36 @@ public class CourseAndScoreController {
 		// 전체 강사 리스트를 가져온다.
 		
 		
-		model.addAttribute("notTestDayCourseList", notTestDayCourseList);
-		// 화면에 보여줄 아직 시험을 치르지 않은 시험 강좌 리스트
+		String testStandard = searchVO.getTestStandardDay();
+		String testStandardDay = "";
 		
-		model.addAttribute("notTestDayCourseListSize", notTestDayCourseList.size());
+		if(testStandard.equals("notTest")) {
+			// 미시험일 리스트를 보여주는 것이라면
+			
+			testStandardDay = "아직 치르지 않은 ";
+			// 제목의 앞부분에 붙여줄 글자를 넣어준다.
+			// '아직 치르지 않은 '시험일 목록
+		} else {
+			// 완료된 시험일 리스트를 보여주는 것이라면
+			
+			testStandardDay = "완료된 ";
+			// 제목의 앞부분에 붙여줄 글자를 넣어준다.
+			// '완료된 '시험일 목록
+		}
+		
+		model.addAttribute("testStandardDay", testStandardDay);
+		// 제목의 앞부분에 붙여줄 글자를 넣어준다.
+		
+		model.addAttribute("testDayCourseList", testDayCourseList);
+		// 화면에 보여줄 아직 시험을 치르지 않은 시험 강좌 리스트
+		// 화면에 보여줄 완료된 시험 강좌 리스트
+		
+		model.addAttribute("testDayCourseListSize", testDayCourseList.size());
 		// 리스트의 사이즈를 보고 시험일 목록의 존재 여부 판단
+		
+		model.addAttribute("testStandard", testStandard);
+		// 위 변수에 담긴 값으로 미시험일 리스트인지, 완료된시험 리스트인지 판단한다.
+		
 		
 		model.addAttribute("subjectList", subjectList);
 		// 샐랙트 박스에 넣어줄 전체 과목 리스트
@@ -582,4 +622,187 @@ public class CourseAndScoreController {
 		
 		return "redirect:/examinationDayList";
 	}
+	
+	
+	
+	
+	
+	// 관리자, 강사 : 학생 시험 성적 입력폼 이동
+	@GetMapping("/addScoreInput")
+	public String addScoreInput(CourseRoomSearchVO searchVO, Model model) {
+		
+		List<Map<String, Object>> oneMap =
+				courseAndScoreService.courseEnrolleeOneOrList(searchVO);
+		// 수강신청코드를 이용하여 객체를 가져오기에 하나의 객체만 나올 것이다.
+		
+		System.out.println(oneMap.toString()
+				+ " <- oneMap.toString()   addScoreInput()   CourseAndScoreController.java");
+		System.out.println(oneMap.size()
+				+ " <- oneMap.size()   addScoreInput()   CourseAndScoreController.java");
+		
+		Map<String, Object> courseEnrolleeInfo = oneMap.get(0);
+		// 가져온 한개의 객체를 맵에 넣어준다.
+		
+		
+		System.out.println((String)courseEnrolleeInfo.get("courseNo")
+				+ " <- courseNo   addScoreInput()   CourseAndScoreController.java");
+		
+		searchVO.setCourseNo((String)courseEnrolleeInfo.get("courseNo"));
+		// 필요한 강좌코드를 얻어온다.
+		
+		searchVO.setTestStandardDay("testComplete");
+		// 성적을 입력하는 것이다. 즉, 시험이 완료된 시험강좌 리스트를 가져와야한다.
+		// 시험 완료된 시험강좌 리스트를 가져오기위해 쿼리 검색 키워드를 넣어준다.
+		
+		List<Map<String, Object>> examinationDayList =
+				courseAndScoreService.testDayCourseOneOrList(searchVO);
+		// 강좌코드와 시험완료 검색 키워드를 넣어서 시험완료된 시험강좌 리스트를 가져온다.
+		
+		
+		List<GradingCriteria> GradingCriteriaList =
+				courseManageService.gradingCriteriaList();
+		// 전체 성적기준 리스트를 가져온다.
+		
+		
+		model.addAttribute("courseEnrolleeInfo", courseEnrolleeInfo);
+		// 학생의 수강신청 정보를 넣어준다.
+		
+		model.addAttribute("examinationDayList", examinationDayList);
+		// 샐랙트 박스에 넣어줄 시험강좌 리스트
+		
+		model.addAttribute("GradingCriteriaList", GradingCriteriaList);
+		// 샐랙트 박스에 넣어줄 성적평가기준 리스트
+		
+		return "/view/lesson/courseAndScore/addScoreInput";
+	}
+	
+	
+	// 관리자, 강사 : 성적입력코드 중복확인
+	@PostMapping("/scoreInputNoOverlapChk")
+	@ResponseBody
+	public Map<String, Object> scoreInputNoOverlapChk(@RequestBody String scoreInputNo) {
+		System.out.println(scoreInputNo
+				+ " <- scoreInputNo   scoreInputNoOverlapChk()   CourseAndScoreController.java");
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		String result = courseAndScoreService.scoreInputByScoreInputNo(scoreInputNo);
+		// 성적입력 테이블에서 해당 성적입력코드가 존재하는지 확인
+		
+		if(result == null) {	// 결과가 없다 : 해당 성적입력코드가 존재하지 않는다.
+			map.put("result", 1);
+			// 성적입력 테이블에 해당 성적입력코드값이 존재하지 않음 : 사용가능한 성적입력코드
+		} else {
+			map.put("result", 0);
+			// 성적입력 테이블에 해당 성적입력코드값이 존재함 : 이미 사용 중인 성적입력코드
+		}
+		
+		return map;
+	}
+	
+	
+	// 강사 : 학생 시험성적 입력 처리
+	@PostMapping("/addScoreInput")
+	public String addScoreInput(
+			 ScoreInput scoreInput
+			,@RequestParam(value = "memberId") String memberId
+			// 강사가 학생의 점수를 입력처리했을 경우
+			,RedirectAttributes redirectAttributes) {
+		System.out.println(memberId + " <- memberId   addScoreInput()   CourseAndScoreController.java");
+		
+		String message = courseAndScoreService.addScoreInput(scoreInput);
+		// 학생시험성적 입력 처리 후 메세지를 반환받는다.
+		
+		String path = "redirect:/addScoreInput";
+		// 학생시험성적 추가에 실패했을 경우 다시 성적을 추가하는 폼으로 이동한다.
+		
+		if(message == null) {
+			// 리턴받은 메세지가 널이라면 학생시험성적 추가에 성공했다는 뜻이다.
+			
+			path = "redirect:/teacherCourseEnrolleeStudentList";
+			// 자신의 강좌에 수강신청한 학생들 목록으로 이동
+			
+			redirectAttributes.addAttribute("memberId", memberId);
+			//해당 강사의 아이디를 넣어준다.
+		} else {
+			// 리턴받은 메세지가 널이 아니라면 학생시험성적 추가에 실패했다는 뜻이다.
+			
+			redirectAttributes.addAttribute("courseEnrolleeNo",
+					scoreInput.getCourseEnrolleeNo());
+			// 점수 입력에 실패하여 성적 입력폼으로 이동할 경우 학생의 수강신청코드를 넣어준다.
+		}
+		
+		return path;	
+	}
+	
+	
+	// 관리자, 강사, 학생 : 시험성적순위 리스트
+	@GetMapping("/scoreRankInCourseList")
+	public String scoreRankInCourseList(CourseRoomSearchVO searchVO, Model model) {
+		
+		List<Map<String, Object>> scoreRankList =
+				courseAndScoreService.totalGradeResultOneOrList(searchVO);
+		// 시험일코드를 이용하여 해당 시험을 치룬 학생들의 리스트를 가져온다.
+		
+		
+		model.addAttribute("scoreRankList", scoreRankList);
+		// 화면에 보여줄 시험을 치룬 학생들의 성적 리스트
+		
+		model.addAttribute("scoreRankListSize", scoreRankList.size());
+		// 리스트의 사이즈를 보고 해당 학생 성적 목록의 존재 여부 판단
+		
+		return "/view/lesson/courseAndScore/listScoreRankInCourse";
+	}
+	
+	
+	// 관리자, 강사 : 시험성적 상세 폼 이동
+	@GetMapping("/updateScoreInput")
+	public String updateScoreInput(CourseRoomSearchVO searchVO, Model model) {
+		// CourseRoomSearchVO : 성적입력코드와 시험일코드가 들어있다.
+		
+		List<Map<String, Object>> oneMap =
+				courseAndScoreService.totalGradeResultOneOrList(searchVO);
+		// 성적입력코드로 값을 가져올 것이기에 값이 한개만 나올것이다.
+		
+		System.out.println(oneMap.toString()
+				+ " <- oneMap.toString()   updateScoreInput()   CourseAndScoreController.java");
+		System.out.println(oneMap.size()
+				+ " <- oneMap.size()   updateScoreInput()   CourseAndScoreController.java");
+		
+		Map<String, Object> scoreInputInfo = oneMap.get(0);
+		// 가져온 한개의 객체를 맵에 넣어준다.
+		
+		
+		searchVO.setScoreInputNo(null);
+		// 해당 시험을 본 학생 순위리스트를 가져올 것이기에 성적입력코드를 없애준다.
+		
+		List<Map<String, Object>> scoreStudentRankList =
+				courseAndScoreService.totalGradeResultOneOrList(searchVO);
+		// 시험일 코드를 이용하여 해당 시험을 본 순위리스트를 가져온다.
+		
+		
+		List<GradingCriteria> GradingCriteriaList =
+				courseManageService.gradingCriteriaList();
+		// 전체 성적기준 리스트를 가져온다.
+		
+		
+		
+		model.addAttribute("scoreInputInfo", scoreInputInfo);
+		// 화면에 뿌려줄 학생성적 상세 정보
+		
+		model.addAttribute("scoreStudentRankList", scoreStudentRankList);
+		// 화면에 뿌려줄 해당 시험을 본 학생 성적 리스트
+		
+		model.addAttribute("scoreStudentRankListSize", scoreStudentRankList.size());
+		// 리스트의 사이즈를 보고 해당 학생 성적 목록의 존재 여부 판단
+		
+		
+		model.addAttribute("GradingCriteriaList", GradingCriteriaList);
+		// 샐랙트 박스에 넣어줄 성적평가기준 리스트
+		
+		return "/view/lesson/courseAndScore/detailScoreInput";
+	}
+	
+	
+	
 }

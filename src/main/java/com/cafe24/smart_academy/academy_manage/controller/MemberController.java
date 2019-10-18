@@ -59,14 +59,14 @@ public class MemberController {
 			session.setAttribute("memberLevel", map.get("memberLevel"));
 			session.setAttribute("memberName", map.get("memberName"));
 			
-			String level = (String)map.get("memberLevel");
-			if(level.equals("관리자")) {
-				path = "/view/adminIndex";
-			} else if(level.equals("강사")) {
-				path = "/view/teacherIndex";
-			} else {
+//			String level = (String)map.get("memberLevel");
+//			if(level.equals("관리자")) {
+//				path = "/view/adminIndex";
+//			} else if(level.equals("강사")) {
+//				path = "/view/teacherIndex";
+//			} else {
 				path = "/view/index";
-			}
+//			}
 			
 		} else {
 			System.out.println(map.get("result") + "<- map.result   memberLogin()   MemberController.java");
@@ -140,6 +140,102 @@ public class MemberController {
 		
 		return map;
 	}
+	
+	
+	// 로그인정보 수정 폼 이동 (패스워드 수정처리)
+	@GetMapping("/updateLoginPassword")
+	public String updateLoginPassword(
+			 @RequestParam(value = "memberId") String memberId
+			,Model model) {
+		Member member = memberService.memberSimpleInfo(memberId);
+		// 회원의 간단한 정보만 얻어온다.
+		// 아이디, 이름, 생년월일
+		
+		model.addAttribute("member", member);
+		// 화면에 표시해줄 회원의 간단한 정보를 넣어준다.
+		
+		return "/view/academyRegister/academyRegisterInfo/updateLoginPassword";
+	}
+	
+	// 로그인정보 수정 처리 (패스워드 수정처리)
+	@PostMapping("/updateLoginPassword")
+	public String updateLoginPassword(
+			 MemberLogin login
+			,RedirectAttributes redirectAttributes) {
+		String message = memberService.updateLoginPassword(login);
+		// 로그인정보 수정처리 후 메세지를 반환받는다.
+		
+		String path = "redirect:/";
+		// 로그인정보 수정에 성공했을 경우 메인 인덱스 페이지로 이동하게 초기화한다.
+		
+		if(message != null) {
+			// 리턴받은 메세지가 널이 아니라면 로그인정보 수정에 실패했다는 뜻이다.
+			
+			System.out.println("로그인정보 수정 실패!!!!!!!!!!!!");
+			
+			redirectAttributes.addAttribute("memberId", login.getMemberId());
+			// 패스워드 수정 페이지로 리다이렉트하면서 회원아이디를 넘겨준다.
+			
+			path = "redirect:/updateLoginPassword";
+			//  패스워드 수정 페이지로 이동
+		}
+		
+		return path;
+	}
+	
+	
+	
+	
+	
+	// 관리자 : 관리자 자신의 정보 수정 폼 이동
+	@GetMapping("/updateAdminInfo")
+	public String updateAdminInfo(
+			 @RequestParam(value = "memberId") String memberId
+			,Model model) {
+		
+		System.out.println(memberId + " <- memberId   updateAdminInfo()   MemberController.java");
+		
+		Map<String, Object> adminInfo =
+				memberService.detailAdminInfoByMemberId(memberId);
+		// 관리자 자신의 상세 정보를 얻어온다.
+		
+		model.addAttribute("adminInfo", adminInfo);
+		// 화면에 뿌려줄 관리자 상세정보
+		
+		return "/view/academyRegister/academyRegisterInfo/detailAdminInfo";
+	}
+	
+	
+	// 관리자 : 관리자 자신의 정보 수정처리
+	@PostMapping("/updateAdminInfo")
+	public String updateAdminInfo(
+			 MemberLogin login
+			,Member member
+			,RedirectAttributes redirectAttributes) {
+		
+		int result = memberService.updateAdminInfo(login, member);
+		// 관리자 자신의 정보 수정 처리 후 메세지를 반환받는다.
+		
+		String path = "redirect:/";
+		// 관리자정보 수정에 성공했을 경우 메인 인덱스 페이지로 이동하게 초기화한다.
+		
+		if(result < 2) {
+			// 리턴받은 결과값이 2보다 작다면 관리자정보 수정에 실패했다는 뜻이다.
+			
+			System.out.println("관리자정보 수정 실패!!!!!!!!!!!!");
+			
+			redirectAttributes.addAttribute("memberId", login.getMemberId());
+			// 관리자정보 상세 페이지로 리다이렉트하면서 회원아이디를 넘겨준다.
+			
+			path = "redirect:/updateAdminInfo";
+			// 관리자정보 상세 페이지로 이동
+		}
+		
+		return path;
+	}
+	
+	
+	
 	
 	
 	//관리자 : 상담기준코드 리스트 가져오기
@@ -223,6 +319,9 @@ public class MemberController {
 	}
 	
 	
+	
+	
+	
 	// 관리자 : 상담구분코드 리스트 이동
 	@GetMapping("/counselTypeList")
 	public String counselTypeList(Model model) {
@@ -247,7 +346,6 @@ public class MemberController {
 			,Model model) {
 		
 		List<CounselType> counselTypeList = memberService.counselTypeList(counselTypeNo);
-		//TODO 검색결과 리스트 수정
 		// 상담구분코드 검색결과 리스트 가져오기
 		
 		model.addAttribute("counselTypeList", counselTypeList);
@@ -377,6 +475,8 @@ public class MemberController {
 		return "redirect:/counselTypeList";
 		// 삭제 완료 후 상담구분코드 리스트로 이동한다.
 	}
+	
+	
 	
 	
 	

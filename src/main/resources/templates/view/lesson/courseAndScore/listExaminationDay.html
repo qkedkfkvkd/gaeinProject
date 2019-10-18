@@ -4,13 +4,13 @@
       layout:decorate="~{layout/default}">
 
 <th:block layout:fragment="customTitle">
-	<title>시험일 목록</title>
+	<title>[[${testStandardDay + ' 시험일 목록'}]]</title>
 </th:block>
 
 <th:block layout:fragment="customContents">
 	<div class="page-header">
 		<div class="col-md-6 col-md-offset-3">
-			<h3>시험일 목록</h3>
+			<h3>[[${testStandardDay + ' 시험일 목록'}]]</h3>
 		</div>
 	</div>
 	
@@ -73,9 +73,15 @@
 				<table class="table">
 					<tbody>
 						<tr>
-							<td>
+							<td th:if="${testStandard == 'testComplete'.toString()}">
 								<button type="button" class="btn btn-primary btn-sm btn-block"
-										th:onclick="'window.location.href = \'' + @{/examinationDayCompleteList(testStandardDay='testComplete', memberId=${session.memberId})} + '\''">
+										th:onclick="'window.location.href = \'' + @{/examinationDayList(testStandardDay='notTest', memberId=${session.memberId}, memberLevel=${session.memberLevel})} + '\''">
+									치러야될 시험 목록
+								</button>
+							</td>
+							<td th:if="${testStandard == 'notTest'.toString()}">
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/examinationDayList(testStandardDay='testComplete', memberId=${session.memberId}, memberLevel=${session.memberLevel})} + '\''">
 									완료된 시험 목록
 								</button>
 							</td>
@@ -105,22 +111,49 @@
 					<th>실용도</th>
 					<th>등록일</th>
 					<th th:if="${session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()}">수정</th>
+					<th th:if="${testStandard == 'testComplete'.toString()}">학생목록</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="test, lists : ${notTestDayCourseList}"
-					th:if="${notTestDayCourseListSize != 0}">
+				<tr th:each="test, lists : ${testDayCourseList}"
+					th:if="${testDayCourseListSize != 0}">
 					<td th:text="${lists.count}"></td>
 					<td th:text="${test.schedulePeriod}"></td>
 					<td th:text="${test.examinationDay}"></td>
 					<td th:text="${test.examinationName}"></td>
 					<td th:text="${test.subjectName}"></td>
-					<td th:text="${test.courseName}"></td>
+					<td>
+						<div class="navbar-menu-wrapper d-flex align-items-center">
+							<ul class="navbar-nav navbar-nav-right">
+								<li class="nav-item nav-profile dropdown">
+									<a class="nav-link dropdown-toggle" th:href="@{#}"
+										data-toggle="dropdown" id="scoreDropdown">
+										<span class="nav-profile-name">
+											[[${test.courseName}]]
+										</span>
+									</a>
+									<div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="scoreDropdown">
+										<a class="dropdown-item"
+										   th:if="${session.memberLevel == '관리자'.toString() || (session.memberLevel == '강사'.toString() && session.memberId == test.memberId)}"
+										   th:href="@{/scoreRankInCourseList(examinationDayNo=${test.examinationDayNo})}">
+											성적순위보기
+										</a>
+										<!-- 관리자는 모든 강좌의 성적순위를 볼 수 있다. -->
+										<!-- 강사인 회원은 자신의 강좌만 성적순위를 볼 수 있다. -->
+									</div>
+								</li>
+							</ul>
+							<button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+								<span class="mdi mdi-menu"></span>
+							</button>
+						</div>
+					</td>
 					<td th:text="${test.memberName}"></td>
 					<td th:text="${test.roomFloor + '층 ' + test.roomNumber + '호'}"></td>
 					<td th:text="${test.roomUsage}"></td>
 					<td th:text="${test.examinationDayRegisteredDate}"></td>
-					<td><!-- 관리자는 무조건 수정이 가능하여야 하고 강사인 회원은 자신 담당 시험일만 수정할 수 있다. -->
+					<td>
+						<!-- 관리자는 무조건 수정이 가능하여야 하고 강사인 회원은 자신 담당 시험일만 수정할 수 있다. -->
 						<span th:if="${session.memberLevel == '관리자'.toString() || (session.memberLevel == '강사'.toString() && session.memberId == test.memberId)}">
 							<button type="button" class="btn btn-success btn-sm"
 									th:onclick="'window.location.href = \'' + @{/updateExaminationDay(examinationDayNo=${test.examinationDayNo})} + '\''">
@@ -136,10 +169,42 @@
 							</button>
 						</span>
 					</td>
+					<td th:if="${testStandard == 'testComplete'.toString()}">
+						<!-- 관리자는 무조건 학생 점수입력이 가능하여야 한다. -->
+						<span th:if="${session.memberLevel == '관리자'.toString()}">
+							<button type="button" class="btn btn-success btn-sm"
+									th:onclick="'window.location.href = \'' + @{/courseEnrolleeList(courseNo=${test.courseNo})} + '\''">
+								학생목록
+							</button>
+						</span>
+						
+						<!-- 강사인 회원은 자신 담당 시험일만 수정할 수 있다. -->
+						<span th:if="${session.memberLevel == '강사'.toString() && session.memberId == test.memberId}">
+							<button type="button" class="btn btn-success btn-sm"
+									th:onclick="'window.location.href = \'' + @{/teacherCourseEnrolleeStudentList(memberId=${session.memberId})} + '\''">
+								학생목록
+							</button>
+						</span>
+						
+						<!-- 강사회원으로 로그인을 했는데 자신 담당 강좌가 아닌 경우라면 수정하면 안된다. -->
+						<span th:if="${session.memberLevel == '강사'.toString() && session.memberId != test.memberId}">
+							<button type="button" class="btn btn-success btn-sm"
+									disabled="disabled">
+								접근불가
+							</button>
+						</span>
+					</td>
 				</tr>
 				
-				<tr th:unless="${notTestDayCourseListSize != 0}">
-					<td colspan="5">등록된 시험일이 없습니다.</td>
+				<tr th:unless="${testDayCourseListSize != 0}">
+					<td colspan="5">
+						<span th:if="${testStandard == 'notTest'.toString()}">
+							등록된 미완료된 시험일이 없습니다.
+						</span>
+						<span th:if="${testStandard == 'testComplete'.toString()}">
+							등록된 완료된 시험일이 없습니다.
+						</span>
+					</td>
 				</tr>
 			</tbody>
 		</table>

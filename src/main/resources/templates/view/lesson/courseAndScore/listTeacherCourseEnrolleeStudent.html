@@ -60,6 +60,7 @@
 						<th>학부모명</th>
 						<th>학부모연락처</th>
 						<th>수강등록일</th>
+						<th>점수입력</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -75,6 +76,12 @@
 						<td th:text="${enrol.parentName}"></td>
 						<td th:text="${enrol.parentPhone}"></td>
 						<td th:text="${#calendars.format(enrol.courseEnrolleeRegisteredDate,'yyyy-MM-dd')}"></td>
+						<td>
+							<button type="button" class="btn btn-success btn-sm"
+									th:onclick="'window.location.href = \'' + @{/addScoreInput(courseEnrolleeNo=${enrol.courseEnrolleeNo}, memberId=${session.memberId})} + '\''">
+								점수입력
+							</button>
+						</td>
 					</tr>
 					
 					<tr th:unless="${teacherCourseEnrolleeStudentListSize != 0}">

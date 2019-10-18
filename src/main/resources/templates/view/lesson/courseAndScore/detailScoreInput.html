@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title th:text="${scoreInputInfo.memberName + ' 점수 상세'}"></title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3 th:text="${scoreInputInfo.memberName + '학생 : ' + scoreInputInfo.examinationName + ' 점수 상세'}"></h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-12 col-md-offset-3">
+		<div class="row">
+			<div class="col-md-3">
+				<form role="form" id="updateScoreInputFrm"
+					  action="/updateScoreInput" method="post">
+					
+					<div class="form-group">
+						<label for="inputScoreInputNo">성적입력코드</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="inputScoreInputNo"
+								   name="scoreInputNo"
+								   th:value="${scoreInputInfo.scoreInputNo}"
+								   readonly="readonly">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputExaminationDayNo">시험시간표</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="inputExaminationDayNo"
+								   th:value="${scoreInputInfo.roomFloor + '층 ' + scoreInputInfo.roomNumber + '호 : ' + scoreInputInfo.examinationDay + ' 일 ' + scoreInputInfo.schedulePeriod  + '교시'}"
+								   readonly="readonly">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="inputCourseName">강좌명</label>
+						<input type="text" class="form-control" id="inputCourseName"
+							   th:value="${scoreInputInfo.courseName}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<label for="GradingCriteriaList">등급</label>
+						<!-- <div class="input-group"> -->
+						<select id="GradingCriteriaList" name="gradingCriteriaRating"
+								class="form-control">
+							<option value="">선택</option>
+							<option th:each="grade : ${GradingCriteriaList}"
+									th:value="${grade.gradingCriteriaRating}"
+									th:text="${grade.gradingCriteriaStartOfSection + ' ~ ' + grade.gradingCriteriaEndOfSection + '점 : ' + grade.gradingCriteria + '점'}"></option>
+						</select>
+						<!-- </div> -->
+						
+					</div>
+					
+					<div class="form-group">
+						<label for="inputScoreInputTestScore">점수</label>
+						<input type="text" class="form-control" id="inputScoreInputTestScore"
+							   name="scoreInputTestScore">
+					</div>
+					
+					<div class="form-group">
+						<label for="inputScoreInputRegisteredDate">등록일</label>
+						<input type="text" class="form-control"
+							   id="inputScoreInputRegisteredDate"
+							   th:value="${scoreInputInfo.scoreInputRegisteredDate}"
+							   readonly="readonly">
+					</div>
+					
+					<div class="form-group">
+						<div class="row"> <!-- style="vertical-align: bottom;" -->
+							<div class="col-md-4">
+								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+							</div>
+							<div class="col-md-4">
+								<button type="button" id="updateScoreInputFrmBtn"
+										class="btn btn-primary btn-sm btn-block">수정</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-9">
+				<div>
+					<h6>학생 성적</h6>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>번호</th>
+								<th>강좌</th>
+								<th>강의실</th>
+								<th>학생</th>
+								<th>점수</th>
+								<th>등급</th>
+								<th>수정</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="grade, lists : ${scoreStudentRankList}"
+								th:if="${scoreStudentRankListSize != 0}">
+								<td th:text="${lists.count}"></td>
+								<td th:text="${grade.courseName}"></td>
+								<td th:text="${grade.roomFloor + '층 ' + grade.roomNumber + '호'}"></td>
+								<td th:text="${grade.memberName}"></td>
+								<td th:text="${grade.scoreInputTestScore}"></td>
+								<td th:text="${grade.gradingCriteriaRating}"></td>
+								<td>
+									<button type="button" class="btn btn-success btn-sm"
+											th:onclick="'window.location.href = \'' + @{/updateScoreInput(scoreInputNo=${grade.scoreInputNo})} + '\''">
+										수정
+									</button>
+								</td>
+							</tr>
+							
+							<tr th:unless="${scoreStudentRankListSize != 0}">
+								<td colspan="5">해당 시험을 참조하는 성적내용이 없습니다.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		
+		// 학생성적 수정 처리 전 공백 유효성 검사
+		$('#updateScoreInputFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+	        if($("#GradingCriteriaList").val() ==''){
+	            alert('등급을 선택하세요');
+	            $("#GradingCriteriaList").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputScoreInputTestScore").val() ==''){
+	            alert('점수를 입력하세요');
+	            $("#inputScoreInputTestScore").focus();
+	            return false;
+	        }
+	        
+	        $('#updateScoreInputFrm').submit();
+	    });
+	</script>
+</th:block>
+
+</html>

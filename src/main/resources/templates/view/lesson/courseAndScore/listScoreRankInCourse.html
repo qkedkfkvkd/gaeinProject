@@ -4,63 +4,101 @@
       layout:decorate="~{layout/default}">
 
 <th:block layout:fragment="customTitle">
-	<title>강좌등록</title>
+	<title>시험성적순위</title>
 </th:block>
 
-<!-- 특정 강좌, 특정 강의실에서 공부하는 학생들에 관한 전체 성적 리스트 -->
 <th:block layout:fragment="customContents">
 	<div class="page-header">
 		<div class="col-md-6 col-md-offset-3">
-			<h3>강좌등록</h3>
+			<h3>시험성적순위</h3>
 		</div>
 	</div>
 	
-	<div class="col-sm-7 col-md-offset-3">
-		<form role="form" action="/addCourseNo" method="post">
-			<div class="form-group">
-				<label for="inputCourseNo">강좌코드</label>
-				<div class="input-group">
-					<input type="text" class="form-control" id="inputCourseNo"
-						   name="courseNo">
-					<span class="input-group-btn">
-						<button type="button" class="btn btn-primary btn-sm"
-								id="courseNoOverlapBtn">중복확인</button>
-						<input type="hidden" id="courseNoOverlapClickChk" value="0">
-					</span>
-				</div>
-			</div>
-			
-			<div class="form-group">
-				<label class="sr-only" for="viewSubjectList">과목명</label>
-				<!-- <div class="input-group"> -->
-				<select id="viewSubjectList" name="SubjectNo"
-						class="form-control"><!-- th:each="subject : ${subjectList}" -->
-					<option  value="국어">국어</option>
-					<!-- th:value="${subject.subjectNo}" -->
-					<!-- th:text="${subject.subjectName}" -->
-					<option value="영어">영어</option>
-					<option value="수학">수학</option>
-				</select>
-				<!-- </div> -->
-			</div>
-			
-			<div class="form-group">
-				<label for="inputCourseName">강좌명</label>
-				<input type="text" class="form-control" id="inputCourseName"
-					   name="courseName">
-			</div>
-			
-			<div class="form-group">
-				<div class="row"> <!-- style="vertical-align: bottom;" -->
-					<div class="col-md-6">
-						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+	<div class="col-sm-12 col-md-offset-3">
+		<div class="row">
+			<div class="col-md-4" >
+				<form class="form-inline" action="/scoreRankInCourseList">
+					<div class="form-group">
+						<label class="sr-only" for="inputMemberName">학생명</label>
+						<input type="text" class="form-control" id="inputMemberName"
+							   name="memberName" placeholder="학생 이름을 입력하세요.">
 					</div>
-					<div class="col-md-6">
-						<button type="submit" class="btn btn-primary btn-sm btn-block">입력</button>
-					</div>
-				</div>
+					
+					<button type="submit" class="btn btn-success">검색</button>
+				</form>
 			</div>
-		</form>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-4" >
+				<table class="table">
+					<tbody>
+						<tr>
+							<td th:if="${testStandard == 'testComplete'.toString()}">
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/examinationDayList(testStandardDay='notTest', memberId=${session.memberId}, memberLevel=${session.memberLevel})} + '\''">
+									치러야될 시험 목록
+								</button>
+							</td>
+							<td th:if="${testStandard == 'notTest'.toString()}">
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/examinationDayList(testStandardDay='testComplete', memberId=${session.memberId}, memberLevel=${session.memberLevel})} + '\''">
+									완료된 시험 목록
+								</button>
+							</td>
+							<td th:if="${session.memberLevel == '강사'.toString()}">
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/addExaminationDay(memberId=${session.memberId})} + '\''">
+									시험일 등록하기
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>순위</th>
+					<th>교시</th>
+					<th>시험일</th>
+					<th>시험명</th>
+					<th>강좌</th>
+					<th>강의실</th>
+					<th>학생</th>
+					<th>점수</th>
+					<th>등급</th>
+					<th th:if="${session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()}">수정</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="test, lists : ${scoreRankList}"
+					th:if="${scoreRankListSize != 0}">
+					<td th:text="${lists.count + '등'}"></td>
+					<td th:text="${test.schedulePeriod}"></td>
+					<td th:text="${test.examinationDay}"></td>
+					<td th:text="${test.examinationName}"></td>
+					<td th:text="${test.courseName}"></td>
+					<td th:text="${test.roomFloor + '층 ' + test.roomNumber + '호'}"></td>
+					<td th:text="${test.memberName}"></td>
+					<td th:text="${test.scoreInputTestScore}"></td>
+					<td th:text="${test.gradingCriteriaRating}"></td>
+					<td th:if="${session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()}">
+						<!-- 관리자나 강사로 접근할 경우 -->
+						<button type="button" class="btn btn-success btn-sm"
+								th:onclick="'window.location.href = \'' + @{/updateScoreInput(scoreInputNo=${test.scoreInputNo}, examinationDayNo=${test.examinationDayNo})} + '\''">
+							수정
+						</button>
+					</td>
+				</tr>
+				
+				<tr th:unless="${scoreRankListSize != 0}">
+					<td colspan="5">입력된 학생 성적 목록이 없습니다.</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 </th:block>
 

@@ -58,6 +58,49 @@ public class MemberService {
 	}
 	
 	
+	// 로그인 정보 수정 처리 (패스워드 수정처리)
+	public String updateLoginPassword(MemberLogin login) {
+		String resultMessage = "updateLoginPasswordFail";
+		// 만약 로그인정보 수정처리에 실패했다면 이 메세지가 리턴될 것이다.
+		
+		int result = memberMapper.updateLoginPassword(login);
+		// 로그인정보 수정 처리
+		
+		if(result == 1) {  // 로그인정보 수정에 성공했다면
+			resultMessage = null;
+			// 리턴 메세지에 널값을 준다
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	// 관리자 : 해당 회원 로그인 정보 삭제 처리
+	// 학생을 삭제할 경우 : CASCADE에 의해 결제정보, 회원신상정보, 학부모정보,
+	//						수강신청정보, 상담정보가 지워진다.
+	// 타 관리자나 강사를 삭제할 경우 : CASCADE에 의해 회원신상정보, 강사정보가 지워진다.
+	public String deleteMemberLogin(String memberId) {
+		String existChk = memberLoginById(memberId);
+		// 삭제하기 전 해당 회원아이디로된 로그인 정보가 존재하는지 확인
+		
+		String resultMessage = "deleteMemberLoginFail";
+		// 회원 로그인정보 삭제 실패로 초기화
+		
+		if(existChk != null) { // 해당 회원아이디 존재(삭제 가능)
+			int result = memberMapper.deleteMemberLogin(memberId);
+			// 해당 로그인정보 삭제 처리
+			
+			if(result == 1) { // 해당 로그인정보 삭제 성공
+				resultMessage = "deleteMemberLoginSuccess";
+				// 로그인정보 삭제 성공 메세지
+			}
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	
 	// 관리자가 학생 혹은 강사를 등록할 시 회원신상정보 테이블에서 유니크값인 이메일 중복 체크
 	public String memberByEmail(String memberEmail) {
 		return memberMapper.memberByEmail(memberEmail);
@@ -72,6 +115,37 @@ public class MemberService {
 	}
 	
 	
+	// 관리자 : 관리자 자신의 상세 정보 가져오기
+	public Map<String, Object> detailAdminInfoByMemberId(String memberId) {
+		return memberMapper.detailAdminInfoByMemberId(memberId);
+	}
+	
+	
+	// 관리자 : 관리자 자신의 정보 수정처리
+	public int updateAdminInfo(MemberLogin login, Member member) {
+		int result = 0;
+		// 관리자정보 수정처리를 아직 안했다는 것으로 초기화한다.
+		
+		int loginResult = memberMapper.updateLoginPassword(login);
+		// 관리자 로그인정보 수정 처리
+		
+		if(loginResult == 1) {  // 관리자 로그인정보 수정에 성공했다면
+			result++;
+			// 수정처리 결과에 1을 증가시킨다.
+		}
+		
+		int memberResult = memberMapper.updateMemberInfo(member);
+		// 관리자 상세정보 수정 처리
+		
+		if(memberResult == 1) {  // 관리자 상세정보 수정에 성공했다면
+			result++;
+			// 수정처리 결과에 1을 증가시킨다.
+		}
+		
+		return result;
+	}
+	
+	
 	// 관리자 : 학생이나 강사 목록 페이지로 이동할 때 가져갈 리스트 객체
 	// 관리자 : 입력한 이름과 가입기간으로 디비에서 권한이
 	//			학생이거나 강사인 사람들만 목록을 가져온다.
@@ -79,6 +153,9 @@ public class MemberService {
 	public List<Map<String, Object>> memberInfoList(MemberSearchVO memberSearchVO) {
 		return memberMapper.memberInfoList(memberSearchVO);
 	}
+	
+	
+	
 	
 	
 	// 관리자 : 상담기준코드 리스트 가져오기
@@ -192,6 +269,7 @@ public class MemberService {
 		
 		return resultMessage;
 	}
+	
 	
 	
 	

@@ -17,6 +17,18 @@
 	</select>
 	
 	
+	<!-- 로그인 정보 수정 처리 (패스워드 수정처리) -->
+	<update id="updateLoginPassword"
+			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin">
+		update
+			member_login
+		set
+			member_pw = #{memberPw}
+		where
+			member_id = #{memberId}
+	</update>
+	
+	
 	<!-- 관리자가 회원등록할 시 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인 -->
 	<select id="memberByEmail" parameterType="String" resultType="String">
 		select
@@ -69,7 +81,7 @@
 	</insert>
 	
 	
-	<!-- 관리자 : 특정 학생 및 강사 정보 수정 처리 -->
+	<!-- 관리자 : 관리자, 특정 학생, 강사 상세정보 수정 처리 -->
 	<update id="updateMemberInfo"
 			parameterType="com.cafe24.smart_academy.academy_manage.member.vo.Member">
 		update
@@ -101,6 +113,10 @@
 	
 	<!-- 관리자 : 학생이나 강사 삭제시 해당 로그인 레코드 삭제 -->
 	<!-- 학생이나 강사를 등록하다가 중간에 실패시 있을지도 모르는 로그인 레코드 삭제 -->
+	<!-- 관리자 : 해당 회원 로그인 정보 삭제 처리 -->
+	<!-- 학생을 삭제할 경우 : CASCADE에 의해 결제정보, 회원신상정보, 학부모정보,
+							  수강신청정보, 상담정보가 지워진다. -->
+	<!-- 타 관리자나 강사를 삭제할 경우 : CASCADE에 의해 회원신상정보, 강사정보가 지워진다. -->
 	<delete id="deleteMemberLogin" parameterType="String">
 		delete from
 			member_login
@@ -117,6 +133,30 @@
 			 mem.member_id			AS memberId
 			,mem.member_name		AS memberName
 			,mem.member_birth		AS memberBirth
+		from
+			 member_login		AS login
+			,member				AS mem
+		where
+			login.member_id = mem.member_id
+		and
+			mem.member_id = #{memberId}
+	</select>
+	
+	
+	<!-- 관리자 : 관리자 자신의 상세 정보 가져오기 -->
+	<select id="detailAdminInfoByMemberId"
+			parameterType="String"
+			resultType="map">
+		select
+			 login.member_id				AS memberId
+			,login.member_pw				AS memberPw
+			,mem.member_name				AS memberName
+			,mem.member_birth				AS memberBirth
+			,mem.member_email				AS memberEmail
+			,mem.member_tel					AS memberTel
+			,mem.member_phone				AS memberPhone
+			,mem.member_address				AS memberAddress
+			,mem.member_registered_date		AS memberRegisteredDate
 		from
 			 member_login		AS login
 			,member				AS mem

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title th:text="${courseEnrolleeInfo.memberName + ' 점수 입력'}"></title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-6 col-md-offset-3">
+			<h3 th:text="${courseEnrolleeInfo.memberName + ' : ' + courseEnrolleeInfo.courseName + ' 점수 입력'}"></h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-7 col-md-offset-3">
+		<form role="form" id="scoreInputJoinFrm"
+			  action="/addScoreInput" method="post">
+			<input type="hidden" name="memberId" th:value="${session.memberId}">
+			<!-- 점수 입력은 오직 강사만 할 수 있다. -->
+			<!-- 입력 처리에 성공하면 강사 담당 강좌 수강신청 목록으로 이동해야하므로 강사의 아이디도 넘겨준다. -->
+			  
+			<input type="hidden" name="courseEnrolleeNo" th:value="${courseEnrolleeInfo.courseEnrolleeNo}">
+			<!-- 점수 테이블에 수강신청 입력시 필요 -->
+			<!-- 점수 추가에 실패하여 다시 추가폼으로 올 때 필요 -->
+			<!-- 추가성공하여 점수 리스트로 이동시 필요 -->
+			
+			
+			<div class="form-group">
+				<label for="inputScoreInputNo">성적입력코드</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="inputScoreInputNo"
+						   name="scoreInputNo">
+					<span class="input-group-btn">
+						<button type="button" class="btn btn-primary btn-sm"
+								id="scoreInputNoOverlapBtn">중복확인</button>
+						<input type="hidden" id="scoreInputNoOverlapClickChk" value="0">
+						<!-- 중복확인 버튼 누름체크 변수  0:안누름 / 1:누름 -->
+					</span>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label for="examinationDayList">시험시간표</label>
+				<!-- <div class="input-group"> -->
+				<select id="examinationDayList" name="examinationDayNo"
+						class="form-control">
+					<option value="">선택</option>
+					<option th:each="examDay : ${examinationDayList}"
+							th:value="${examDay.examinationDayNo}"
+							th:text="${examDay.examinationName + ' : ' + examDay.roomFloor + '층 ' + examDay.roomNumber + '호 : ' + examDay.examinationDay + ' 일 ' + examDay.schedulePeriod  + '교시'}"></option>
+				</select>
+				<!-- </div> -->
+				
+			</div>
+			
+			<div class="form-group">
+				<label for="inputCourseName">강좌명</label>
+				<input type="text" class="form-control" id="inputCourseName"
+					   th:value="${courseEnrolleeInfo.courseName}"
+					   readonly="readonly">
+			</div>
+			
+			<div class="form-group">
+				<label for="GradingCriteriaList">등급</label>
+				<!-- <div class="input-group"> -->
+				<select id="GradingCriteriaList" name="gradingCriteriaRating"
+						class="form-control">
+					<option value="">선택</option>
+					<option th:each="grade : ${GradingCriteriaList}"
+							th:value="${grade.gradingCriteriaRating}"
+							th:text="${grade.gradingCriteriaStartOfSection + ' ~ ' + grade.gradingCriteriaEndOfSection + '점 : ' + grade.gradingCriteria + '점'}"></option>
+				</select>
+				<!-- </div> -->
+				
+			</div>
+			
+			<div class="form-group">
+				<label for="inputScoreInputTestScore">점수</label>
+				<input type="text" class="form-control" id="inputScoreInputTestScore"
+					   name="scoreInputTestScore">
+			</div>
+			
+			<div class="form-group">
+				<div class="row"> <!-- style="vertical-align: bottom;" -->
+					<div class="col-md-6">
+						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
+					</div>
+					<div class="col-md-6">
+						<button type="button" id="scoreInputJoinFrmBtn"
+								class="btn btn-primary btn-sm btn-block">입력</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		
+		// 성적입력코드 중복 확인
+		$('#scoreInputNoOverlapBtn').on('click', function(e){
+			e.preventDefault();
+			
+			var scoreInputNo = $('#inputScoreInputNo').val();
+			console.log(`scoreInputNo:${scoreInputNo}`);
+			
+			if($("#inputScoreInputNo").val() ==''){
+	            alert('성적입력코드를 입력하세요');
+	            $("#inputScoreInputNo").focus();
+	            return false;
+	        }
+			
+			$.ajax({
+	            url: '/scoreInputNoOverlapChk',
+	            type: 'POST',
+	            data: scoreInputNo,
+	            dataType: 'json',
+	            contentType: "application/json; charset=UTF-8",
+	            success: function (response) {
+	                if(response.result == 1){
+	                	alert('사용 가능한 코드 입니다.')
+	                    $('#scoreInputNoOverlapClickChk').val(1);
+	                	// 중복확인 버튼 누름으로 변경 0:안누름 / 1:누름
+	                } else if(response.result == 0){
+	                	alert('이미 등록된 코드 입니다');
+	                } else {
+	                    alert('검사 중 에러가 발생했습니다');
+	                }
+	            },
+	            error: function(jqXHR, textStatus, errorThrown){
+	                alert("arjax error : " + textStatus + "\n" + errorThrown);
+	            }
+	        });
+		});
+		
+		// 값을 바꿨을 경우 중복확인 버튼을 다시 눌러야함 (중복확인 버튼 눌럿는지 체크하는 값을 0으로 셋팅) 0:안누름 / 1:누름
+		$("#inputScoreInputNo").on('change', function(e) {
+			e.preventDefault();
+			$('#scoreInputNoOverlapClickChk').val(0);
+		});
+		
+		
+		
+		// 학생성적 등록 처리 전 공백 및 중복확인버튼 눌렀는지 유효성 검사
+		$('#scoreInputJoinFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+			var scoreInputNoOverlapClickChk = $('#scoreInputNoOverlapClickChk').val();
+			
+			console.log(`scoreInputNoOverlapClickChk:${scoreInputNoOverlapClickChk}`);
+			console.log('0이면 사용 중, 1이면 사용 가능');
+			
+	        if($("#inputScoreInputNo").val() ==''){
+	            alert('성적입력코드를 입력하세요');
+	            $('#scoreInputNoOverlapClickChk').val(0);
+	            // 만약 성적입력코드를 입력하고 중복확인 버튼을 눌러서 사용가능한 코드라고 나오면 중복확인 버튼 체크값이 1로 바뀐다.
+	            // 재입력하고자 값을 지웠을 경우 다시 눌러줘야한다.
+	            $("#inputScoreInputNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#scoreInputNoOverlapClickChk").val() == 0){
+	            alert('성적입력코드 중복확인을 해주세요');
+	            $("#inputScoreInputNo").focus();
+	            return false;
+	        }
+	        
+	        if($("#examinationDayList").val() ==''){
+	            alert('시험시간표를 선택하세요');
+	            $("#examinationDayList").focus();
+	            return false;
+	        }
+	        
+	        if($("#GradingCriteriaList").val() ==''){
+	            alert('등급을 선택하세요');
+	            $("#GradingCriteriaList").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputScoreInputTestScore").val() ==''){
+	            alert('점수를 입력하세요');
+	            $("#inputScoreInputTestScore").focus();
+	            return false;
+	        }
+	        
+	        $('#scoreInputJoinFrm').submit();
+	    });
+	</script>
+</th:block>
+
+</html>

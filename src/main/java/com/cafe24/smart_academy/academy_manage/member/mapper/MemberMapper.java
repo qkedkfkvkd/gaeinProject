@@ -18,6 +18,9 @@ public interface MemberMapper {
 	public String memberLoginInfoById(String memberId);
 	// 로그인 테이블에서 아이디 존재 여부 확인
 	
+	public int updateLoginPassword(MemberLogin login);
+	// 로그인 정보 수정 처리 (패스워드 수정처리)
+	
 	public String memberByEmail(String memberEmail);
 	// 관리자가 학생 혹은 강사를 등록할 때 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인
 	
@@ -30,12 +33,15 @@ public interface MemberMapper {
 	//			로그인 테이블 먼저 등록 후 회원 신상정보 등록
 	
 	public int updateMemberInfo(Member member);
-	// 관리자 : 특정 학생이나 강사 신상정보 수정 처리
+	// 관리자 : 관리자, 특정 학생, 강사 상세정보 수정 처리
 	
 	public int deleteMemberLogin(String memberId);
 	// 관리자 : 학생이나 강사 삭제시 해당 로그인 레코드 삭제
 	//			학생이나 강사를 등록하다가 중간에 실패시 있을지도 모르는 로그인 레코드 삭제
-	
+	// 관리자 : 해당 회원 로그인 정보 삭제 처리
+	// 학생을 삭제할 경우 : CASCADE에 의해 결제정보, 회원신상정보, 학부모정보,
+	//						수강신청정보, 상담정보가 지워진다.
+	// 타 관리자나 강사를 삭제할 경우 : CASCADE에 의해 회원신상정보, 강사정보가 지워진다.
 	
 	public MemberLogin memberLogin(MemberLogin login);
 	// 로그인 체크 - 비밀번호까지 일치하는지 확인
@@ -48,6 +54,9 @@ public interface MemberMapper {
 	public Member memberSimpleInfo(String memberId);
 	// 관리자 : 결제정보가 없는 학생일 경우
 	// 제목 상단에 아이디, 이름, 생년월일을 나타내기 위함
+	
+	public Map<String, Object> detailAdminInfoByMemberId(String memberId);
+	// 관리자 : 관리자 자신의 상세 정보 가져오기
 	
 	public List<Map<String, Object>> memberInfoList(MemberSearchVO memberSearchVO);
 	// 관리자 : 학생이나 강사 목록 페이지로 이동할 때 가져갈 리스트 객체

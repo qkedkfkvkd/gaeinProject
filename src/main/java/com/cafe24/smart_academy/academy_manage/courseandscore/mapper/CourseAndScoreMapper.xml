@@ -153,6 +153,7 @@
 			,co.course_name							AS courseName
 			,sub.subject_name						AS subjectName
 			,tea.member_id							AS memberId
+			,tea.course_no							AS courseNo
 			,mem.member_name						AS memberName
 			,mem.member_phone						AS memberPhone
 		from
@@ -297,17 +298,22 @@
 			parameterType="com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO"
 			resultType="map">
 		select
-			 co.course_name								AS courseName
-			,(select member_name from member where mem.member_id = tea.member_id) AS teacherName
+			 co.course_no								AS courseNo
+			,co.course_name								AS courseName
 			,aro.room_number							AS roomNumber
 			,aro.room_floor								AS roomFloor
 			,ed.examination_name						AS examinationName
 			,ed.examination_day							AS examinationDay
-			,(select member_name from member where mem.member_id = cen.member_id) AS studentName
+			,mem.member_name							AS memberName
+			,cs.schedule_no								AS scheduleNo
+			,cs.schedule_day							AS scheduleDay
+			,cs.schedule_period							AS schedulePeriod
 			,si.score_input_no							AS scoreInputNo
+			,si.examination_day_no						AS examinationDayNo
+			,si.course_enrollee_no						AS courseEnrolleeNo
+			,si.grading_criteria_rating					AS gradingCriteriaRating
 			,si.score_input_test_score					AS scoreInputTestScore
 			,si.score_input_registered_date				AS scoreInputRegisteredDate
-			,gcr.grading_criteria_rating				AS gradingCriteriaRating
 			,gcr.grading_criteria_start_of_section		AS gradingCriteriaStartOfSection
 			,gcr.grading_criteria_end_of_section		AS gradingCriteriaEndOfSection
 		from
@@ -317,7 +323,6 @@
 			,course_room_assignment			AS cra
 			,academy_room					AS aro
 			,course							AS co
-			,teacher						AS tea
 			,member_login					AS login
 			,member							AS mem
 			,course_enrollee				AS cen
@@ -333,10 +338,6 @@
 		and
 			cra.course_no				= co.course_no
 		and
-			co.course_no				= tea.course_no
-		and
-			tea.member_id				= login.member_id
-		and
 			login.member_id				= mem.member_id
 		and
 			si.course_enrollee_no		= cen.course_enrollee_no
@@ -349,14 +350,60 @@
 		and
 			si.grading_criteria_rating	= gcr.grading_criteria_rating
 		<!-- 시험일 상세화면에서 해당 시험일코드를 참조하는 강좌시험성적 리스트 -->
+		<!-- 해당 시험을 치룬 학생들의 성적순위 리스트 -->
 		<if test="examinationDayNo != null and examinationDayNo neq ''.toString()">
 		and
 			ed.examination_day_no		= #{examinationDayNo}
+		</if>
+		<!-- 해당 시험을 치룬 학생들의 성적순위 리스트에서 특정 학생 검색 결과 리스트 -->
+		<if test="memberName != null and memberName neq ''.toString()">
+		and
+			mem.member_name like CONCAT('%',#{memberName},'%')
 		</if>
 		<!-- 성적기준 상세화면에서 해당 성적기준을 참조하는 강좌시험성적 리스트 -->
 		<if test="gradingCriteriaRating != null and gradingCriteriaRating neq ''.toString()">
 		and
 			gcr.grading_criteria_rating	= #{gradingCriteriaRating}
 		</if>
+		order by
+			 si.score_input_test_score		desc
+			,mem.member_name				asc
 	</select>
+	
+	
+	<!-- 관리자, 강사 : 성적입력코드 중복확인 -->
+	<select id="scoreInputByScoreInputNo"
+			parameterType="String"
+			resultType="String">
+		select
+			score_input_no
+		from
+			score_input
+		where
+			score_input_no = #{scoreInputNo}
+	</select>
+	
+	
+	<!-- 관리자, 강사 : 해당 학생 성적 추가 처리 -->
+	<insert id="addScoreInput"
+			parameterType="com.cafe24.smart_academy.academy_manage.courseandscore.vo.ScoreInput">
+		insert into score_input (
+			 score_input_no
+			,examination_day_no
+			,course_enrollee_no
+			,grading_criteria_rating
+			,score_input_test_score
+			,score_input_registered_date
+		) values (
+			 #{scoreInputNo}
+			,#{examinationDayNo}
+			,#{courseEnrolleeNo}
+			,#{gradingCriteriaRating}
+			,#{scoreInputTestScore}
+			,curdate()
+		)
+	</insert>
+	
+	
+	
 </mapper>

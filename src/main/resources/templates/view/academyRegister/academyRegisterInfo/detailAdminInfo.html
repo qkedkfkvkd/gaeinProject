@@ -4,21 +4,18 @@
       layout:decorate="~{layout/default}">
 
 <th:block layout:fragment="customTitle">
-	<title>강사 상세</title>
+	<title>관리자정보 상세</title>
 </th:block>
 
 <th:block layout:fragment="customContents">
 	<div class="page-header">
 		<div class="col-md-10 col-md-offset-3">
-			<h3>강사 상세</h3>
+			<h3>관리자정보 상세</h3>
 		</div>
 	</div>
 	
 	<div class="col-sm-10 col-md-offset-3">
-		<form action="/updateTeacherInfo" id="updateTeacherFrm" method="post">
-			<input type="hidden" id="teacherIsChanged" name="teacherIsChanged" value="무">
-			<!-- 강사테이블은 강좌코드를 참조하고 있으므로 강좌 코드가 바뀌었다면
-				 자동적으로 변경여부는 "유"로 바뀌어야 될 것이다. -->
+		<form action="/updateAdminInfo" id="updateAdminFrm" method="post">
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
@@ -26,7 +23,7 @@
 						<div class="input-group">
 							<input type="text" class="form-control" id="inputId"
 								   name="memberId"
-								   th:value="${teacherInfo.memberId}"
+								   th:value="${adminInfo.memberId}"
 								   readonly="readonly">
 						</div>
 					</div>
@@ -35,7 +32,7 @@
 						<label for="inputPassword">비밀번호</label>
 						<input type="password" class="form-control" id="inputPassword"
 							   name="memberPw"
-							   th:value="${teacherInfo.memberPw}"
+							   th:value="${adminInfo.memberPw}"
 							   placeholder="비밀번호를 입력해주세요">
 					</div>
 					
@@ -43,32 +40,33 @@
 						<label for="inputPasswordCheck">비밀번호 확인</label>
 						<input type="password" class="form-control"
 							   id="inputPasswordCheck"
-							   th:value="${teacherInfo.memberPw}"
+							   th:value="${adminInfo.memberPw}"
 							   placeholder="비밀번호 확인을 위해 다시 한번 입력해주세요">
 					</div>
 					
 					<div class="form-group">
-						<label for="inputName">강사명</label>
+						<label for="inputName">이름</label>
 						<input type="text" class="form-control" id="inputName"
 							   name="memberName"
-							   th:value="${teacherInfo.memberName}"
-							   placeholder="강사의 이름을 입력해주세요">
+							   th:value="${adminInfo.memberName}"
+							   placeholder="이름을 입력해주세요">
 					</div>
 					
 					<div class="form-group">
 						<label for="inputBirth">생년월일</label>
 						<input type="date" class="form-control" id="inputBirth"
 							   name="memberBirth"
-							   th:value="${teacherInfo.memberBirth}">
+							   th:value="${adminInfo.memberBirth}">
 					</div>
-					
+				</div>
+				<div class="col-md-6">
 					<div class="form-group">
 						<label for="inputEmail">이메일</label>
 						<div class="input-group">
 							<input type="email" class="form-control" id="inputEmail"
 								   name="memberEmail"
-								   th:value="${teacherInfo.memberEmail}"
-								   placeholder="강사의 이메일을 입력해주세요">
+								   th:value="${adminInfo.memberEmail}"
+								   placeholder="이메일을 입력해주세요">
 							<span class="input-group-btn">
 								<button type="button" class="btn btn-primary btn-sm"
 										id="emailOverlapBtn">중복확인</button>
@@ -78,35 +76,18 @@
 					</div>
 					
 					<div class="form-group">
-						<label for="checkCourse">담당 강좌</label>
-						<!-- <div class="input-group"> -->
-						<select id="checkCourse" name="courseNo"
-								class="form-control" >
-							<option value="">선택</option>
-							<option th:each="course : ${courseList}"
-									th:value="${course.courseNo}"
-									th:text="${course.subjectName + ' : ' + course.courseName}"></option>
-						</select>
-						<!-- </div> -->
-						<input type="hidden" id="dbTeacherCourseNo" th:value="${teacherInfo.courseNo}">
-						<input type="hidden" id="courseNoChangeChk" value="1">
-						<!-- 강좌코드가 바뀌었는지 체크할 변수  0:값 바뀜 / 1:그대로 -->
-					</div>
-				</div>
-				<div class="col-md-6">
-					<div class="form-group">
-						<label for="inputPhone">강사 휴대폰번호</label>
+						<label for="inputPhone">휴대폰번호</label>
 						<input type="tel" class="form-control" id="inputPhone"
 							   name="memberPhone"
-							   th:value="${teacherInfo.memberPhone}"
-							   placeholder="강사의 휴대폰 번호를 입력해주세요">
+							   th:value="${adminInfo.memberPhone}"
+							   placeholder="휴대폰 번호를 입력해주세요">
 					</div>
 					
 					<div class="form-group">
 						<label for="inputTel">집전화</label>
 						<input type="text" class="form-control" id="inputTel"
 							   name="memberTel"
-							   th:value="${teacherInfo.memberTel}"
+							   th:value="${adminInfo.memberTel}"
 							   placeholder="집전화를 입력해주세요(생략가능)">
 					</div>
 					
@@ -114,47 +95,25 @@
 						<label for="inputAddr">주소</label>
 						<input type="text" class="form-control" id="inputAddr"
 							   name="memberAddress"
-							   th:value="${teacherInfo.memberAddress}"
+							   th:value="${adminInfo.memberAddress}"
 							   placeholder="주소를 입력해주세요">
-					</div>
-					
-					<div class="form-group">
-						<label for="inputTeacherReasonForChange">강좌변경사유</label>
-						<textarea class="form-control" rows="4" id="inputTeacherReasonForChange"
-								  name="teacherReasonForChange"
-								  th:text="${teacherInfo.teacherReasonForChange}"></textarea>
-					</div>
-					
-					
-					<div class="form-group">
-						<label for="inputTeacherChangedDate">강좌변경일</label>
-						<input type="text" class="form-control" id="inputTeacherChangedDate"
-							   th:value="${#calendars.format(teacherInfo.teacherChangedDate,'yyyy-MM-dd')}"
-							   readonly="readonly">
 					</div>
 					
 					<div class="form-group">
 						<label for="inputMemberRegisteredDate">등록일</label>
 						<input type="date" class="form-control"
 							   id="inputMemberRegisteredDate"
-							   th:value="${teacherInfo.memberRegisteredDate}"
+							   th:value="${adminInfo.memberRegisteredDate}"
 							   readonly="readonly">
 					</div>
 					
 					<div class="form-group">
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
-							<!-- 강사는 오직 관리자만 삭제할 수 있다. -->
-							<div class="col-md-4" th:if="${session.memberLevel == '관리자'.toString()}">
-								<button type="button" class="btn btn-primary btn-sm btn-block"
-										th:onclick="'window.location.href = \'' + @{/deleteTeacher(memberId=${teacherInfo.memberId})} + '\''">
-									삭제
-								</button>
-							</div>
-							<div class="col-md-4">
+							<div class="col-md-6">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-4">
-								<button type="button" id="updateTeacherFrmBtn"
+							<div class="col-md-6">
+								<button type="button" id="updateAdminFrmBtn"
 										class="btn btn-primary btn-sm btn-block">수정</button>
 							</div>
 						</div>
@@ -166,17 +125,6 @@
 </th:block>
 
 <th:block layout:fragment="customScript">
-	<script th:inline="javascript">
-		/*<![CDATA[*/
-			var courseNo = /*[[ ${teacherInfo.courseNo} ]]*/;
-		/*]]*/
-		
-		$(document).ready(function(){
-			console.log(`courseNo:${courseNo}`);
-			
-			$("#checkCourse").val(courseNo);
-		});
-	</script>
 	<script type="text/javascript">
 		// 이메일 중복 확인
 		$('#emailOverlapBtn').on('click', function(e){
@@ -231,27 +179,8 @@
 		
 		
 		
-		// 강사가 담당하는 강좌코드가 바뀌었다면
-		$('#checkCourse').on('change', function(e){
-			e.preventDefault();
-			
-			if($('#dbTeacherCourseNo').val() != $("#checkCourse").val()) {
-				// 디비에 저장된 강사담당 강좌코드와
-				// 새로 선택한 강사담당 강좌코드가 서로 다를 경우
-				$("#courseNoChangeChk").val(0);
-				// 코드가 바뀌었다고 값을 넣어준다.
-				// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
-			} else {
-				$("#courseNoChangeChk").val(1);
-				// 다른걸 선택했다가 다시 원래 선택값으로 바꾸었다.
-				// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
-			}
-		});
-		
-		
-		
-		// 강사 수정 처리 전 공백  및  이메일 유효성 검사  ex)abc@gmail.com
-		$('#updateTeacherFrmBtn').on('click', function(e){
+		// 관리자 상세정보 수정 처리 전 공백  및  이메일 유효성 검사  ex)abc@gmail.com
+		$('#updateAdminFrmBtn').on('click', function(e){
 			e.preventDefault();
 			
 			var emailOverlapClickChk = $('#emailOverlapClickChk').val();
@@ -314,12 +243,6 @@
 		        return false;
 		    }
 		    
-		    if($("#checkCourse").val() ==''){
-		        alert('담당 강좌를 선택하세요');
-		        $("#checkCourse").focus();
-		        return false;
-		    }
-		    
 		    if($("#inputPhone").val() ==''){
 		        alert('휴대폰 번호를 입력하세요');
 		        $("#inputPhone").focus();
@@ -332,27 +255,7 @@
 		        return false;
 		    }
 		    
-		    if($("#courseNoChangeChk").val() == 0 && $("#inputTeacherReasonForChange").val() == ''){
-	        	// 강사 테이블의 강좌코드를 바꿨으나 강좌변경사유를 입력하지 않았다면
-	        	// courseNoChangeChk => 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
-	            alert('강좌변경사유를 입력하세요');
-	            $("#inputTeacherReasonForChange").focus();
-	            return false;
-	        }
-		    
-		    if($("#courseNoChangeChk").val() == 0 && $("#inputTeacherReasonForChange").val() != ''){
-	        	// 강좌코드를 수정했고 강사 담당 강좌변경사유를 입력했다면
-	        	// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
-	        	$("#teacherIsChanged").val("유");
-	        	// 강사담당 강좌변경유무를 "유"로 바꿔준다.
- 	        }
-		    
-		    /*if($("#agree").is(":checked") == false){
-		        alert('약관에 동의하셔야 합니다');
-		        return false;      
-		    }*/
-		    
-		    $('#updateTeacherFrm').submit();
+		    $('#updateAdminFrm').submit();
 		});
 	</script>
 </th:block>

@@ -11,6 +11,7 @@ import com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO;
 import com.cafe24.smart_academy.academy_manage.courseandscore.mapper.CourseAndScoreMapper;
 import com.cafe24.smart_academy.academy_manage.courseandscore.vo.CourseEnrollee;
 import com.cafe24.smart_academy.academy_manage.courseandscore.vo.ExaminationDay;
+import com.cafe24.smart_academy.academy_manage.courseandscore.vo.ScoreInput;
 
 @Service
 @Transactional
@@ -57,7 +58,8 @@ public class CourseAndScoreService {
 	}
 	
 	
-	// 관리자 : 수강신청 상세보기
+	// 관리자, 강사 : 수강신청 상세보기
+	// 관리자, 강사 : 수강신청 검색결과 리스트
 	public List<Map<String, Object>> courseEnrolleeOneOrList(CourseRoomSearchVO searchVO) {
 		return courseAndScoreMapper.courseEnrolleeOneOrList(searchVO);
 	}
@@ -192,5 +194,35 @@ public class CourseAndScoreService {
 	// 특정 검색 키워드를 입력받아 해당 키워드에 맞는 성적결과 리스트를 리턴한다.
 	public List<Map<String, Object>> totalGradeResultOneOrList(CourseRoomSearchVO searchVO) {
 		return courseAndScoreMapper.totalGradeResultOneOrList(searchVO);
+	}
+	
+	
+	// 관리자, 강사 : 성적입력코드 중복확인
+	public String scoreInputByScoreInputNo(String scoreInputNo) {
+		return courseAndScoreMapper.scoreInputByScoreInputNo(scoreInputNo);
+	}
+	
+	
+	// 관리자, 강사 : 학생 성적 입력 처리
+	public String addScoreInput(ScoreInput scoreInput) {
+		String existChk = scoreInputByScoreInputNo(scoreInput.getScoreInputNo());
+		// 성적입력 테이블에 해당 성적입력코드가 존재하는지 확인
+		
+		String resultMessage = "usedScoreInputNoCode";
+		// 만약 이미 등록된 성적입력코드가 있다면 이 메세지가 리턴될 것이다.
+		
+		if(existChk == null) {
+			// 존재하지 않는 성적입력코드 (입력가능한 성적입력코드)
+			
+			int result = courseAndScoreMapper.addScoreInput(scoreInput);
+			// 해당 학생 성적 추가 처리
+			
+			if(result == 1) {  // 성적 등록에 성공했다면
+				resultMessage = null;
+				// 리턴 메세지에 널값을 준다
+			}
+		}
+		
+		return resultMessage;
 	}
 }

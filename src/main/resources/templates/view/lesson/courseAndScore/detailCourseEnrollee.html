@@ -125,7 +125,7 @@
 								<td th:text="${grade.gradingCriteriaRating}"></td>
 								<td>
 									<button type="button" class="btn btn-success btn-sm"
-											th:onclick="'window.location.href = \'' + @{/updateInputScore(scoreInputNo=${grade.scoreInputNo})} + '\''">
+											th:onclick="'window.location.href = \'' + @{/updateScoreInput(scoreInputNo=${grade.scoreInputNo})} + '\''">
 										수정
 									</button>
 								</td>
