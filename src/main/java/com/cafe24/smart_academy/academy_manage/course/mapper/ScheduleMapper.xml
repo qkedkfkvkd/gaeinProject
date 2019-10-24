@@ -56,6 +56,8 @@
 		</if>
 		
 		<!-- 강사 시간표 추가폼에서 요일을 선택하여 시간표를 출력하는 경우 관리자의 승인여부는 필요없다. -->
+		<!-- 강좌시간표 리스트 : 관리자승인 '유' -->
+		<!-- 강좌시간표 승인요청 리스트 : 관리자승인 '무' -->
 		<if test="scheduleApprovalStatus != null and scheduleApprovalStatus neq ''.toString()">
 		and
 			cs.schedule_approval_status	= #{scheduleApprovalStatus}
@@ -86,6 +88,7 @@
 		</if>
 		
 		<!-- 강좌시간표 추가폼에서 특정 요일을 선택했을 경우 -->
+		<!-- 로그인전, 학생 로그인시 왼쪽메뉴에서 특정 요일을 선택했을 경우 -->
 		<if test="scheduleDay != null and scheduleDay neq ''.toString()">
 		and
 			cs.schedule_day = #{scheduleDay}
@@ -171,4 +174,87 @@
 		where
 			schedule_no = #{scheduleNo}
 	</delete>
+	
+	
+	<!-- 관리자, 학생 : 특정 학생의 강좌 시간표 리스트 -->
+	<!-- 관리자, 학생 : 특정 학생의 강좌 시간표 검색결과 리스트 -->
+	<select id="oneStudentCourseScheduleList"
+			parameterType="com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO"
+			resultType="map">
+		select
+			 ce.member_id							AS memberId
+			,ce.course_no							AS courseNo
+			,ce.course_enrollee_registered_date		AS courseEnrolleeRegisteredDate
+			,co.course_name							AS courseName
+			,sub.subject_name						AS subjectName
+			,aro.room_number						AS roomNumber
+			,aro.room_floor							AS roomFloor
+			,aro.room_usage							AS roomUsage
+			,cs.schedule_no							AS scheduleNo
+			,cs.schedule_day						AS scheduleDay
+			,cs.schedule_period						AS schedulePeriod
+			,(select
+				member_name
+			  from
+				 member AS m
+				,teacher AS tea
+			  where
+				m.member_id = tea.member_id
+			  and
+				tea.course_no = ce.course_no)		AS teacherName
+			,mem.member_name						AS memberName
+			,mem.member_birth						AS memberBirth
+			,mem.member_phone						AS memberPhone
+		from
+			 course_enrollee			AS ce
+			,course						AS co
+			,subject					AS sub
+			,academy_room				AS aro
+			,course_room_assignment		AS cra
+			,course_schedule			AS cs
+			,member_login				AS login
+			,member						AS mem
+		where
+			ce.course_no	= co.course_no
+		and
+			ce.member_id	= login.member_id
+		and
+			co.subject_no	= sub.subject_no
+		and
+			cra.course_no	= co.course_no
+		and
+			cra.room_no		= aro.room_no
+		and
+			cs.course_assignment_no = cra.course_assignment_no
+		and
+			login.member_id	= mem.member_id
+		and
+			cs.schedule_approval_status = '유'
+		<!-- 특정 학생이 수강신청한 강좌 시간표 가져오기 -->
+		<if test="memberId != null and memberId neq ''.toString()">
+		and
+			ce.member_id	= #{memberId}
+		</if>
+		
+		<!-- 해당 과목에 일치하는 조건 검색 -->
+		<if test="subjectNo != null and subjectNo neq ''.toString() and subjectNo neq 'not'.toString()">
+		and
+			sub.subject_no			= #{subjectNo}
+		</if>
+		
+		<!-- 해당 강좌에 일치하는 조건 검색 -->
+		<if test="courseNo != null and courseNo neq ''.toString()">
+		and
+			co.course_no			= #{courseNo}
+		</if>
+		
+		<!-- 해당 강의실에 일치하는 조건 검색 -->
+		<if test="roomNo != null and roomNo neq ''.toString()">
+		and
+			cra.room_no				= #{roomNo}
+		</if>
+		order by
+			 cs.schedule_day		asc
+			,cs.schedule_period		asc
+	</select>
 </mapper>

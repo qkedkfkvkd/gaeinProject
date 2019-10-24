@@ -47,7 +47,7 @@
 						</li>
 						
 						<li class="nav-item">
-							<a class="nav-link" th:href="@{/courseEnrolleeList}">수강신청 목록</a>
+							<a class="nav-link" th:href="@{/courseEnrolleeList}">수강신청목록</a>
 							<!-- 권한이 학생인 사람들만 검색한다. -->
 							<!-- 수강신청 리스트를 볼 수 있게 해서 상단에 수강등록 버튼을 준다. -->
 						</li>
@@ -113,12 +113,12 @@
 				<div class="collapse" id="ui-test">
 					<ul class="nav flex-column sub-menu" style="">
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/examinationDayList(testStandardDay='notTest')}">시험일</a>
+							<a class="nav-link" th:href="@{/examinationDayList(testStandardDay='notTest', memberLevel=${session.memberLevel})}">시험일</a>
 							<!-- 아직 시험을 치르지 않은 시험날짜 강좌리스트를 조회한다. -->
 						</li>
 						
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/examinationDayList(testStandardDay='testComplete')}">완료된시험목록</a>
+							<a class="nav-link" th:href="@{/examinationDayList(testStandardDay='testComplete', memberLevel=${session.memberLevel})}">완료된시험목록</a>
 							<!-- 시험 완료된 강좌리스트를 보여주고 해당 강좌 클릭시 시험 상세정보를 조회한다. -->
 							<!-- 우측에 학생목록을 보여주고 점수를 내림차순하여 조회한다. -->
 						</li>

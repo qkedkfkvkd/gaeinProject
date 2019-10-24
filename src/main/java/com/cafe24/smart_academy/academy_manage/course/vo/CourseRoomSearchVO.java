@@ -1,5 +1,7 @@
 package com.cafe24.smart_academy.academy_manage.course.vo;
 
+import java.util.List;
+
 // 강좌강의실배정, 시간표 리스트 검색 객체
 public class CourseRoomSearchVO {
 	private String	subjectNo;				// 과목테이블의 과목코드(기본키)
@@ -22,6 +24,13 @@ public class CourseRoomSearchVO {
 	
 	////// 특정 학생 이름을 포함하여 검색하는 변수
 	private String	memberName;				// 회원 이름
+	
+	////// 강사 : 학생 수강신청 검색 기간 변수
+	private String	startCourseEnrolleeDate;	// 수강신청 등록기간 검색 (시작일)
+	private String	endCourseEnrolleeDate;		// 수강신청 등록기간 검색 (마지막)
+	
+	////// 학생 수강신청 강좌리스트 저장 객체
+	private List<String> courseList;		// 특정 학생이 수강신청한 강좌 리스트
 	
 	
 	public String getSubjectNo() {
@@ -155,5 +164,37 @@ public class CourseRoomSearchVO {
 	public void setMemberName(String memberName) {
 		System.out.println(memberName + " <- memberName   setMemberName()   CourseRoomSearchVO.java");
 		this.memberName = memberName;
+	}
+
+	public String getStartCourseEnrolleeDate() {
+		return startCourseEnrolleeDate;
+	}
+
+	public void setStartCourseEnrolleeDate(String startCourseEnrolleeDate) {
+		System.out.println(startCourseEnrolleeDate
+				+ " <- startCourseEnrolleeDate   setStartCourseEnrolleeDate()   CourseRoomSearchVO.java");
+		this.startCourseEnrolleeDate = startCourseEnrolleeDate;
+	}
+
+	public String getEndCourseEnrolleeDate() {
+		return endCourseEnrolleeDate;
+	}
+
+	public void setEndCourseEnrolleeDate(String endCourseEnrolleeDate) {
+		System.out.println(endCourseEnrolleeDate
+				+ " <- endCourseEnrolleeDate   setEndCourseEnrolleeDate()   CourseRoomSearchVO.java");
+		this.endCourseEnrolleeDate = endCourseEnrolleeDate;
+	}
+
+	public List<String> getCourseList() {
+		return courseList;
+	}
+
+	public void setCourseList(List<String> courseList) {
+		System.out.println(courseList.toString()
+				+ " <- courseList.toString()   setCourseList()   CourseRoomSearchVO.java");
+		System.out.println(courseList.size()
+				+ " <- courseList.size()   setCourseList()   CourseRoomSearchVO.java");
+		this.courseList = courseList;
 	}
 }

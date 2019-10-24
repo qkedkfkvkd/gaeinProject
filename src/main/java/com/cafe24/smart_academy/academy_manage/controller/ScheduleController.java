@@ -19,10 +19,11 @@ import com.cafe24.smart_academy.academy_manage.course.manage.vo.AcademyRoom;
 import com.cafe24.smart_academy.academy_manage.course.manage.vo.Subject;
 import com.cafe24.smart_academy.academy_manage.course.service.CourseService;
 import com.cafe24.smart_academy.academy_manage.course.service.ScheduleService;
-import com.cafe24.smart_academy.academy_manage.course.vo.Course;
 import com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO;
 import com.cafe24.smart_academy.academy_manage.course.vo.CourseSchedule;
+import com.cafe24.smart_academy.academy_manage.member.service.MemberService;
 import com.cafe24.smart_academy.academy_manage.member.service.TeacherInfoService;
+import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
 
 @Controller
@@ -36,6 +37,10 @@ public class ScheduleController {
 	@Autowired
 	CourseManageService courseManageService;
 	// 과목과 강의실에 관한 정보를 가져오기위한 서비스 객체
+	
+	@Autowired
+	MemberService memberService;
+	// 회원 정보 관리 서비스 객체
 	
 	@Autowired
 	TeacherInfoService teacherInfoService;
@@ -54,6 +59,15 @@ public class ScheduleController {
 			 CourseRoomSearchVO searchVO
 			,Model model) {
 		
+		Member member = null;
+		// 강사의 강사 담당 시간표 접근 시 해당 강사의 간단한 정보를 저장할 객체
+		// 아이디, 이름, 생년월일
+		
+		if(searchVO.getMemberId() != null) { // 강사의 강사 담당시간표를 접근한 것이라면
+			member = memberService.memberSimpleInfo(searchVO.getMemberId());
+			// 해당 강사의 간단한 정보를 가져온다. (아이디, 이름, 생년월일)
+		}
+		
 		List<Map<String, Object>> scheduleList = scheduleService.scheduleOneOrList(searchVO);
 		// 전체 강좌 시간표를 얻어온다.
 		
@@ -66,6 +80,24 @@ public class ScheduleController {
 		List<Map<String, Object>> teacherList = teacherInfoService.teacherInfoOneOrList();
 		// 전체 강사 리스트를 가져온다.
 		
+		String title = "전체";
+		// 시간표 페이지의 제목부분
+		
+		if(searchVO.getScheduleDay() != null) {
+			// 로그인 전 및 학생로그인 후 특정 요일의 강좌 시간표를 클릭했다면
+			title = searchVO.getScheduleDay() + "요일";
+			// 몇요일의 날짜를 클릭했는지 제목부분에 표시해준다.
+			
+		} else if (searchVO.getMemberId() != null) {
+			// 강사가 강사담당 강좌시간표를 접근한 것이라면
+			
+			title = member.getMemberId() + " : " + member.getMemberName() + " 강사의";
+			// 강사의 아이디와 이름을 제목부분에 표시해준다.
+		}
+		
+		
+		model.addAttribute("title", title);
+		// 시간표 페이지의 제목부분
 		
 		model.addAttribute("subjectList", subjectList);
 		// 샐랙트 박스에 넣어줄 전체 과목 리스트
@@ -392,6 +424,47 @@ public class ScheduleController {
 		}
 		
 		return "redirect:/scheduleList";
+	}
+	
+	
+	// 관리자, 학생 : 특정 학생의 강좌 시간표 리스트
+	// 관리자, 학생 : 특정 학생의 강좌 시간표 검색결과 리스트
+	@GetMapping("/oneStudentCourseScheduleList")
+	public String oneStudentCourseScheduleList(
+			 CourseRoomSearchVO searchVO
+			,Model model) {
 		
+		Member student = memberService.memberSimpleInfo(searchVO.getMemberId());
+		// 회원의 간단한 정보를 가져온다. (아이디, 이름, 생년월일)
+		
+		List<Map<String, Object>> courseScheduleList =
+				scheduleService.oneStudentCourseScheduleList(searchVO);
+		// 특정 학생의 강좌 시간표를 얻어온다.
+		
+		List<Subject> subjectList = courseManageService.subjectList();
+		// 전체 과목 리스트를 가져온다.
+		
+		List<AcademyRoom> roomList = courseManageService.academyRoomList();
+		// 전체 강의실 리스트를 가져온다.
+		
+		
+		
+		model.addAttribute("student", student);
+		// 화면의 제목 부분에 보여줄 학생의 간단한 정보
+		
+		model.addAttribute("courseScheduleList", courseScheduleList);
+		// 화면에 보여줄 특정 학생의 강좌 시간표 리스트
+		
+		model.addAttribute("courseScheduleListSize", courseScheduleList.size());
+		// 리스트의 길이를 보고 해당 학생의 강좌 시간표 존재 여부 판단
+		
+		
+		model.addAttribute("subjectList", subjectList);
+		// 샐랙트 박스에 넣어줄 전체 과목 리스트
+		
+		model.addAttribute("roomList", roomList);
+		// 샐랙트박스에 넣어줄 전체 강의실 리스트
+		
+		return "/view/lesson/schedule/listOneStudentCourseSchedule";
 	}
 }

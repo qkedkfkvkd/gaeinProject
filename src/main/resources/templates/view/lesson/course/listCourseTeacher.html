@@ -38,7 +38,8 @@
 			<button type="submit" class="btn btn-success">검색</button>
 		</form>
 		
-		<div class="row">
+		<div class="row"
+			 th:if="${session.memberLevel == '관리자'.toString()}">
 			<div class="col-md-4" >
 				<table class="table">
 					<tbody>
@@ -65,7 +66,7 @@
 					<th>강사</th>
 					<th>변경</th>
 					<th>등록일</th>
-					<th>수정</th>
+					<th th:if="${session.memberLevel == '관리자'.toString()}">수정</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -78,7 +79,7 @@
 					<td th:text="${course.memberName}"></td>
 					<td th:text="${course.courseIsChanged}"></td>
 					<td th:text="${#calendars.format(course.courseRegisteredDate,'yyyy-MM-dd')}"></td>
-					<td>
+					<td th:if="${session.memberLevel == '관리자'.toString()}">
 						<button type="button" class="btn btn-success btn-sm"
 								th:onclick="'window.location.href = \'' + @{/updateCourseAssignTeacher(memberId=${course.memberId}, memberLevel='강사')} + '\''">
 							수정

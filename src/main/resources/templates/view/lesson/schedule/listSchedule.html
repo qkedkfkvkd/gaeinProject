@@ -4,13 +4,13 @@
       layout:decorate="~{layout/default}">
 
 <th:block layout:fragment="customTitle">
-	<title>전체 강좌시간표</title>
+	<title th:text="${title + ' 강좌시간표'}"></title>
 </th:block>
 
 <th:block layout:fragment="customContents">
 	<div class="page-header">
 		<div class="col-md-6 col-md-offset-3">
-			<h3>전체 강좌시간표</h3>
+			<h3 th:text="${title + ' 강좌시간표'}"></h3>
 		</div>
 	</div>
 	
@@ -70,7 +70,8 @@
 			<button type="submit" class="btn btn-success">검색</button>
 		</form>
 		
-		<div class="row">
+		<div class="row"
+			 th:if="${session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()}">
 			<div class="col-md-4" >
 				<table class="table">
 					<tbody>

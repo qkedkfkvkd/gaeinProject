@@ -50,13 +50,13 @@
 				<div class="collapse" id="ui-test">
 					<ul class="nav flex-column sub-menu" style="">
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/examinationDayList(testStandardDay='notTest', memberId=${session.memberId})}">시험일</a>
+							<a class="nav-link" th:href="@{/examinationDayList(testStandardDay='notTest', memberId=${session.memberId}, memberLevel=${session.memberLevel})}">시험일</a>
 							<!-- 아직 시험을 치르지 않은 시험날짜 강좌리스트를 조회한다. -->
 							<!-- 시험날짜 리스트에서 해당 강좌 클릭시 자신의 강좌에 수강신청한 학생들 목록을 볼 수있게 한다. -->
 						</li>
 						
 						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/examinationDayList(testStandardDay='testComplete', memberId=${session.memberId})}">완료된시험목록</a>
+							<a class="nav-link" th:href="@{/examinationDayList(testStandardDay='testComplete', memberId=${session.memberId}, memberLevel=${session.memberLevel})}">완료된시험목록</a>
 							<!-- 시험 완료된 강좌리스트를 보여주고 해당 강좌 클릭시 시험 상세정보를 조회한다. -->
 							<!-- 우측에 학생목록을 보여주고 점수를 내림차순하여 조회한다. -->
 							<!-- 점수 입력이 되지않은 학생은 목록화면에서 바로 점수를 입력할 수 있게 한다. -->

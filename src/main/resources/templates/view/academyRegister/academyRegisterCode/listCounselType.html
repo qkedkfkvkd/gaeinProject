@@ -61,8 +61,8 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="counselType, lists : ${counselTypeList}"
-					th:if="${counselTypeListSize != 0}">
+				<tr th:each="counselType, lists : ${counselTypeViewList}"
+					th:if="${counselTypeViewListSize != 0}">
 					<td th:text="${lists.count}"></td>
 					<td th:text="${counselType.counselTypeNo}"></td>
 					<td th:text="${counselType.counselTypeName}"></td>
@@ -76,7 +76,7 @@
 					</td>
 				</tr>
 				
-				<tr th:unless="${counselTypeListSize != 0}">
+				<tr th:unless="${counselTypeViewListSize != 0}">
 					<td colspan="8">등록된 상담구분이 없습니다.</td>
 				</tr>
 			</tbody>

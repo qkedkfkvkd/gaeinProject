@@ -24,6 +24,10 @@ public interface CourseAndScoreMapper {
 	
 	public List<Map<String, Object>> courseEnrolleeOneOrList(CourseRoomSearchVO searchVO);
 	// 관리자 : 수강신청 상세보기
+	// 관리자 : 학생 전체 수강신청 리스트
+	// 관리자 : 학생 전체 수강신청 검색결과 리스트
+	// 관리자, 강사 : 특정 강좌 수강신청한 학생 리스트
+	// 관리자, 학생 : 특정 학생의 수강신청 목록 보기
 	
 	public int updateCourseEnrollee(CourseEnrollee courseEnrollee);
 	// 관리자 : 수강신청 수정처리
@@ -62,4 +66,10 @@ public interface CourseAndScoreMapper {
 	
 	public int addScoreInput(ScoreInput scoreInput);
 	// 관리자, 강사 : 해당 학생 성적 추가 처리
+	
+	public int updateScoreInput(ScoreInput scoreInput);
+	// 관리자, 강사 : 시험성적 수정 처리
+	
+	public int deleteScoreInput(String scoreInputNo);
+	// 관리자, 강사 : 시험성적 삭제 처리
 }

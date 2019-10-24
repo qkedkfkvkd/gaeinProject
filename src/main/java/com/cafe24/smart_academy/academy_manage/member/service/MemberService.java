@@ -51,6 +51,18 @@ public class MemberService {
 	}
 	
 	
+	// 아이디 찾기
+	public String findLoginId(Map<String, Object> findLoginInfo) {
+		return memberMapper.findLoginId(findLoginInfo);
+	}
+	
+	
+	// 비밀번호 찾기
+	public MemberLogin findLoginPw(Map<String, Object> findLoginInfo) {
+		return memberMapper.findLoginPw(findLoginInfo);
+	}
+	
+	
 	// 관리자가 학생 혹은 강사를 등록할 시 로그인 테이블에서 아이디 중복 체크
 	public String memberLoginById(String memberId) {
 		return memberMapper.memberLoginInfoById(memberId);

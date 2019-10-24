@@ -4,19 +4,20 @@
       layout:decorate="~{layout/default}">
 
 <th:block layout:fragment="customTitle">
-	<title>강좌시간표 승인 요청</title>
+	<title th:text="${student.memberName + ' 학생의 강좌 시간표'}"></title>
 </th:block>
 
 <th:block layout:fragment="customContents">
 	<div class="page-header">
 		<div class="col-md-6 col-md-offset-3">
-			<h3>강좌시간표 승인 요청</h3>
+			<h3 th:text="${student.memberId + ' : ' + student.memberName + ' 학생의 강좌 시간표'}"></h3>
 		</div>
 	</div>
 	
 	<div class="col-sm-11 col-md-offset-3">
-		<form class="form-inline" action="/scheduleApprovalRequestList">
-			<input type="hidden" name="scheduleApprovalStatus" value="무">
+		<form class="form-inline" action="/oneStudentCourseScheduleList">
+			<input type="hidden" name="memberId" th:value="${student.memberId}">
+			<input type="hidden" name="scheduleApprovalStatus" value="유">
 			
 			<div class="form-group">
 				<label class="sr-only" for="subjectList">과목명</label>
@@ -46,7 +47,7 @@
 				<!-- <div class="input-group"> -->
 				<select id="roomList" name="roomNo"
 						class="form-control">
-					<option value="not">강의실</option>
+					<option value="">강의실</option>
 					<option th:each="room : ${roomList}"
 							th:value="${room.roomNo}"
 							th:text="${room.roomFloor + '층 ' + room.roomNumber + '호'}"></option>
@@ -54,23 +55,8 @@
 				<!-- </div> -->
 			</div>
 			
-			<div class="form-group">
-				<label class="sr-only" for="teacherList">강사명</label>
-				<!-- <div class="input-group"> -->
-				<select id="teacherList" name="memberId"
-						class="form-control">
-					<option value="not">강사명</option>
-					<option th:each="teacher : ${teacherList}"
-							th:value="${teacher.memberId}"
-							th:text="${teacher.memberName}"></option>
-				</select>
-				<!-- </div> -->
-			</div>
-			
 			<button type="submit" class="btn btn-success">검색</button>
 		</form>
-		
-		
 		
 		<table class="table table-striped">
 			<thead>
@@ -83,47 +69,29 @@
 					<th>강사</th>
 					<th>강의실</th>
 					<th>등록일</th>
-					<th>변경일</th>
-					<th>수정</th>
-					<th th:if="${session.memberLevel == '관리자'.toString()}">승인</th>
+					<th th:if="${session.memberLevel == '관리자'.toString()}">수정</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="schedule, lists : ${scheduleList}"
-					th:if="${scheduleListSize != 0}">
+				<tr th:each="schedule, lists : ${courseScheduleList}"
+					th:if="${courseScheduleListSize != 0}">
 					<td th:text="${lists.count}"></td>
 					<td th:text="${schedule.schedulePeriod}"></td>
 					<td th:text="${schedule.scheduleDay}"></td>
 					<td th:text="${schedule.subjectName}"></td>
 					<td th:text="${schedule.courseName}"></td>
-					<td th:text="${schedule.memberName}"></td>
+					<td th:text="${schedule.teacherName}"></td>
 					<td th:text="${schedule.roomFloor + '층 ' + schedule.roomNumber + '호'}"></td>
-					<td th:text="${#calendars.format(schedule.scheduleRegisteredDate,'yyyy-MM-dd')}"></td>
-					<td th:text="${#calendars.format(schedule.scheduleModificationDate,'yyyy-MM-dd')}"></td>
-					<td><!-- 관리자는 모든 강좌시간표를 수정할 수 있고, 강사인 회원은 자신 담당 강좌만 수정할 수 있다. -->
-						<span th:if="${session.memberLevel == '관리자'.toString() || (session.memberLevel == '강사'.toString() && session.memberId == schedule.memberId)}">
-							<button type="button" class="btn btn-success btn-sm"
-									th:onclick="'window.location.href = \'' + @{/updateSchedule(scheduleNo=${schedule.scheduleNo})} + '\''">
-								수정
-							</button>
-						</span>
-						<!-- 강사회원으로 로그인을 했는데 자신 담당 강좌가 아닌 경우라면 수정하면 안된다. -->
-						<span th:if="${session.memberLevel == '강사'.toString() && session.memberId != schedule.memberId}">
-							<button type="button" class="btn btn-success btn-sm"
-									disabled="disabled">
-								수정불가
-							</button>
-						</span>
-					</td>
+					<td th:text="${#calendars.format(schedule.courseEnrolleeRegisteredDate,'yyyy-MM-dd')}"></td>
 					<td th:if="${session.memberLevel == '관리자'.toString()}">
 						<button type="button" class="btn btn-success btn-sm"
-								th:onclick="scheduleApproval([[${schedule.scheduleNo}]])">
-							승인
+								th:onclick="'window.location.href = \'' + @{/updateSchedule(scheduleNo=${schedule.scheduleNo})} + '\''">
+							수정
 						</button>
 					</td>
 				</tr>
 				
-				<tr th:unless="${scheduleListSize != 0}">
+				<tr th:unless="${courseScheduleListSize != 0}">
 					<td colspan="5">등록된 시간표가 없습니다.</td>
 				</tr>
 			</tbody>
@@ -133,7 +101,6 @@
 
 <th:block layout:fragment="customScript">
 	<script type="text/javascript">
-		
 		// 과목명을 선택하면 해당 과목코드를 참조하는 강좌 리스트가 나온다.
 		function courseSelect(subjectNo) {
 			console.log(`subjectNo:${subjectNo}`);
@@ -158,34 +125,6 @@
 					alert("오류가 발생하였습니다.");
 				}
 			});
-		}
-		
-		
-		// 강사가 승인요청한 강좌시간표 승인하기
-		function scheduleApproval(scheduleNo) {
-			console.log(`scheduleNo:${scheduleNo}`);
-			
-			$.ajax({
-	            url: '/scheduleApproval',
-	            type: 'POST',
-	            data: scheduleNo,
-	            dataType: 'json',
-	            contentType: "application/json; charset=UTF-8",
-	            success: function (response) {
-	                if(response.result == 1){
-	                	alert('승인 완료');
-	                	location.href = "/scheduleApprovalRequestList?scheduleApprovalStatus='무'";
-	                	// 승인 완료 후 페이지 새로고침(승인처리된 시간표는 승인요청 리스트에 보이지 않게 된다.)
-	                } else if(response.result == 0){
-	                	alert('승인 실패');
-	                } else {
-	                    alert('검사 중 에러가 발생했습니다');
-	                }
-	            },
-	            error: function(jqXHR, textStatus, errorThrown){
-	                alert("arjax error : " + textStatus + "\n" + errorThrown);
-	            }
-	        });
 		}
 	</script>
 </th:block>

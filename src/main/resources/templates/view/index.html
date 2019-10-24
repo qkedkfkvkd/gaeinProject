@@ -5,37 +5,25 @@
 
 <th:block layout:fragment="customTitle">
 	<title>index</title>
+	<style type="text/css">
+		img { max-width: 100%; height: auto; }
+	</style>
 </th:block>
 
 <th:block layout:fragment="customContents">
-	<div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
-		<!-- Indicators -->
-		<ol class="carousel-indicators">
-			<li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
-			<li data-target="#carousel-example-generic" data-slide-to="1"></li>
-			<li data-target="#carousel-example-generic" data-slide-to="2"></li>
-		</ol>
+	<div class="col-sm-12 col-md-offset-3">
+		<img src="/images/mainpage/loginPrev_StudentLogin.png"
+			 th:if="${session.memberLevel eq '학생'.toString() || session.memberLevel eq null}"
+			 alt="로그인전 및 학생로그인">
 		
-		<!-- Wrapper for slides -->
-		<div class="carousel-inner" role="listbox" style="margin: auto;">
-			<div class="carousel-item active">
-				<img src="/images/mainpage/mainpage_subject_ad/first.png" alt="수학광고">
-			</div>
-			<div class="carousel-item">
-				<img src="/images/mainpage/mainpage_subject_ad/second.png" alt="국어광고">
-			</div>
-			<div class="carousel-item">
-				<img src="/images/mainpage/mainpage_subject_ad/third.png" alt="영어광고">
-			</div>
-		</div>
+		<img src="/images/mainpage/teacherLogin.png"
+			 th:if="${session.memberLevel eq '강사'.toString()}"
+			 alt="강사로그인">
+		
+		<img src="/images/mainpage/adminLogin.png"
+			 th:if="${session.memberLevel eq '관리자'.toString()}"
+			 alt="관리자로그인">
 	</div>
-	
-	<hr>
-	
-	<img src="/images/mainpage/subject_package_ad2.png" alt="수학광고" style="margin-right: 45px;">
-	<img src="/images/mainpage/subject_package_ad3.png" alt="영어광고" style="margin: auto;">
-	<img src="/images/mainpage/subject_package_ad4.png" alt="국어광고" style="margin-left: 45px;">
-	
 </th:block>
 
 <th:block layout:fragment="customScript">

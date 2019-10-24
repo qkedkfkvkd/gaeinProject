@@ -10,7 +10,7 @@
 <th:block layout:fragment="customContents">
 	<div class="page-header">
 		<div class="col-md-6 col-md-offset-3">
-			<h3 th:text="${scoreInputInfo.memberName + '학생 : ' + scoreInputInfo.examinationName + ' 점수 상세'}"></h3>
+			<h3 th:text="${scoreInputInfo.memberId + ' ' +scoreInputInfo.memberName + '학생 : ' + scoreInputInfo.examinationName + ' 점수 상세'}"></h3>
 		</div>
 	</div>
 	
@@ -36,6 +36,9 @@
 							<input type="text" class="form-control" id="inputExaminationDayNo"
 								   th:value="${scoreInputInfo.roomFloor + '층 ' + scoreInputInfo.roomNumber + '호 : ' + scoreInputInfo.examinationDay + ' 일 ' + scoreInputInfo.schedulePeriod  + '교시'}"
 								   readonly="readonly">
+							<input type="hidden" name="examinationDayNo"
+								   th:value="${scoreInputInfo.examinationDayNo}">
+							<!-- 수정처리에 성공할 경우 해당 시험을 본 순위리스트로 이동할때 필요한 값을 넣어준다. -->
 						</div>
 					</div>
 					
@@ -57,7 +60,6 @@
 									th:text="${grade.gradingCriteriaStartOfSection + ' ~ ' + grade.gradingCriteriaEndOfSection + '점 : ' + grade.gradingCriteria + '점'}"></option>
 						</select>
 						<!-- </div> -->
-						
 					</div>
 					
 					<div class="form-group">
@@ -76,6 +78,12 @@
 					
 					<div class="form-group">
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
+							<div class="col-md-4">
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/deleteScoreInput(scoreInputNo=${scoreInputInfo.scoreInputNo}, examinationDayNo=${scoreInputInfo.examinationDayNo})} + '\''">
+									삭제
+								</button>
+							</div>
 							<div class="col-md-4">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>

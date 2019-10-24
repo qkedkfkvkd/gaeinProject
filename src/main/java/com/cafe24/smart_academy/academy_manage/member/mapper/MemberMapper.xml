@@ -29,6 +29,43 @@
 	</update>
 	
 	
+	<!-- 아이디 찾기 -->
+	<select id="findLoginId"
+			parameterType="map"
+			resultType="String">
+		select
+			login.member_id		AS memberId
+		from
+			 member_login			AS login
+			,member					AS mem
+		where
+			login.member_id = mem.member_id
+		and
+			mem.member_name = #{memberName}
+		and
+			mem.member_email = #{memberEmail}
+	</select>
+	
+	
+	<!-- 비밀번호 찾기 -->
+	<select id="findLoginPw"
+			parameterType="map"
+			resultType="com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin">
+		select
+			 login.member_id		AS memberId
+			,login.member_pw		AS memberPw
+		from
+			 member_login			AS login
+			,member					AS mem
+		where
+			login.member_id = mem.member_id
+		and
+			login.member_id = #{memberId}
+		and
+			mem.member_email = #{memberEmail}
+	</select>
+	
+	
 	<!-- 관리자가 회원등록할 시 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인 -->
 	<select id="memberByEmail" parameterType="String" resultType="String">
 		select
@@ -205,6 +242,15 @@
 				  (endJoinDate == null or endJoinDate eq ''.toString())">
 		and
 			me.member_registered_date >= #{startJoinDate}
+		</if>
+		
+		<!-- 마지막 가입기간만 입력했을 경우 -->
+		<if test="startJoinDate == null and startJoinDate eq ''.toString() and
+				  (endJoinDate != null or endJoinDate neq ''.toString())">
+		and
+			me.member_registered_date
+		<![CDATA[ < ]]>
+			#{endJoinDate}
 		</if>
 		
 		<!-- 시작 가입기간부터 마지막 가입기간까지 입력했을 경우 -->

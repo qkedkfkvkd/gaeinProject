@@ -5,101 +5,119 @@
 	<nav class="sidebar sidebar-offcanvas" id="sidebar">
 		<ul class="nav">
 			<li class="nav-item">
-				<a class="nav-link" th:href="@{/addMember}">
-					<i class="mdi mdi-account-plus menu-icon"></i><span class="menu-title">학원소개</span>
+				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-course" aria-expanded="false" aria-controls="ui-course">
+					<i class="mdi mdi-package-variant menu-icon"></i> 
+					<span class="menu-title">강좌 소개</span> <i class="menu-arrow"></i>
 				</a>
-			</li>
-			
-			<li class="nav-item">
-				<a class="nav-link" th:href="@{/addMember}">
-					<i class="mdi mdi-account-plus menu-icon"></i><span class="menu-title">공지사항</span>
-				</a>
-			</li>
-			
-			<li class="nav-item">
-				<a class="nav-link" data-toggle="collapse" href="#ui-teacher" aria-expanded="false" aria-controls="ui-basic">
-					<i class="mdi mdi-account-multiple menu-icon"></i> 
-					<span class="menu-title">선생님 소개</span> <i class="menu-arrow"></i>
-				</a>
-				<div class="collapse" id="ui-teacher">
+				<div class="collapse" id="ui-course">
 					<ul class="nav flex-column sub-menu">
-						<li class="nav-item">
-							<a class="nav-link" th:href="@{/memberList}">국어</a>
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/courseList}">강좌목록</a>
 						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/memberList">영어</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/memberList">수학</a>
+						
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/courseAssignTeacherList}">강좌별 강사목록</a>
 						</li>
 					</ul>
 				</div>
 			</li>
 			
 			<li class="nav-item">
-				<a class="nav-link" data-toggle="collapse" href="#ui-textbook" aria-expanded="false" aria-controls="ui-basic">
-					<i class="mdi mdi-bulletin-board menu-icon"></i> 
-					<span class="menu-title">교재소개</span> <i class="menu-arrow"></i>
+				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-room" aria-expanded="false" aria-controls="ui-room">
+					<i class="mdi mdi-package-variant menu-icon"></i> 
+					<span class="menu-title">강의실 소개</span> <i class="menu-arrow"></i>
 				</a>
-				<div class="collapse" id="ui-textbook">
+				<div class="collapse" id="ui-room">
 					<ul class="nav flex-column sub-menu">
 						<li class="nav-item">
-							<a class="nav-link" th:href="@{/addBoard}">고1</a>
+							<a class="nav-link" href="/academyRoomList">강의실 목록</a>
 						</li>
-						<li class="nav-item">
-							<a class="nav-link" th:href="@{/boardList}">고2</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" th:href="@{/boardList}">고3</a>
+						
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/courseAssignList}">강좌별 강의실목록</a>
 						</li>
 					</ul>
 				</div>
 			</li>
 			
 			<li class="nav-item">
-				<a class="nav-link" data-toggle="collapse" href="#ui-board" aria-expanded="false" aria-controls="ui-basic">
-					<i class="mdi mdi-bulletin-board menu-icon"></i> 
-					<span class="menu-title">학습커뮤니티</span> <i class="menu-arrow"></i>
+				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-schedule" aria-expanded="false" aria-controls="ui-schedule">
+					<i class="mdi mdi-package-variant menu-icon"></i> 
+					<span class="menu-title">강좌시간표</span> <i class="menu-arrow"></i>
 				</a>
-				<div class="collapse" id="ui-board">
+				<div class="collapse" id="ui-schedule">
 					<ul class="nav flex-column sub-menu">
-						<li class="nav-item">
-							<a class="nav-link" th:href="@{/addBoard}">질의문답</a>
+						<li class="nav-item"><!-- 시간표 오름차순으로 강좌별 시간표를 조회한다. -->
+							<a class="nav-link" th:href="@{/scheduleList(scheduleApprovalStatus='유', scheduleDay='월')}">월요일</a>
 						</li>
+						
 						<li class="nav-item">
-							<a class="nav-link" th:href="@{/boardList}">과제</a>
+							<a class="nav-link" th:href="@{/scheduleList(scheduleApprovalStatus='유', scheduleDay='화')}">화요일</a>
 						</li>
+						
 						<li class="nav-item">
-							<a class="nav-link" th:href="@{/boardList}">건의사항</a>
+							<a class="nav-link" th:href="@{/scheduleList(scheduleApprovalStatus='유', scheduleDay='수')}">수요일</a>
+						</li>
+						
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/scheduleList(scheduleApprovalStatus='유', scheduleDay='목')}">목요일</a>
+						</li>
+						
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/scheduleList(scheduleApprovalStatus='유', scheduleDay='금')}">금요일</a>
 						</li>
 					</ul>
 				</div>
 			</li>
 			
-			<li class="nav-item">
-				<a class="nav-link" data-toggle="collapse" href="#ui-counsel" aria-expanded="false" aria-controls="ui-basic">
-					<i class="mdi mdi-bulletin-board menu-icon"></i> 
-					<span class="menu-title">학습상담</span> <i class="menu-arrow"></i>
+			<li class="nav-item"
+				th:if="${session.memberLevel == '학생'.toString()}">
+				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-class" aria-expanded="false" aria-controls="ui-class">
+					<i class="mdi mdi-package-variant menu-icon"></i> 
+					<span class="menu-title">나의 강의실</span> <i class="menu-arrow"></i>
 				</a>
-				<div class="collapse" id="ui-counsel">
+				<div class="collapse" id="ui-class">
 					<ul class="nav flex-column sub-menu">
-						<li class="nav-item">
-							<a class="nav-link" th:href="@{/addBoard}">상담절차</a>
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/oneStudentCourseScheduleList(memberId=${session.memberId})}">강좌시간표</a>
+							<!-- 시간표 오름차순으로 강좌별 시간표를 조회한다. -->
 						</li>
-						<li class="nav-item">
-							<a class="nav-link" th:href="@{/boardList}">신입생상담</a>
+						
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/examinationDayList(testStandardDay='notTest', memberId=${session.memberId}, memberLevel=${session.memberLevel})}">시험일 목록</a>
 						</li>
-						<li class="nav-item">
-							<a class="nav-link" th:href="@{/boardList}">학습고민상담</a>
+						
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/gradingCriteriaList}">성적평가기준</a>
+						</li>
+						
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/oneStudentTotalGradeResultList(memberId=${session.memberId})}">성적결과</a>
+						</li>
+						
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/counselAppointmentList(memberId=${session.memberId}, counselWhether='무')}">상담예약현황</a>
 						</li>
 					</ul>
 				</div>
 			</li>
 			
-			<li class="nav-item">
-				<a class="nav-link" th:href="@{/addMember}">
-					<i class="mdi mdi-account-plus menu-icon"></i><span class="menu-title">나의 강의실</span>
+			<li class="nav-item"
+				th:if="${session.memberLevel == '학생'.toString()}">
+				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-student" aria-expanded="false" aria-controls="ui-student">
+					<i class="mdi mdi-package-variant menu-icon"></i> 
+					<span class="menu-title">내정보관리</span> <i class="menu-arrow"></i>
 				</a>
+				<div class="collapse" id="ui-student">
+					<ul class="nav flex-column sub-menu">
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/updateStudentInfo(memberId=${session.memberId})}">정보수정</a>
+						</li>
+						<li class="nav-item"> <!--  -->
+							<a class="nav-link" th:href="@{/updateLoginPassword(memberId=${session.memberId})}">비밀번호수정</a>
+						</li>
+					</ul>
+				</div>
 			</li>
 		</ul>
 	</nav>

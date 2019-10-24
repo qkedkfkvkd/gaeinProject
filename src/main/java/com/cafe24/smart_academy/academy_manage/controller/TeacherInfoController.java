@@ -1,6 +1,5 @@
 package com.cafe24.smart_academy.academy_manage.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cafe24.smart_academy.academy_manage.course.service.CourseService;
-import com.cafe24.smart_academy.academy_manage.member.service.MemberService;
 import com.cafe24.smart_academy.academy_manage.member.service.TeacherInfoService;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
@@ -23,12 +21,6 @@ import com.cafe24.smart_academy.academy_manage.member.vo.Teacher;
 @Controller
 public class TeacherInfoController {
 // 강사 정보 관리 컨트롤러
-	
-	@Autowired
-	private MemberService memberService;
-	// 아이디 및 이메일 중복 확인
-	// 로그인 및 회원신상정보 테이블 입력, 수정, 삭제
-	// 회원 간단한 정보 가져오기 (아이디, 이름, 생년월일)
 	
 	@Autowired
 	private TeacherInfoService teacherInfoService;
@@ -89,11 +81,12 @@ public class TeacherInfoController {
 	
 	
 	// 강사 목록 보기
+	// 강사 검색결과 목록 보기
 	@GetMapping("/teacherList")
-	public String teacherList(Model model) {
+	public String teacherList(MemberSearchVO searchVO, Model model) {
 		
 		List<Map<String, Object>> teacherInfoList =
-				teacherInfoService.teacherInfoOneOrList();
+				teacherInfoService.teacherInfoOneOrList(searchVO);
 		// 강사 정보 목록 가져오기
 		// 아이디, 권한, 이름, 이메일, 휴대폰번호, 담당 강좌코드, 과목명, 강좌명, 강사 등록일
 		

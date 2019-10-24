@@ -649,17 +649,6 @@ public class StudentInfoController {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	// 관리자 : 상담예약현황 리스트 이동
 	@GetMapping("/currentReservationStateList")
 	public String currentReservationStateList(Model model) {
@@ -700,7 +689,7 @@ public class StudentInfoController {
 	// 관리자 : 상담예약현황 리스트에서 선택한 상담코드로 검색
 	@PostMapping("/searchCounselReservationStateList")
 	public String searchCounselReservationStateList(
-					CounselResult counselResult ,Model model) {
+					CounselResult counselResult, Model model) {
 		
 		List<Map<String, Object>> counselReservationStateList = 
 				studentInfoService.counselReservationStateList(counselResult);
@@ -730,7 +719,93 @@ public class StudentInfoController {
 	}
 	
 	
-	// 관리자 : 학생 예약신청 상세보기
+	// 학생 : 상담예약현황 리스트
+	@GetMapping("/counselAppointmentList")
+	public String counselAppointmentList(
+			CounselAppointment counselAppointment, Model model) {
+		System.out.println(counselAppointment.getMemberId() + " <- memberId   counselAppointmentList()   StudentInfoController.java");
+		
+		Member member = memberService.memberSimpleInfo(counselAppointment.getMemberId());
+		// 해당 학생의 간단한 정보를 가져온다.
+		// 아이디, 이름, 생년월일
+		
+		List<CounselType> counselTypeList = memberService.counselTypeList();
+		// 샐랙트 박스에 넣어줄 전체 상담구분코드 리스트 가져오기
+		// (기본키 - 상담구분코드)와 상담구분명만 가져온다.
+		
+		
+		List<Map<String, Object>> counselAppointmentList =
+				studentInfoService.counselAppointmentOneOrList(counselAppointment);
+		// 특정 학생 상담예약현황 리스트 가져오기
+		
+		
+		model.addAttribute("member", member);
+		// 학생의 정보를 넣어준다.
+		
+		model.addAttribute("counselTypeList", counselTypeList);
+		// 상담구분코드 리스트를 넣어준다.
+		
+		model.addAttribute("counselAppointmentList", counselAppointmentList);
+		// 상담예약현황 리스트를 넣어준다.
+		
+		model.addAttribute("counselAppointmentListSize",
+									counselAppointmentList.size());
+		// 리스트의 사이즈를 보고 특정 학생의 상담예약현황 리스트 존재여부 판단
+		
+		return "/view/academyRegister/studentInfo/listCounselAppointment";
+	}
+	
+	
+	// 학생 : 상담예약신청 입력폼 이동
+	@GetMapping("/addCounselAppointment")
+	public String addCounselAppointment(
+			 @RequestParam(value = "memberId") String memberId
+			,Model model) {
+		System.out.println(memberId + " <- memberId   addCounselAppointment()   StudentInfoController.java");
+		
+		Member member = memberService.memberSimpleInfo(memberId);
+		// 해당 학생의 간단한 정보를 가져온다.
+		// 아이디, 이름, 생년월일
+		
+		List<CounselType> counselTypeList = memberService.counselTypeList();
+		// 샐랙트 박스에 넣어줄 전체 상담구분코드 리스트 가져오기
+		// (기본키 - 상담구분코드)와 상담구분명만 가져온다.
+		
+		model.addAttribute("member", member);
+		// 학생의 정보를 넣어준다.
+		
+		model.addAttribute("counselTypeList", counselTypeList);
+		// 상담구분코드 리스트를 넣어준다.
+		
+		return "/view/academyRegister/studentInfo/addCounselAppointment";
+	}
+	
+	
+	// 학생 : 상담예약신청 입력 처리
+	@PostMapping("/addCounselAppointment")
+	public String addCounselAppointment(
+			 CounselAppointment counselAppointment
+			,RedirectAttributes redirectAttributes) {
+		String message = studentInfoService.addCounselAppointment(counselAppointment);
+		// 상담예약 추가 처리 후 메세지를 반환받는다.
+		
+		String path = "redirect:/addCounselAppointment";
+		// 상담예약추가에 실패했을 경우 다시 상담예약을 추가하는 폼으로 이동하게 초기화한다.
+		
+		if(message == null) {
+			// 리턴받은 메세지가 널이라면 상담예약 추가에 성공했다는 뜻이다.
+			path = "redirect:/counselAppointmentList";
+			// 상담예약 리스트로 이동한다.
+		}
+		
+		redirectAttributes.addAttribute("memberId", counselAppointment.getMemberId());
+		// 상담예약추가의 성공여부와 관계없이 해당 학생 관련폼으로 이동하므로 항상 아이디를 가지고 다녀야한다.
+		
+		return path;
+	}
+	
+	
+	// 관리자, 학생 : 학생 상담예약신청 상세보기
 	@GetMapping("/updateCounselAppointment")
 	public String updateCounselAppointment(
 			CounselAppointment counselAppointment, Model model) {
@@ -761,7 +836,7 @@ public class StudentInfoController {
 	}
 	
 	
-	// 관리자 : 학생예약신청 페이지에서 해당 상담결과코드로된 상담결과명 보이기
+	// 관리자 : 학생 상담예약신청 페이지에서 해당 상담결과코드로된 상담결과명 보이기
 	@PostMapping("/counselResultNoSelect")
 	@ResponseBody
 	public CounselResult counselResultNoSelect(@RequestBody String counselResultNo) {

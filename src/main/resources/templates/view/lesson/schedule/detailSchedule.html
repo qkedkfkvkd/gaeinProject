@@ -120,7 +120,7 @@
 							<th>등록일</th>
 						</tr>
 					</thead>
-					<tbody id="scheduleDayList">
+					<tbody id="scheduleDBList">
 						<tr th:each="schedule, lists : ${scheduleList}"
 							th:if="${scheduleListSize != 0}">
 							<td th:text="${lists.count}"></td>
@@ -179,7 +179,7 @@
 					console.log(`length : ${length}`);
 					
 					//테이블 초기화           
-					$("#scheduleDayList").children().remove();
+					$("#scheduleDBList").children().remove();
 					
 					if(length != 0) {
 						// 넘어온 시간표리스트의 사이즈가 0보다 크다.
@@ -203,7 +203,7 @@
 						    contents +=		'<td>'+ result[i].scheduleRegisteredDate +'</td>';
 							contents += '</tr>';
 							
-							$('#scheduleDayList').append(contents);
+							$('#scheduleDBList').append(contents);
 						});
 					} else {  // 넘어온 시간표리스트의 사이즈가 0이다. 해당 요일에 등록된 시간표가 없다.
 						var contents = '';
@@ -211,7 +211,7 @@
 						contents +=		'<td colspan="7">해당 요일에 등록된 강좌시간표가 없습니다.</td>';
 						contents += '</tr>';
 						
-						$('#scheduleDayList').append(contents);
+						$('#scheduleDBList').append(contents);
 					}
 				}
 				,error: function (jqXHR, textStatus, errorThrown) {

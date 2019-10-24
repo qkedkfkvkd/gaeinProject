@@ -1,5 +1,6 @@
 package com.cafe24.smart_academy.academy_manage.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,10 @@ import com.cafe24.smart_academy.academy_manage.courseandscore.service.CourseAndS
 import com.cafe24.smart_academy.academy_manage.courseandscore.vo.CourseEnrollee;
 import com.cafe24.smart_academy.academy_manage.courseandscore.vo.ExaminationDay;
 import com.cafe24.smart_academy.academy_manage.courseandscore.vo.ScoreInput;
+import com.cafe24.smart_academy.academy_manage.member.service.MemberService;
 import com.cafe24.smart_academy.academy_manage.member.service.StudentInfoService;
 import com.cafe24.smart_academy.academy_manage.member.service.TeacherInfoService;
+import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
 
 @Controller
@@ -43,6 +46,10 @@ public class CourseAndScoreController {
 	@Autowired
 	ScheduleService scheduleService;
 	// 강좌 시간표 관리 서비스
+	
+	@Autowired
+	MemberService memberService;
+	// 회원 정보 관리 서비스 객체
 	
 	@Autowired
 	StudentInfoService studentInfoService;
@@ -86,6 +93,7 @@ public class CourseAndScoreController {
 	// 관리자 : 학생 전체 수강신청 리스트
 	// 관리자 : 학생 전체 수강신청 검색결과 리스트
 	// 관리자, 강사 : 특정 강좌 수강신청한 학생 리스트
+	// 관리자, 학생 : 특정 학생의 수강신청 목록 보기
 	@GetMapping("/courseEnrolleeList")
 	public String courseEnrolleeList(
 			 CourseRoomSearchVO searchVO
@@ -283,12 +291,12 @@ public class CourseAndScoreController {
 	// 강사 : 자신의 강좌에 수강신청한 학생들 리스트 보기
 	@GetMapping("/teacherCourseEnrolleeStudentList")
 	public String teacherCourseEnrolleeStudentList(
-			 @RequestParam(value = "memberId") String memberId
+			CourseRoomSearchVO courseRoomSearchVO
 			,Model model) {
-		System.out.println(memberId + " <- memberId   teacherCourseEnrolleeStudentList()   CourseAndScoreController.java");
+		System.out.println(courseRoomSearchVO.getMemberId() + " <- memberId   teacherCourseEnrolleeStudentList()   CourseAndScoreController.java");
 		
 		MemberSearchVO searchVO = new MemberSearchVO();
-		searchVO.setMemberId(memberId);
+		searchVO.setMemberId(courseRoomSearchVO.getMemberId());
 		// 특정 강사의 정보만을 가져와야 하므로
 		// 검색 키워드에 특정 강사의 아이디를 넣어준다.
 		
@@ -305,7 +313,12 @@ public class CourseAndScoreController {
 		Map<String, Object> teacherInfo = oneMap.get(0);
 		// 하나의 객체 밖에 없으므로 맨 앞에있는 객체를 가져다가 맵에 넣어준다.
 		
-		CourseRoomSearchVO courseRoomSearchVO = new CourseRoomSearchVO();
+		
+		courseRoomSearchVO.setMemberId(null);
+		// 강사 아이디가 저장된 변수에 널값을 준다.
+		// 학생의 수강신청 리스트를 검색하는데 학생아이디 = 강사아이디 ? 는 말이 안된다.
+		// 제대로 값이 나오질 않는다.
+		
 		courseRoomSearchVO.setCourseNo((String)teacherInfo.get("courseNo"));
 		// 해당 강사가 담당하는 강좌코드를 검색 키워드로 넣어준다.
 		
@@ -335,7 +348,7 @@ public class CourseAndScoreController {
 	@GetMapping("/examinationDayList")
 	public String examinationDayList(
 			 CourseRoomSearchVO searchVO
-			,@RequestParam(value = "memberLevel", required = false) String memberLevel
+			,@RequestParam(value = "memberLevel") String memberLevel
 			,Model model) {
 		
 		System.out.println(memberLevel
@@ -343,21 +356,50 @@ public class CourseAndScoreController {
 		// 회원 권한 보기
 		
 		
-		if(memberLevel != null && memberLevel.equals("관리자")) {
+		if(memberLevel.equals("관리자")) {
 			// 관리자 회원이 시험일 리스트를 조회하는 것이라면 모든 강사의 아이디를 조회해야한다.
 			searchVO.setMemberId(null);
-			// 시험일은 강사만이 등록할 수 있는데 관리자 아이디가 들어있으므로 제대로 조회가 안될 것이다.
+			// 시험일은 강사만이 등록할 수 있는데 관리자 아이디로 등록된 시험일 리스트를 뽑으면 제대로 조회가 안될 것이다.
 			// 따라서 관리자 아이디가 들어있는 변수에 널값을 넣어줘야 값이 제대로 나온다.
+			
+		} else if(memberLevel.equals("학생")) {
+			// 학생 권한으로 시험일 리스트 조회 시
+			
+			List<Map<String, Object>> courseEnrolleeList =
+					courseAndScoreService.courseEnrolleeOneOrList(searchVO);
+			// 학생의 아이디로 수강신청내역을 검색하여 리스트를 가져온다.
+			
+			List<String> courseList = new ArrayList<String>();
+			// 수강신청한 강좌를 저장할 리스트 객체
+			
+			for(int i=0; i<courseEnrolleeList.size(); i++) {
+				System.out.println((String)courseEnrolleeList.get(i).get("courseNo")
+						+ " <- courseEnrolleeList.get(i).get('courseNo')   "
+						+ "examinationDayList()   CourseAndScoreController.java");
+				
+				String courseNo = (String)courseEnrolleeList.get(i).get("courseNo");
+				// 수강신청한 강좌의 강좌코드를 한개씩 꺼내온다.
+				
+				courseList.add(courseNo);
+				// 꺼내온 수강신청한 강좌코드를 넣어준다.
+			}
+			
+			System.out.println(courseList.toString() + " <- courseList.toString()   examinationDayList()   CourseAndScoreController.java");
+			System.out.println(courseList.size() + " <- courseList.size()   examinationDayList()   CourseAndScoreController.java");
+			
+			
+			searchVO.setMemberId(null);
+			// 학생이 등록한 시험일은 없으므로 쿼리 검색 키워드에서 강사아이디 부분을 없애준다.
+			
+			searchVO.setCourseList(courseList);
+			// 수강신청한 강좌로 쿼리를 돌리기위해 검색 키워드에 넣어준다.
 		}
-		
 		
 		List<Map<String, Object>> testDayCourseList =
 				courseAndScoreService.testDayCourseOneOrList(searchVO);
 		// 관리자 접근시 : 시험 날짜가 오늘보다 이후인 모든 시험일자 강좌 리스트를 얻어온다.
 		// 강사 접근시 : 시험 날짜가 오늘보다 이후인 강사 담당 강좌의 모든 시험일자 강좌 리스트를 얻어온다.
-		
-		
-		///// TODO 학생 접근시 수강신청 테이블에서 강좌코드를 리스트로 뽑아내야한다. 
+		// 학생 접근시 : 시험 날짜가 오늘보다 이후인 수강신청한 강좌의 모든 시험일자 강좌 리스트를 얻어온다.
 		
 		
 		List<Subject> subjectList = courseManageService.subjectList();
@@ -804,5 +846,98 @@ public class CourseAndScoreController {
 	}
 	
 	
+	// 관리자, 강사 : 시험성적 수정 처리
+	@PostMapping("/updateScoreInput")
+	public String updateScoreInput(
+			 ScoreInput scoreInput
+			,RedirectAttributes redirectAttributes) {
+		
+		String message = courseAndScoreService.updateScoreInput(scoreInput);
+		
+		String path = "redirect:/scoreRankInCourseList";
+		// 시험성적 수정에 성공했을 경우 시험성적 순위리스트로 이동하게 초기화한다.
+		
+		if(message == null) {
+			// 리턴받은 메세지가 널이라면 시험성적 수정에 성공했다는 뜻이다.
+			
+			redirectAttributes.addAttribute("examinationDayNo",
+					scoreInput.getExaminationDayNo());
+			// 어떤 시험의 순위 리스트인지 검색할 쿼리문장의 값을 넣어준다.
+			
+		} else {
+			// 리턴받은 메세지가 널이 아니라면 시험성적 수정에 실패했다는 뜻이다.
+			
+			System.out.println("시험성적 수정 실패!!!!!!!!!!!!");
+			
+			redirectAttributes.addAttribute("scoreInputNo", scoreInput.getScoreInputNo());
+			// 시험성적 상세 페이지로 리다이렉트하면서 성적입력코드를 넘겨준다.
+			
+			path = "redirect:/updateScoreInput";
+			// 시험성적 상세 페이지로 이동
+		}
+		
+		return path;
+	}
 	
+	
+	// 관리자, 강사 : 시험성적 삭제 처리
+	@GetMapping("/deleteScoreInput")
+	public String deleteScoreInput(
+			 @RequestParam(value = "scoreInputNo") String scoreInputNo
+			,@RequestParam(value = "examinationDayNo") String examinationDayNo
+			,RedirectAttributes redirectAttributes) {
+		System.out.println(scoreInputNo + " <- scoreInputNo   deleteScoreInput()   CourseAndScoreController.java");
+		System.out.println(examinationDayNo + " <- examinationDayNo   deleteScoreInput()   CourseAndScoreController.java");
+		
+		String message = courseAndScoreService.deleteScoreInput(scoreInputNo);
+		// 해당 시험성적 삭제 쿼리 실행 후 메세지 반환
+		
+		System.out.println(message + " <- message   deleteScoreInput()   CourseAndScoreController.java");
+		
+		redirectAttributes.addAttribute("examinationDayNo", examinationDayNo);
+		// 성적 삭제 처리후 어떤 시험의 순위리스트로 이동할 것인지 쿼리 검색키워드를 넣어준다.
+		
+		return "redirect:/scoreRankInCourseList";
+		// 성적 삭제 처리 후 시험성적 순위리스트로 이동한다.
+	}
+	
+	
+	// 관리자, 학생 : 특정 학생의 성적 결과 리스트 가져오기
+	@GetMapping("/oneStudentTotalGradeResultList")
+	public String oneStudentTotalGradeResultList(
+			 CourseRoomSearchVO searchVO
+			,Model model) {
+		
+		Member student = memberService.memberSimpleInfo(searchVO.getMemberId());
+		// 회원의 간단한 정보를 가져온다. (아이디, 이름, 생년월일)
+		
+		List<Map<String, Object>> gradeResultList =
+				courseAndScoreService.totalGradeResultOneOrList(searchVO);
+		// 특정 학생의 회원 아이디를 이용하여 해당 학생의 성적 결과를 가져온다.
+		
+		List<Subject> subjectList = courseManageService.subjectList();
+		// 전체 과목 리스트를 가져온다.
+		
+		List<AcademyRoom> roomList = courseManageService.academyRoomList();
+		// 전체 강의실 리스트를 가져온다.
+		
+		
+		model.addAttribute("student", student);
+		// 화면의 제목 부분에 보여줄 학생의 간단한 정보
+		
+		model.addAttribute("gradeResultList", gradeResultList);
+		// 화면에 보여줄 특정 학생의 성적결과 리스트
+		
+		model.addAttribute("gradeResultListSize", gradeResultList.size());
+		// 리스트의 사이즈를 보고 해당 학생의 성적결과 리스트 존재여부 판단
+		
+		
+		model.addAttribute("subjectList", subjectList);
+		// 샐랙트 박스에 넣어줄 전체 과목 리스트
+		
+		model.addAttribute("roomList", roomList);
+		// 샐랙트박스에 넣어줄 전체 강의실 리스트
+		
+		return "/view/lesson/courseAndScore/listOneStudentTotalGradeResult";
+	}
 }

@@ -58,8 +58,11 @@ public class CourseAndScoreService {
 	}
 	
 	
-	// 관리자, 강사 : 수강신청 상세보기
-	// 관리자, 강사 : 수강신청 검색결과 리스트
+	// 관리자 : 수강신청 상세보기
+	// 관리자 : 학생 전체 수강신청 리스트
+	// 관리자 : 학생 전체 수강신청 검색결과 리스트
+	// 관리자, 강사 : 특정 강좌 수강신청한 학생 리스트
+	// 관리자, 학생 : 특정 학생의 수강신청 목록 보기
 	public List<Map<String, Object>> courseEnrolleeOneOrList(CourseRoomSearchVO searchVO) {
 		return courseAndScoreMapper.courseEnrolleeOneOrList(searchVO);
 	}
@@ -220,6 +223,45 @@ public class CourseAndScoreService {
 			if(result == 1) {  // 성적 등록에 성공했다면
 				resultMessage = null;
 				// 리턴 메세지에 널값을 준다
+			}
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	// 관리자, 강사 : 시험성적 수정 처리
+	public String updateScoreInput(ScoreInput scoreInput) {
+		String resultMessage = "updateScoreInputFail";
+		// 만약 시험성적 수정처리에 실패했다면 이 메세지가 리턴될 것이다.
+		
+		int result = courseAndScoreMapper.updateScoreInput(scoreInput);
+		// 시험성적 수정 처리
+		
+		if(result == 1) {  // 시험성적 수정에 성공했다면
+			resultMessage = null;
+			// 리턴 메세지에 널값을 준다
+		}
+		
+		return resultMessage;
+	}
+	
+	
+	// 관리자, 강사 : 시험성적 삭제 처리
+	public String deleteScoreInput(String scoreInputNo) {
+		String existChk = scoreInputByScoreInputNo(scoreInputNo);
+		// 삭제하기 전 해당 성적입력코드로된 학생성적이 존재하는지 확인
+		
+		String resultMessage = "deleteScoreInputFail";
+		// 학생성적 삭제 실패로 초기화
+		
+		if(existChk != null) { // 해당 성적입력코드 존재(삭제 가능)
+			int result = courseAndScoreMapper.deleteScoreInput(scoreInputNo);
+			// 해당 학생성적 삭제 처리
+			
+			if(result == 1) { // 해당 학생성적 삭제 성공
+				resultMessage = "deleteScoreInputSuccess";
+				// 학생성적 삭제 성공 메세지
 			}
 		}
 		

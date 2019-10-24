@@ -74,9 +74,43 @@
 			tea.course_no = co.course_no
 		and
 			co.subject_no = sub.subject_no
+		<!-- 강사 상세정보 가져오기 -->
 		<if test="memberId != null and memberId neq ''.toString()">
 		and
 			tea.member_id = #{memberId}
+		</if>
+		
+		<!-- 강사 이름을 입력하여 검색 시 -->
+		<if test="memberName != null and memberName neq ''.toString()">
+		and
+			mem.member_name like CONCAT('%',#{memberName},'%')
+		</if>
+		
+		<!-- 시작 가입기간만 입력하여 검색 시 -->
+		<if test="startJoinDate != null and startJoinDate neq ''.toString() and
+				  (endJoinDate == null or endJoinDate eq ''.toString())">
+		and
+			mem.member_registered_date >= #{startJoinDate}
+		</if>
+		
+		<!-- 마지막 가입기간만 입력하여 검색 시 -->
+		<if test="startJoinDate == null and startJoinDate eq ''.toString() and
+				  (endJoinDate != null or endJoinDate neq ''.toString())">
+		and
+			mem.member_registered_date
+		<![CDATA[ < ]]>
+			#{endJoinDate}
+		</if>
+		
+		<!-- 시작 가입기간부터 마지막 가입기간까지 입력하여 검색 시 -->
+		<if test="startJoinDate != null and startJoinDate neq ''.toString() and
+				  endJoinDate != null and endJoinDate neq ''.toString()">
+		and
+			mem.member_registered_date
+		between
+			#{startJoinDate}
+		and
+			#{endJoinDate}
 		</if>
 	</select>
 	

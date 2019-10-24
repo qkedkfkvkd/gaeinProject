@@ -8,14 +8,14 @@ public class CounselAppointment {
 	private String		counselResultNo;					// 상담결과코드(상담결과코드 테이블 참조 외래키 1:다 대응)
 	private String		memberId;							// 학생 아이디(로그인테이블 참조 외래키 1:다 대응)
 	private String		counselAppointmentDate;				// 상담예약일
-	private String		counselWhether;						// 상담여부
-	private String		counselAppointmentWhether;			// 예약여부
+	private String		counselWhether;						// 상담여부 -> ENUM('유','무')
+	private String		counselAppointmentWhether;			// 예약여부 -> ENUM('유','무')
 	private Date		counselAppointmentRegisteredDate;	// 상담예약 등록일
 	
 	
 	////////////////////////////////////////////////////
 	// 검색 키워드 변수 선언
-	private String counselTypeNo;		// 상담구분테이블의 상담구분코드(기본키)
+	private String		counselTypeNo;		// 상담구분테이블의 상담구분코드(기본키)
 	
 	
 	public String getCounselHistoryNo() {
@@ -23,7 +23,7 @@ public class CounselAppointment {
 	}
 	public void setCounselHistoryNo(String counselHistoryNo) {
 		System.out.println(counselHistoryNo
-				+ " <- counselHistoryNo   setCounselHistoryNo()   Counsel.java");
+				+ " <- counselHistoryNo   setCounselHistoryNo()   CounselAppointment.java");
 		this.counselHistoryNo = counselHistoryNo;
 	}
 	public String getCounselResultNo() {
@@ -31,14 +31,14 @@ public class CounselAppointment {
 	}
 	public void setCounselResultNo(String counselResultNo) {
 		System.out.println(counselResultNo
-				+ " <- counselResultNo   setCounselResultNo()   Counsel.java");
+				+ " <- counselResultNo   setCounselResultNo()   CounselAppointment.java");
 		this.counselResultNo = counselResultNo;
 	}
 	public String getMemberId() {
 		return memberId;
 	}
 	public void setMemberId(String memberId) {
-		System.out.println(memberId + " <- memberId   setMemberId()   Counsel.java");
+		System.out.println(memberId + " <- memberId   setMemberId()   CounselAppointment.java");
 		this.memberId = memberId;
 	}
 	public String getCounselAppointmentDate() {
@@ -46,14 +46,14 @@ public class CounselAppointment {
 	}
 	public void setCounselAppointmentDate(String counselAppointmentDate) {
 		System.out.println(counselAppointmentDate
-				+ " <- counselAppointmentDate   setCounselAppointmentDate()   Counsel.java");
+				+ " <- counselAppointmentDate   setCounselAppointmentDate()   CounselAppointment.java");
 		this.counselAppointmentDate = counselAppointmentDate;
 	}
 	public String getCounselWhether() {
 		return counselWhether;
 	}
 	public void setCounselWhether(String counselWhether) {
-		System.out.println(counselWhether + " <- counselWhether   setCounselWhether()   Counsel.java");
+		System.out.println(counselWhether + " <- counselWhether   setCounselWhether()   CounselAppointment.java");
 		this.counselWhether = counselWhether;
 	}
 	public String getCounselAppointmentWhether() {
@@ -61,7 +61,7 @@ public class CounselAppointment {
 	}
 	public void setCounselAppointmentWhether(String counselAppointmentWhether) {
 		System.out.println(counselAppointmentWhether
-				+ " <- counselAppointmentWhether   setCounselAppointmentWhether()   Counsel.java");
+				+ " <- counselAppointmentWhether   setCounselAppointmentWhether()   CounselAppointment.java");
 		this.counselAppointmentWhether = counselAppointmentWhether;
 	}
 	public Date getCounselAppointmentRegisteredDate() {
@@ -69,14 +69,14 @@ public class CounselAppointment {
 	}
 	public void setCounselAppointmentRegisteredDate(Date counselAppointmentRegisteredDate) {
 		System.out.println(counselAppointmentRegisteredDate +
-				" <- counselAppointmentRegisteredDate   setCounselAppointmentRegisteredDate()   Counsel.java");
+				" <- counselAppointmentRegisteredDate   setCounselAppointmentRegisteredDate()   CounselAppointment.java");
 		this.counselAppointmentRegisteredDate = counselAppointmentRegisteredDate;
 	}
 	public String getCounselTypeNo() {
 		return counselTypeNo;
 	}
 	public void setCounselTypeNo(String counselTypeNo) {
-		System.out.println(counselTypeNo + " <- counselTypeNo   setCounselTypeNo()   Counsel.java");
+		System.out.println(counselTypeNo + " <- counselTypeNo   setCounselTypeNo()   CounselAppointment.java");
 		this.counselTypeNo = counselTypeNo;
 	}
 	

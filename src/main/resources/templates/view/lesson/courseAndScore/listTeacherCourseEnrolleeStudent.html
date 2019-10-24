@@ -17,8 +17,8 @@
 	<div class="col-sm-12 col-md-offset-3">
 		<div class="row">
 			<div class="col-md-5">
-				<form id="searchTeacherCourseEnrolleeStudentFrm"
-					action="/searchTeacherCourseEnrolleeStudentList" method="post">
+				<form action="/teacherCourseEnrolleeStudentList">
+					<input type="hidden" name="memberId" th:value="${teacherInfo.memberId}">
 					<div class="form-group">
 						<label class="sr-only" for="searchMemberName">학생명</label>
 						<input type="text" class="form-control" id="searchMemberName"
@@ -26,21 +26,20 @@
 					</div>
 					
 					<div class="form-group">
-						<label for="inputJoinDate">가입기간</label>
+						<label for="inputCourseEnrolleeDate">수강등록일</label>
 						<div class="input-group">
-							<input type="date" class="form-control" id="inputJoinDate"
-								   name="startJoinDate" placeholder="시작 가입일을 선택하세요.">
+							<input type="date" class="form-control" id="inputCourseEnrolleeDate"
+								   name="startCourseEnrolleeDate" placeholder="시작 등록일을 선택하세요.">
 							
 							<span class="label">
 								<label><i class="mdi mdi-dots-horizontal"></i></label>
 							</span> 
 							
-							<input type="date" class="form-control" id="inputEndJoinDate"
-								   name="endJoinDate" placeholder="마지막 가입일을 선택하세요.">  
+							<input type="date" class="form-control" id="inputEndCourseEnrolleeDate"
+								   name="endCourseEnrolleeDate" placeholder="마지막 등록일을 선택하세요.">  
 						</div>
 					</div>
-					<button type="button" id="/searchTeacherCourseEnrolleeStudentFrmBtn"
-							class="btn btn-success">검색</button>
+					<button type="submit" class="btn btn-success">검색</button>
 				</form>
 			</div>
 		</div>
@@ -78,7 +77,7 @@
 						<td th:text="${#calendars.format(enrol.courseEnrolleeRegisteredDate,'yyyy-MM-dd')}"></td>
 						<td>
 							<button type="button" class="btn btn-success btn-sm"
-									th:onclick="'window.location.href = \'' + @{/addScoreInput(courseEnrolleeNo=${enrol.courseEnrolleeNo}, memberId=${session.memberId})} + '\''">
+									th:onclick="'window.location.href = \'' + @{/addScoreInput(courseEnrolleeNo=${enrol.courseEnrolleeNo})} + '\''">
 								점수입력
 							</button>
 						</td>

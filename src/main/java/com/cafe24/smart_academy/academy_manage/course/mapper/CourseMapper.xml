@@ -55,14 +55,19 @@
 			,subject		AS sub
 		where
 			co.subject_no = sub.subject_no
+		<!-- 과목코드를 선택하여 검색 -->
 		<if test="subjectNo != null and subjectNo neq ''.toString()">
 		and
 			co.subject_no = #{subjectNo}
 		</if>
+		
+		<!-- 강좌명을 입력하여 검색 -->
 		<if test="courseName != null and courseName neq ''.toString()">
 		and
 			co.course_name like concat('%',#{courseName},'%')
 		</if>
+		
+		<!-- 해당 강좌코드로 강좌 상세정보 가져오기 -->
 		<if test="courseNo != null and courseNo neq ''.toString()">
 		and
 			co.course_no = #{courseNo}
@@ -150,13 +155,16 @@
 			co.course_no = tea.course_no
 		where
 			tea.course_no is null
+		<!-- 과목명을 선택하여 검색 -->
 		<if test="subjectNo != null and subjectNo neq ''.toString()">
 		and
 			co.subject_no = #{subjectNo}
 		</if>
+		
+		<!-- 강좌명을 입력하여 검색 -->
 		<if test="courseName != null and courseName neq ''.toString()">
 		and
-			co.course_name = #{courseName}
+			co.course_name like concat('%',#{courseName},'%')
 		</if>
 	</select>
 	
@@ -190,14 +198,18 @@
 			login.member_id = mem.member_id
 		and
 			login.member_level = '강사'
+		<!-- 과목명을 입력하여 검색 -->
 		<if test="subjectNo != null and subjectNo neq ''.toString()">
 		and
 			co.subject_no = #{subjectNo}
 		</if>
+		
+		<!-- 강좌명을 입력하여 검색 -->
 		<if test="courseName != null and courseName neq ''.toString()">
 		and
-			co.course_name = #{courseName}
+			co.course_name like concat('%',#{courseName},'%')
 		</if>
+		
 		<!-- 해당 강좌로 등록된 강사 목록 찾기 -->
 		<if test="courseNo != null and courseNo neq ''.toString()">
 		and
@@ -271,6 +283,7 @@
 			cra.room_no = ro.room_no
 		and
 			cra.course_no = co.course_no
+		<!-- 강사가 배정이 안된 강좌리스트를 검색키워드로 강좌강의실 배정 리스트 가져오기 -->
 		<if test="courseNoList != null">
 		and
 			co.course_no in
@@ -278,22 +291,31 @@
 				#{item,jdbcType=VARCHAR}
 			</foreach>
 		</if>
+		
+		<!-- 강사가 배정이 안된 특정 강좌 상세보기 화면에서 특정 강좌코드를 참조하는 강좌강의실 배정 리스트 가져오기 -->
 		<if test="courseNo != null and courseNo neq ''.toString()">
 		and
 			co.course_no = #{courseNo}
 		</if>
+		
+		<!-- 강사가 배정이 안된 강좌의 상세 정보 가져오기 -->
 		<if test="courseAssignmentNo != null and courseAssignmentNo neq ''.toString()">
 		and
 			cra.course_assignment_no = #{courseAssignmentNo}
 		</if>
+		
+		<!-- 과목코드를 선택하여 검색 -->
 		<if test="subjectNo != null and subjectNo neq ''.toString()">
 		and
 			co.subject_no = #{subjectNo}
 		</if>
+		
+		<!-- 강좌명을 입력하여 검색 -->
 		<if test="courseName != null and courseName neq ''.toString()">
 		and
 			co.course_name like concat('%',#{courseName},'%')
 		</if>
+		
 		<!-- 해당 강의실을 참조하는 강좌강의실 배정 목록 -->
 		<if test="roomNo != null and roomNo neq ''.toString()">
 		and
@@ -349,21 +371,31 @@
 		and
 			cra.course_assignment_no = #{courseAssignmentNo}
 		</if>
+		
 		<!-- 강좌 강의실 배정 및 강사 강좌 배정 상세 데이터 가져오기 -->
 		<if test="memberId != null and memberId neq ''.toString()">
 		and
 			tea.member_id = #{memberId}
 		</if>
-		<!-- 과목을 선택했을 때, 특정 과목을 참조하는 강좌리스트 -->
+		
+		<!-- 과목을 선택하여 검색 시 특정 과목을 참조하는 강좌리스트 -->
 		<if test="subjectNo != null and subjectNo neq ''.toString() and subjectNo neq 'not'">
 		and
 			co.subject_no = #{subjectNo}
 		</if>
-		<!-- 리스트 검색 폼에서 과목을 선택하고 강좌를 선택했을 경우, 강좌상세화면에서 특정 강좌를 선택했을 경우 -->
+		
+		<!-- 강좌명을 입력하여 검색 -->
+		<if test="courseName != null and courseName neq ''.toString()">
+		and
+			co.course_name like concat('%',#{courseName},'%')
+		</if>
+		
+		<!-- 강좌상세화면에서 특정 강좌를 선택했을 경우 -->
 		<if test="courseNo != null and courseNo neq ''.toString()">
 		and
 			co.course_no = #{courseNo}
 		</if>
+		
 		<!-- 특정 강의실을 참조하는 강좌리스트 -->
 		<if test="roomNo != null and roomNo neq ''.toString()">
 		and

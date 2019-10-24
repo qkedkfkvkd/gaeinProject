@@ -21,6 +21,12 @@ public interface MemberMapper {
 	public int updateLoginPassword(MemberLogin login);
 	// 로그인 정보 수정 처리 (패스워드 수정처리)
 	
+	public String findLoginId(Map<String, Object> findLoginInfo);
+	// 아이디 찾기
+	
+	public MemberLogin findLoginPw(Map<String, Object> findLoginInfo);
+	// 비밀번호 찾기
+	
 	public String memberByEmail(String memberEmail);
 	// 관리자가 학생 혹은 강사를 등록할 때 회원신상정보 테이블에서 유니크값인 이메일이 중복되는지 확인
 	

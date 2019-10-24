@@ -41,8 +41,9 @@
 			<button type="submit" class="btn btn-success">검색</button>
 		</form>
 		
-		<div class="row">
-			<div class="col-md-5" >
+		<div class="row"
+			 th:if="${session.memberLevel == '관리자'.toString()}">
+			<div class="col-md-3" >
 				<table class="table">
 					<tbody>
 						<tr>
@@ -50,12 +51,6 @@
 								<button type="button" class="btn btn-primary btn-sm btn-block"
 										onclick="location.href='/addAcademyRoom'">
 									강의실등록
-								</button>
-							</td>
-							<td>
-								<button type="button" class="btn btn-primary btn-sm btn-block"
-										onclick="location.href='/updateAcademyRoom'">
-									변경된 강의실
 								</button>
 							</td>
 						</tr>
@@ -72,9 +67,9 @@
 					<th>호실번호</th>
 					<th>층수</th>
 					<th>실용도</th>
-					<th>코드변경</th>
+					<th th:if="${session.memberLevel == '관리자'.toString()}">코드변경</th>
 					<th>등록일</th>
-					<th>상세</th>
+					<th th:if="${session.memberLevel == '관리자'.toString()}">상세</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -85,9 +80,10 @@
 					<td th:text="${room.roomNumber}"></td>
 					<td th:text="${room.roomFloor}"></td>
 					<td th:text="${room.roomUsage}"></td>
-					<td th:text="${room.roomIsChanged}"></td>
+					<td th:text="${room.roomIsChanged}"
+						th:if="${session.memberLevel == '관리자'.toString()}"></td>
 					<td th:text="${#calendars.format(room.roomRegisteredDate,'yyyy-MM-dd')}"></td>
-					<td>
+					<td th:if="${session.memberLevel == '관리자'.toString()}">
 						<button type="button" class="btn btn-success btn-sm"
 								th:onclick="'window.location.href = \'' + @{/updateAcademyRoom(roomNo=${room.roomNo})} + '\''">
 							상세

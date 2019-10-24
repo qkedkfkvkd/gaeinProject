@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title  th:text="${member.memberName + ' 학생의 상담예약현황'}"></title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<div class="page-header">
+		<div class="col-md-10 col-md-offset-3">
+			<h3 th:text="${member.memberId + ' : ' + member.memberName + ' 학생의 상담예약현황'}"></h3>
+		</div>
+	</div>
+	
+	<div class="col-sm-11 col-md-offset-3">
+		<form class="form-inline" action="/counselAppointmentList">
+			<input type="hidden" name="memberId" th:value="${member.memberId}"> <!-- 특정 학생의 상담예약정보 검색 -->
+			<input type="hidden" value="무" name="counselWhether"><!-- 상담여부 '무' 쿼리 검색 키워드 -->
+			<input type="hidden" value="무" name="counselAppointmentWhether"><!-- 상담예약 '무' 쿼리 검색 키워드 -->
+			
+			<div class="form-group">
+				<label class="sr-only" for="counselTypeList">상담구분명</label>
+				<!-- <div class="input-group"> -->
+				<select id="counselTypeList" name="counselTypeNo"
+						onchange="counselResultListSelect(this.value)" class="form-control">
+					<option value="not">상담구분명</option>
+					<option th:each="counselType : ${counselTypeList}"
+							th:value="${counselType.counselTypeNo}"
+							th:text="${counselType.counselTypeName}"></option>
+				</select>
+				<!-- </div> -->
+			</div>
+			
+			<div class="form-group">
+				<label class="sr-only" for="counselResultList">상담결과명</label>
+				<!-- <div class="input-group"> -->
+				<select id="counselResultList" name="counselResultNo"
+						class="form-control">
+					<option value="">상담결과명</option>
+				</select>
+				<!-- </div> -->
+			</div>
+			<button type="submit" class="btn btn-primary">검색</button>
+		</form>
+		
+		<div class="row"
+			 th:if="${session.memberLevel == '학생'.toString()}">
+			<div class="col-md-5" >
+				<table class="table">
+					<tbody>
+						<tr>
+							<td>
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/addCounselAppointment(memberId=${session.memberId})} + '\''">
+									상담예약등록
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<table class="table table-striped" style="text-align: center;">
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>구분</th>
+					<th>결과</th>
+					<th>상담예정일</th>
+					<th>아이디</th>
+					<th>학생명</th>
+					<th>이메일</th>
+					<th>신청일</th>
+					<th>예약</th>
+					<th>수정</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="counsel, lists : ${counselAppointmentList}"
+					th:if="${counselAppointmentListSize != 0}">
+					<td th:text="${lists.count}"></td>
+					<td th:text="${counsel.counselTypeName}"></td>
+					<td th:text="${counsel.counselResultName}"></td>
+					<td th:text="${counsel.counselAppointmentDate}"></td>
+					<td th:text="${counsel.memberId}"></td>
+					<td th:text="${counsel.memberName}"></td>
+					<td th:text="${counsel.memberEmail}"></td>
+					<td th:text="${counsel.counselAppointmentRegisteredDate}"></td>
+					<td>
+						<span th:if="${counsel.counselAppointmentWhether == '무'.toString()}">
+							신청됨
+						</span>
+						<span th:unless="${counsel.counselAppointmentWhether == '무'.toString()}">
+							예약완료
+						</span>
+					</td>
+					<td>
+						<button type="button" class="btn btn-success btn-sm"
+								th:onclick="'window.location.href = \'' + @{/updateCounselAppointment(counselHistoryNo=${counsel.counselHistoryNo})} + '\''">
+							수정
+						</button>
+					</td>
+				</tr>
+				
+				<tr th:unless="${counselAppointmentListSize != 0}">
+					<td colspan="7">예약된 상담예약현황이 없습니다.</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		// 선택한 상담구분코드를 참조하는 상담결과목록 가져오기
+		function counselResultListSelect(counselTypeNo) {
+			console.log(`counselTypeNo:${counselTypeNo}`);
+			
+			$.ajax({
+				 type: "POST"
+				,url: "/counselResultListSelect"
+				,dataType:"json"
+				,data: counselTypeNo
+				,contentType: "application/json; charset=UTF-8"
+				,success: function(result){
+					//SELECT BOX 초기화           
+					$("#counselResultList").find("option").remove().end().append("<option value=''>상담결과명</option>");
+					
+					//배열 개수 만큼 option 추가
+					$.each(result, function(i){
+						console.log(`넘어온 상담결과코드:${result}`);
+						$("#counselResultList").append("<option value='"+result[i].counselResultNo+"'>"+result[i].counselResultName+"</option>");
+					});    
+				}
+				,error: function (jqXHR, textStatus, errorThrown) {
+					alert("오류가 발생하였습니다.");
+				}
+			});
+		}
+	</script>
+</th:block>
+
+</html>

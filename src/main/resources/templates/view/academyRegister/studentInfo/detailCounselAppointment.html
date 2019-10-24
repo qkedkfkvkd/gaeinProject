@@ -82,7 +82,8 @@
 							삭제
 						</button>
 					</div>
-					<div class="col-md-3">
+					<div class="col-md-3"
+						 th:if="${session.memberLevel == '관리자'.toString()}">
 						<span th:if="${counselAppointment.counselAppointmentWhether != '유'}">
 							<button type="button" class="btn btn-primary btn-sm btn-block"
 								id="permissionCounselAppointmentBtn">

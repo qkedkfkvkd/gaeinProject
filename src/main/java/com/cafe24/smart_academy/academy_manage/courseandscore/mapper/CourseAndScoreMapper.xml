@@ -8,7 +8,9 @@
 	
 	<!-- 관리자 : 전체 학생 수강신청 리스트 -->
 	<!-- 관리자 : 학생 수강신청 상세보기 -->
-	<!-- 특정 강좌에 수강신청한 학생들 리스트 -->
+	<!-- 관리자, 강사 : 특정 강좌에 수강신청한 학생들 리스트 -->
+	<!-- 관리자 : 학생 전체 수강신청 검색결과 리스트 -->
+	<!-- 관리자, 학생 : 특정 학생의 수강신청 목록 보기 -->
 	<select id="courseEnrolleeOneOrList"
 			parameterType="com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO"
 			resultType="map">
@@ -63,10 +65,58 @@
 		and
 			ce.course_enrollee_no	= #{courseEnrolleeNo}
 		</if>
+		
+		<!-- 과목코드 선택 후 리스트 조회 -->
+		<if test="subjectNo != null and subjectNo neq ''.toString()">
+		and	
+			sub.subject_no		= #{subjectNo}
+		</if>
+		
 		<!-- 특정 강좌에 수강신청한 학생들 목록 조회시 실행 -->
 		<if test="courseNo != null and courseNo neq ''.toString()">
 		and	
 			co.course_no		= #{courseNo}
+		</if>
+		
+		<!-- 특정 학생 수강신청 목록 조회시 실행 -->
+		<if test="memberId != null and memberId neq ''.toString()">
+		and	
+			ce.member_id		= #{memberId}
+		</if>
+		
+		<!-- 학생 이름을 입력하여 검색 시 -->
+		<if test="memberName != null and memberName neq ''.toString()">
+		and
+			mem.member_name like CONCAT('%',#{memberName},'%')
+		</if>
+		
+		<!-- 시작 수강등록기간만 입력하여 검색 시 -->
+		<if test="(startCourseEnrolleeDate != null and startCourseEnrolleeDate neq ''.toString()) and
+				  (endCourseEnrolleeDate == null or endCourseEnrolleeDate eq ''.toString())">
+		and
+			ce.course_enrollee_registered_date
+		>=
+			#{startCourseEnrolleeDate}
+		</if>
+		
+		<!-- 마지막 수강등록기간만 입력하여 검색 시 -->
+		<if test="(startCourseEnrolleeDate == null and startCourseEnrolleeDate eq ''.toString()) and
+				  (endCourseEnrolleeDate != null or endCourseEnrolleeDate neq ''.toString())">
+		and
+			ce.course_enrollee_registered_date
+		<![CDATA[ < ]]>
+			#{endCourseEnrolleeDate}
+		</if>
+		
+		<!-- 시작 수강등록기간부터 마지막 수강등록기간까지 입력하여 검색 시 -->
+		<if test="(startCourseEnrolleeDate != null and startCourseEnrolleeDate neq ''.toString()) and
+				  (endCourseEnrolleeDate != null and endCourseEnrolleeDate neq ''.toString())">
+		and
+			ce.course_enrollee_registered_date
+		between
+			#{startCourseEnrolleeDate}
+		and
+			#{endCourseEnrolleeDate}
 		</if>
 		order by
 			co.course_no asc, mem.member_name asc
@@ -187,36 +237,51 @@
 		and
 			sub.subject_no			= #{subjectNo}
 		</if>
+		
 		<!-- 해당 강좌에 일치하는 조건 검색 -->
 		<if test="courseNo != null and courseNo neq ''.toString()">
 		and
 			co.course_no			= #{courseNo}
 		</if>
+		
 		<!-- 해당 강의실에 일치하는 조건 검색 -->
 		<if test="roomNo != null and roomNo neq ''.toString()">
 		and
 			cra.room_no				= #{roomNo}
 		</if>
+		
 		<!-- 시험일 상세 정보 가져오기 -->
 		<if test="examinationDayNo != null and examinationDayNo neq ''.toString()">
 		and
 			ed.examination_day_no	= #{examinationDayNo}
 		</if>
+		
 		<!-- 시험 완료된 시험날짜 강좌리스트를 조회한다. -->
 		<if test="testStandardDay eq 'testComplete'.toString()">
 		and
 			ed.examination_day <![CDATA[ <= ]]> date(now())
 		</if>
+		
 		<!-- 아직 시험을 치르지 않은 시험날짜 강좌리스트를 조회한다. -->
 		<if test="testStandardDay eq 'notTest'.toString()">
 		and
 			ed.examination_day > date(now())
 		</if>
+		
 		<!-- 해당 강사에 일치하는 조건 검색 -->
 		<!-- 강사 담당 강좌의 시험일 강좌 리스트 보기 -->
 		<if test="memberId != null and memberId neq ''.toString()">
 		and
 			tea.member_id				= #{memberId}
+		</if>
+		
+		<!-- 특정 학생이 수강신청한 시험일 강좌 리스트 보기 -->
+		<if test="courseList != null">
+		and
+			co.course_no in
+			<foreach collection="courseList" item="item" index="index" separator="," open="(" close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
 		</if>
 	</select>
 	
@@ -304,6 +369,7 @@
 			,aro.room_floor								AS roomFloor
 			,ed.examination_name						AS examinationName
 			,ed.examination_day							AS examinationDay
+			,cen.member_id								AS memberId
 			,mem.member_name							AS memberName
 			,cs.schedule_no								AS scheduleNo
 			,cs.schedule_day							AS scheduleDay
@@ -349,17 +415,43 @@
 			cen.course_no				= cra.course_no
 		and
 			si.grading_criteria_rating	= gcr.grading_criteria_rating
+		<!-- 해당 과목에 일치하는 조건 검색 -->
+		<if test="subjectNo != null and subjectNo neq ''.toString() and subjectNo neq 'not'.toString()">
+		and
+			co.subject_no			= #{subjectNo}
+		</if>
+		
+		<!-- 해당 강좌에 일치하는 조건 검색 -->
+		<if test="courseNo != null and courseNo neq ''.toString()">
+		and
+			co.course_no			= #{courseNo}
+		</if>
+		
+		<!-- 해당 강의실에 일치하는 조건 검색 -->
+		<if test="roomNo != null and roomNo neq ''.toString()">
+		and
+			cra.room_no				= #{roomNo}
+		</if>
+		
+		<!-- 특정 학생의 성적 결과 리스트 가져오기 -->
+		<if test="memberId != null and memberId neq ''.toString()">
+		and
+			cen.member_id			= #{memberId}
+		</if>
+		
 		<!-- 시험일 상세화면에서 해당 시험일코드를 참조하는 강좌시험성적 리스트 -->
 		<!-- 해당 시험을 치룬 학생들의 성적순위 리스트 -->
 		<if test="examinationDayNo != null and examinationDayNo neq ''.toString()">
 		and
-			ed.examination_day_no		= #{examinationDayNo}
+			ed.examination_day_no	= #{examinationDayNo}
 		</if>
+		
 		<!-- 해당 시험을 치룬 학생들의 성적순위 리스트에서 특정 학생 검색 결과 리스트 -->
 		<if test="memberName != null and memberName neq ''.toString()">
 		and
 			mem.member_name like CONCAT('%',#{memberName},'%')
 		</if>
+		
 		<!-- 성적기준 상세화면에서 해당 성적기준을 참조하는 강좌시험성적 리스트 -->
 		<if test="gradingCriteriaRating != null and gradingCriteriaRating neq ''.toString()">
 		and
@@ -405,5 +497,30 @@
 	</insert>
 	
 	
+	<!-- 관리자, 강사 : 시험성적 수정 처리 -->
+	<update id="updateScoreInput"
+			parameterType="com.cafe24.smart_academy.academy_manage.courseandscore.vo.ScoreInput">
+		update
+			score_input
+		<trim prefix="set" prefixOverrides=",">
+			<if test="gradingCriteriaRating != null and gradingCriteriaRating neq ''.toString()">
+				 grading_criteria_rating		= #{gradingCriteriaRating}
+			</if>
+			<if test="scoreInputTestScore != null and scoreInputTestScore neq ''.toString()">
+				,score_input_test_score			= #{scoreInputTestScore}
+			</if>
+		</trim>
+		where
+			score_input_no = #{scoreInputNo}
+	</update>
 	
+	
+	<!-- 관리자, 강사 : 시험성적 삭제 처리 -->
+	<delete id="deleteScoreInput"
+			parameterType="String">
+		delete from
+			score_input
+		where
+			score_input_no = #{scoreInputNo}
+	</delete>
 </mapper>

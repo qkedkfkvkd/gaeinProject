@@ -33,4 +33,8 @@ public interface ScheduleMapper {
 	
 	public int deleteSchedule(String scheduleNo);
 	// 관리자, 강사 : 시간표 삭제 처리
+	
+	public List<Map<String, Object>> oneStudentCourseScheduleList(CourseRoomSearchVO searchVO);
+	// 관리자, 학생 : 특정 학생의 강좌 시간표 리스트
+	// 관리자, 학생 : 특정 학생의 강좌 시간표 검색결과 리스트
 }

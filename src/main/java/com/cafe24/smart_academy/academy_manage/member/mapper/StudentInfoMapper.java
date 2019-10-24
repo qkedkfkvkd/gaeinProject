@@ -11,7 +11,6 @@ import com.cafe24.smart_academy.academy_manage.member.vo.CounselResult;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
 import com.cafe24.smart_academy.academy_manage.member.vo.GetCounselResultNo;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
-import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
 import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;

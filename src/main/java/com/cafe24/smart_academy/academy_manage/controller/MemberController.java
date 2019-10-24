@@ -21,8 +21,6 @@ import com.cafe24.smart_academy.academy_manage.member.vo.CounselResult;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
-import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
-import com.cafe24.smart_academy.academy_manage.member.vo.PaymentInfo;
 
 @Controller
 public class MemberController {
@@ -89,6 +87,93 @@ public class MemberController {
 		
 		return "redirect:/";
 	}
+	
+	
+	// 아이디 찾기 폼 이동
+	@GetMapping("/findLoginId")
+	public String findLoginId() {
+		return "/view/academyRegister/academyRegisterInfo/findLoginId";
+	}
+	
+	
+	// 아이디 찾기
+	@PostMapping("/findLoginId")
+	@ResponseBody
+	public Map<Object, Object> findLoginId(@RequestBody Map<String, Object> findLoginInfo) {
+		String memberName = (String)findLoginInfo.get("memberName");
+		String memberEmail = (String)findLoginInfo.get("memberEmail");
+		// 입력한 이름과 이메일을 변수에 저장한다.
+		
+		System.out.println(memberName + "<- memberName   findLoginId()   MemberController.java");
+		System.out.println(memberEmail + "<- memberEmail   findLoginId()   MemberController.java");
+		
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		
+		String memberId = memberService.findLoginId(findLoginInfo);
+		// 아이디 찾기 메소드 호출
+		
+		System.out.println(memberId + " <- memberId   findLoginId()   MemberController.java");
+		
+		if(memberId != null) {
+			map.put("result", "success");
+			// 아이디가 존재함 : 입력한 이름과 이메일이 디비의 데이터와 정확히 일치
+			
+			map.put("memberId", memberId);
+			// 찾은 아이디를 넣어줌
+		} else {
+			map.put("result", "fail");
+			// 아이디가 존재하지 않음 : 이름이나 이메일을 잘못 입력
+		}
+		
+		return map;
+	}
+	
+	
+	// 비밀번호 찾기 폼 이동
+	@GetMapping("/findLoginPw")
+	public String findLoginPw() {
+		return "/view/academyRegister/academyRegisterInfo/findLoginPw";
+	}
+	
+	
+	// 비밀번호 찾기
+	@PostMapping("/findLoginPw")
+	@ResponseBody
+	public Map<Object, Object> findLoginPw(@RequestBody Map<String, Object> findLoginInfo) {
+		String memberId = (String)findLoginInfo.get("memberId");
+		String memberEmail = (String)findLoginInfo.get("memberEmail");
+		// 입력한 아이디와 이메일을 변수에 저장한다.
+		
+		System.out.println(memberId + "<- memberId   findLoginPw()   MemberController.java");
+		System.out.println(memberEmail + "<- memberEmail   findLoginPw()   MemberController.java");
+		
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		
+		MemberLogin loginInfo = memberService.findLoginPw(findLoginInfo);
+		// 비밀번호 찾기 메소드 호출
+		
+		if(loginInfo != null) {
+			System.out.println(loginInfo.getMemberId() + " <- memberId   findLoginPw()   MemberController.java");
+			System.out.println(loginInfo.getMemberPw() + " <- memberPw   findLoginPw()   MemberController.java");
+			
+			map.put("result", "success");
+			// 객체가 존재함 : 입력한 아이디와 이메일이 디비의 데이터와 정확히 일치
+			
+			map.put("memberId", loginInfo.getMemberId());
+			// 아이디를 넣어줌
+			
+			map.put("memberPw", loginInfo.getMemberPw());
+			// 비밀번호를 넣어줌
+		} else {
+			map.put("result", "fail");
+			// 객체가 존재하지 않음 : 이름이나 이메일을 잘못 입력
+		}
+		
+		return map;
+	}
+	
+	
+	
 	
 	
 	// 관리자 전용 학생, 강사 등록 폼에서 아이디 중복버튼 눌렀을 경우
@@ -238,7 +323,7 @@ public class MemberController {
 	
 	
 	
-	//관리자 : 상담기준코드 리스트 가져오기
+	// 관리자 : 상담기준코드 리스트 가져오기
 	@GetMapping("/counselStandardList")
 	public String counselStandardList(Model model) {
 		
@@ -268,6 +353,7 @@ public class MemberController {
 		model.addAttribute("counselTypeListSize", counselTypeListSize);
 		model.addAttribute("counselTypeList", counselTypeList);
 		//model.addAttribute("counselResultList", counselResultList);
+		
 		return "/view/academyRegister/academyRegisterCode/listCounselStandard";
 	}
 	
@@ -345,13 +431,19 @@ public class MemberController {
 			 @RequestParam(value = "counselTypeNo") String counselTypeNo
 			,Model model) {
 		
-		List<CounselType> counselTypeList = memberService.counselTypeList(counselTypeNo);
+		List<CounselType> counselTypeList = memberService.counselTypeList();
+		// 샐랙트 박스에 넣어줄 상담구분코드 리스트 가져오기
+		
+		List<CounselType> counselTypeViewList = memberService.counselTypeList(counselTypeNo);
 		// 상담구분코드 검색결과 리스트 가져오기
 		
 		model.addAttribute("counselTypeList", counselTypeList);
-		// 화면에 보여줄 상담구분코드 리스트
+		// 샐랙트 박스에 넣을 상담구분코드 리스트
 		
-		model.addAttribute("counselTypeListSize", counselTypeList.size());
+		model.addAttribute("counselTypeViewList", counselTypeViewList);
+		// 화면에 보여줄 검색결과 상담구분코드 리스트
+		
+		model.addAttribute("counselTypeViewListSize", counselTypeViewList.size());
 		// 화면에 리스트의 존재 여부를 알려줄 리스트 사이즈
 		
 		return "/view/academyRegister/academyRegisterCode/listCounselType";

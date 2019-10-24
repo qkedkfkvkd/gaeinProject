@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>비밀번호찾기</title>
+</th:block>
+<th:block layout:fragment="customContents">
+	
+	<div class="row text-center" style="width: 100%; align-items: center;">
+		<div style="width: 80%; float:none; margin:0 auto; display:flex;
+			 align-items:center;">
+			<span>
+				<img src="images/mainpage/login/Member_login_logo.png" alt="로그인로고"
+					 class="img-responsive center-block">
+			</span>
+			<form id="findLoginPwFrm">
+				<img src="images/mainpage/login/login_logo.png" alt="로그인로고">
+				
+				<div class="form-group" style="margin-top: 10px;">
+					<label style="font-size: large;">비밀번호찾기</label>
+				</div>
+				
+				<div class="form-group" style="margin-top: 10px;">
+					<label for="inputMemberId" style="font-size: large;">아이디:</label>
+					<input type="text" class="form-control" id="inputMemberId">
+				</div>
+				
+				<div class="form-group">
+					<label for="inputMemberEmail" style="font-size: large;">이메일:</label>
+					<input type="text" class="form-control" id="inputMemberEmail">
+				</div>
+				
+				<div class="form-group">
+					<div class="row"> <!-- style="vertical-align: bottom;" -->
+						<div class="col-md-6">
+							<button type="reset" class="btn btn-danger form-control">
+								취소
+							</button>
+						</div>
+						<div class="col-md-6">
+							<button type="button" id="findLoginPwFrmBtn"
+									class="btn btn-primary form-control">
+								찾기
+							</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</th:block>
+
+<th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		
+		// 아이디 찾기 처리 전 공백 및 이메일 유효성 검사
+		$('#findLoginPwFrmBtn').on('click', function(e){
+			e.preventDefault();
+			
+			if($("#inputMemberId").val() ==''){
+				alert('아이디를 입력하세요');
+				$("#inputMemberId").focus();
+			return false;
+			}
+			
+			var email = $('#inputMemberEmail').val();
+			if(email == ''){
+				alert('이메일을 입력하세요');
+				$("#inputMemberEmail").focus();
+				return false;
+			} else {
+				var emailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+				if (!emailRegex.test(email)) {
+					alert('이메일 주소가 유효하지 않습니다. ex)abc@gmail.com');
+					$("#inputMemberEmail").focus();
+					return false;
+				}
+			}
+			
+			var memberId = $("#inputMemberId").val();
+			
+			var memberData = {
+					 "memberId" : memberId
+					,"memberEmail" : email
+			};
+			
+			$.ajax({
+				url: '/findLoginPw',
+				type: 'POST',
+				data: JSON.stringify(memberData),
+				dataType: 'json',
+				contentType: "application/json; charset=UTF-8",
+				success: function (response) {
+					if(response.result == 'success'){
+						alert(response.memberId + '님의 비밀번호는 ' + response.memberPw + ' 입니다.');
+						location.href = "/loginMember";
+					} else if(response.result == 'fail'){
+						alert('아이디 혹은 이메일을 잘못 입력하셨습니다.');
+					} else {
+						alert('검사 중 에러가 발생했습니다');
+					}
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					alert("arjax error : " + textStatus + "\n" + errorThrown);
+				}
+			});
+		});
+	</script>
+</th:block>
+
+</html>
