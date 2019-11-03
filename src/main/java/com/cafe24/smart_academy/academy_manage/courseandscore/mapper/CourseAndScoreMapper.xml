@@ -67,7 +67,7 @@
 		</if>
 		
 		<!-- 과목코드 선택 후 리스트 조회 -->
-		<if test="subjectNo != null and subjectNo neq ''.toString()">
+		<if test="subjectNo != null and subjectNo neq ''.toString() and subjectNo neq 'not'">
 		and	
 			sub.subject_no		= #{subjectNo}
 		</if>
@@ -370,7 +370,19 @@
 			,ed.examination_name						AS examinationName
 			,ed.examination_day							AS examinationDay
 			,cen.member_id								AS memberId
-			,mem.member_name							AS memberName
+			,(select
+				teamem.member_name
+			  from
+			  	 member_login	AS tealogin
+			  	,member			AS teamem
+			  	,teacher		AS tea
+			  where
+			  	tealogin.member_id = teamem.member_id
+			  and
+			  	tealogin.member_id = tea.member_id
+			  and
+			  	tea.course_no = co.course_no)			AS teacherName
+			,mem.member_name							AS studentName
 			,cs.schedule_no								AS scheduleNo
 			,cs.schedule_day							AS scheduleDay
 			,cs.schedule_period							AS schedulePeriod

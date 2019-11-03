@@ -60,7 +60,7 @@
 						<!-- <div class="input-group"> -->
 						<select id="scheduleDayList" name="scheduleDay"
 								onchange="viewScheduleByDay(this.value)" class="form-control">
-							<option value="all">선택</option>
+							<option value="not">선택</option>
 							<option value="월">월</option>
 							<option value="화">화</option>
 							<option value="수">수</option>
@@ -104,21 +104,9 @@
 							<th>등록일</th>
 						</tr>
 					</thead>
-					<tbody id="scheduleDayList">
-						<tr th:each="schedule, lists : ${scheduleList}"
-							th:if="${scheduleListSize != 0}">
-							<td th:text="${lists.count}"></td>
-							<td th:text="${schedule.schedulePeriod}"></td>
-							<td th:text="${schedule.scheduleDay}"></td>
-							<td th:text="${schedule.subjectName}"></td>
-							<td th:text="${schedule.courseName}"></td>
-							<td th:text="${schedule.memberName}"></td>
-							<td th:text="${schedule.roomFloor + '층 ' + schedule.roomNumber + '호'}"></td>
-							<td th:text="${#calendars.format(schedule.scheduleRegisteredDate,'yyyy-MM-dd')}"></td>
-						</tr>
-						
-						<tr th:unless="${scheduleListSize != 0}">
-							<td colspan="7">등록된 강좌시간표가 없습니다.</td>
+					<tbody id="scheduleDayViewList">
+						<tr>
+							<td colspan="7">선택한 강좌시간표가 없습니다.</td>
 						</tr>
 					</tbody>
 				</table>
@@ -149,7 +137,7 @@
 					console.log(`length : ${length}`);
 					
 					//테이블 초기화           
-					$("#scheduleDayList").children().remove();
+					$("#scheduleDayViewList").children().remove();
 					
 					if(length != 0) {
 						// 넘어온 시간표리스트의 사이즈가 0보다 크다.
@@ -173,7 +161,7 @@
 						    contents +=		'<td>'+ result[i].scheduleRegisteredDate +'</td>';
 							contents += '</tr>';
 							
-							$('#scheduleDayList').append(contents);
+							$('#scheduleDayViewList').append(contents);
 							
 						});
 					} else {  // 넘어온 시간표리스트의 사이즈가 0이다. 해당 요일에 등록된 시간표가 없다.
@@ -182,7 +170,7 @@
 						contents +=		'<td colspan="7">해당 요일에 등록된 강좌시간표가 없습니다.</td>';
 						contents += '</tr>';
 						
-						$('#scheduleDayList').append(contents);
+						$('#scheduleDayViewList').append(contents);
 					}
 					
 					

@@ -64,10 +64,12 @@
 	<script th:inline="javascript">
 		/*<![CDATA[*/
 			var courseNo = /*[[ ${courseNo} ]]*/;
+			var memberId = /*[[ ${memberId} ]]*/;
 		/*]]*/
 		
 		$(document).ready(function(){
 			$("#courseList").val(courseNo);
+			$("#teacherList").val(memberId);
 		});
 	</script>
 	

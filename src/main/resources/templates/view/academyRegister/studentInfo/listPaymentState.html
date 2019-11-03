@@ -17,7 +17,7 @@
 	<div class="col-sm-11 col-md-offset-3">
 		<div class="row">
 			<div class="col-md-6">
-				<form action="/searchStudentInfoPaymentState" method="post">
+				<form action="/searchStudentInfoPaymentState">
 					<input type="hidden" name="title" th:value="${title}">
 					<input type="hidden" name="paymentStateListSizeZeroMessage"
 						   th:value="${paymentStateListSizeZeroMessage}">
@@ -60,6 +60,7 @@
 					<th>납부예정액</th>
 					<th>실납부액</th>
 					<th>마지막결제일</th>
+					<th>수정</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -74,6 +75,12 @@
 					<td th:text="${payment.paymentScheduleMoney}"></td>
 					<td th:text="${payment.actualityPaymentMoney}"></td>
 					<td th:text="${#calendars.format(payment.paymentModificationDate,'yyyy-MM-dd')}"></td>
+					<td>
+						<button type="button" class="btn btn-success btn-sm"
+								th:onclick="'window.location.href = \'' + @{/updatePaymentInfo(memberId=${payment.memberId})} + '\''">
+							수정
+						</button>
+					</td>
 				</tr>
 				
 				<tr th:unless="${paymentStateListSize != 0}">

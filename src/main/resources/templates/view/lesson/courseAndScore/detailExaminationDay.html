@@ -162,7 +162,7 @@
 									</button>
 								</span>
 								
-								<span th:if="${session.memberLevel != '관리자'.toString() || session.memberLevel != '강사'.toString()}">
+								<span th:if="${session.memberLevel != '관리자'.toString() && session.memberLevel != '강사'.toString()}">
 									<button type="button" class="btn btn-success btn-sm"
 											disabled="disabled">
 										불가

@@ -56,7 +56,7 @@
 		where
 			co.subject_no = sub.subject_no
 		<!-- 과목코드를 선택하여 검색 -->
-		<if test="subjectNo != null and subjectNo neq ''.toString()">
+		<if test="subjectNo != null and subjectNo neq ''.toString() and subjectNo neq 'not'">
 		and
 			co.subject_no = #{subjectNo}
 		</if>
@@ -68,7 +68,7 @@
 		</if>
 		
 		<!-- 해당 강좌코드로 강좌 상세정보 가져오기 -->
-		<if test="courseNo != null and courseNo neq ''.toString()">
+		<if test="courseNo != null">
 		and
 			co.course_no = #{courseNo}
 		</if>
@@ -156,7 +156,7 @@
 		where
 			tea.course_no is null
 		<!-- 과목명을 선택하여 검색 -->
-		<if test="subjectNo != null and subjectNo neq ''.toString()">
+		<if test="subjectNo != null and subjectNo neq ''.toString() and subjectNo neq 'not'">
 		and
 			co.subject_no = #{subjectNo}
 		</if>
@@ -198,8 +198,8 @@
 			login.member_id = mem.member_id
 		and
 			login.member_level = '강사'
-		<!-- 과목명을 입력하여 검색 -->
-		<if test="subjectNo != null and subjectNo neq ''.toString()">
+		<!-- 과목명을 선택하여 검색 -->
+		<if test="subjectNo != null and subjectNo neq ''.toString() and subjectNo neq 'not'">
 		and
 			co.subject_no = #{subjectNo}
 		</if>
@@ -305,7 +305,7 @@
 		</if>
 		
 		<!-- 과목코드를 선택하여 검색 -->
-		<if test="subjectNo != null and subjectNo neq ''.toString()">
+		<if test="subjectNo != null and subjectNo neq ''.toString() and subjectNo neq 'not'">
 		and
 			co.subject_no = #{subjectNo}
 		</if>

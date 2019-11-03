@@ -21,7 +21,7 @@
 				<!-- <div class="input-group"> -->
 				<select id="subjectList" class="form-control"
 						onchange="courseSelect(this.value)" name="subjectNo">
-					<option value="">과목명</option>
+					<option value="not">과목명</option>
 					<option th:each="subject : ${subjectList}"
 							th:value="${subject.subjectNo}"
 							th:text="${subject.subjectName}"></option>

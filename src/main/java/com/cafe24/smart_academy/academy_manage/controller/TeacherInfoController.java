@@ -1,5 +1,6 @@
 package com.cafe24.smart_academy.academy_manage.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,8 +36,9 @@ public class TeacherInfoController {
 	@GetMapping("/addTeacher")
 	public String addTeacher(Model model) {
 		
-		List<Map<String, Object>> courseList =courseService.courseOneOrList();
-		// 담당 강좌를 선택하게 하기 위해서 리스트를 가져온다.
+		List<Map<String, Object>> courseList =
+				courseService.courseNotAssignmentTeacherSimpleList();
+		// 담당 강좌를 선택하게 하기 위해서 강사와 매칭되지않은 강좌 리스트를 가져온다.
 		// 강좌코드, 강좌명, 강좌 등록일, 과목코드, 과목명
 		
 		model.addAttribute("courseList", courseList);
@@ -119,9 +121,55 @@ public class TeacherInfoController {
 		Map<String, Object> teacherInfo = oneMap.get(0);
 		// 가져온 한개의 객체를 맵에 담는다.
 		
-		List<Map<String, Object>> courseList = courseService.courseOneOrList();
-		// 담당 강좌를 선택하게 하기 위해서 리스트를 가져온다.
+		String courseNo = (String)teacherInfo.get("courseNo");
+		// 해당 강사의 강좌 코드만 가지고 온다.
+		
+		System.out.println(courseNo + " <- courseNo   updateTeacherInfo()   TeacherInfoController.java");
+		
+		Map<String, Object> searchCourse = new HashMap<String, Object>();
+		// 해당 강좌만 가져올 수 있게 강좌코드 저장 검색 객체를 선언한다.
+		
+		searchCourse.put("courseNo", courseNo);
+		// 가지고 온 강좌코드 저장
+		
+		List<Map<String, Object>> teacherCourseOne =
+				courseService.courseOneOrList(searchCourse);
+		// 해당 강좌를 가지고온다. 강좌코드로 검색하므로 한개의 객체만 나온다.
+		
+		System.out.println(teacherCourseOne.toString()
+				+ " <- teacherCourseOne.toString()   updateTeacherInfo()   TeacherInfoController.java");
+		System.out.println(teacherCourseOne.size()
+				+ " <- teacherCourseOne.size()   updateTeacherInfo()   TeacherInfoController.java");
+		
+		Map<String, Object> getCourse = new HashMap<String, Object>();
+		// 한개의 강좌에 대한 정보를 저장할 객체
+		
+		getCourse = teacherCourseOne.get(0);
+		// 가지고온 한개의 강좌 저장
+		
+		//System.out.println("진입1");
+		
+		Map<String, Object> putCourse = new HashMap<String, Object>();
+		// 강좌리스트에 넣어줄 강사의 담당 강좌 정보
+		
+		//System.out.println("진입2");
+		
+		putCourse.put("courseNo", getCourse.get("courseNo"));
+		putCourse.put("courseName", getCourse.get("courseName"));
+		putCourse.put("subjectName", getCourse.get("subjectName"));
+		putCourse.put("courseIsChanged", getCourse.get("courseIsChanged"));
+		putCourse.put("courseRegisteredDate", getCourse.get("courseRegisteredDate"));
+		// 강좌 정보를 저장객체에 넣어준다.
+		
+		//System.out.println("진입3");
+		
+		List<Map<String, Object>> courseList =
+				courseService.courseNotAssignmentTeacherSimpleList();
+		// 담당 강좌를 선택하게 하기 위해서 강사와 매칭되지않은 강좌 리스트를 가져온다.
 		// 강좌코드, 강좌명, 강좌 등록일, 과목코드, 과목명
+		
+		courseList.add(putCourse);
+		// 담당 강좌 정보를 추가해준다.
 		
 		
 		model.addAttribute("teacherInfo", teacherInfo);

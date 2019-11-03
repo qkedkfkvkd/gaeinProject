@@ -114,6 +114,12 @@ public class CourseController {
 		List<Map<String, Object>> courseList = courseService.courseOneOrList();
 		// 모든 강좌 목록을 가져온다.
 		
+		List<Subject> subjectList = courseManageService.subjectList();
+		// 샐렉트박스에 넣어줄 과목 리스트를 가져온다.
+		
+		model.addAttribute("subjectList", subjectList);
+		// 샐렉트박스에 보여줄 과목 리스트
+		
 		model.addAttribute("courseList", courseList);
 		// 화면에 보여줄 강좌목록을 모델에 넣는다.
 		
@@ -152,8 +158,14 @@ public class CourseController {
 		List<Map<String, Object>> courseList = courseService.courseOneOrList(map);
 		// 선택한 과목코드 혹은 강좌명으로 검색된 강좌 리스트 가져오기
 		
+		List<Subject> subjectList = courseManageService.subjectList();
+		// 샐렉트박스에 넣어줄 과목 리스트를 가져온다.
+		
 		model.addAttribute("courseList", courseList);
 		// 화면에 보여줄 강좌목록을 모델에 넣는다.
+		
+		model.addAttribute("subjectList", subjectList);
+		// 샐렉트박스에 보여줄 과목 리스트
 		
 		return "/view/lesson/course/listCourse";
 	}
@@ -339,8 +351,9 @@ public class CourseController {
 			,MemberSearchVO memberSearchVO
 			,Model model) {
 		
-		List<Map<String, Object>> courseList = courseService.courseOneOrList();
-		// 전체 강좌 리스트를 가져온다.
+		List<Map<String, Object>> courseList =
+				courseService.courseNotAssignmentTeacherSimpleList();
+		// 강사와 매칭되지 않은 강좌 리스트를 가져온다.
 		
 		List<Map<String, Object>> teacherList = memberService.memberInfoList(memberSearchVO);
 		// 샐랙트박스에 넣어줄 강사 리스트
@@ -356,6 +369,11 @@ public class CourseController {
 			
 			model.addAttribute("courseNo", teacher.getCourseNo());
 			// 모델객체에 강좌코드를 넣어준다.
+		} else if(memberSearchVO.getMemberId() != null) {
+			// 강사 배정된 강좌목록에서 수정 버튼을 눌렀다면
+			
+			model.addAttribute("memberId", memberSearchVO.getMemberId());
+			// 모델 객체에 강사아이디를 넣어준다.
 		}
 		
 		return "/view/lesson/course/addCourseAssignTeacher";
@@ -403,8 +421,14 @@ public class CourseController {
 				courseService.courseAssignTeacherList();
 		// 강사가 배정된 강좌리스트 가져오기
 		
+		List<Subject> subjectList = courseManageService.subjectList();
+		// 샐렉트박스에 넣어줄 과목 리스트를 가져온다.
+		
 		model.addAttribute("courseTeacherList", courseTeacherList);
 		// 화면에 뿌려줄 강좌 강사 배정 리스트 
+
+		model.addAttribute("subjectList", subjectList);
+		// 샐랙트박스에 넣어줄 과목리스트
 		
 		return "/view/lesson/course/listCourseTeacher";
 	}
@@ -425,7 +449,15 @@ public class CourseController {
 				courseService.courseAssignTeacherList(course);
 		// 입력한 검색 키워드로 강좌 검색결과리스트 가져오기
 		
+		List<Subject> subjectList = courseManageService.subjectList();
+		// 샐렉트박스에 넣어줄 과목 리스트를 가져온다.
+		
+		
 		model.addAttribute("courseTeacherList", searchCourseTeacherList);
+		// 화면에 뿌려줄 강좌 강사 배정 리스트
+		
+		model.addAttribute("subjectList", subjectList);
+		// 샐랙트박스에 넣어줄 과목리스트
 		
 		return "/view/lesson/course/listCourseTeacher";
 	}
@@ -516,19 +548,28 @@ public class CourseController {
 			String courseNo = (String)courseNotAssignList.get(i).get("courseNo");
 			// 맵에 들어있는 객체들 중 강좌 코드만 가져온다.
 			
-			System.out.println(courseNo + " <- courseNo courseNotAssignmentTeacherList() for   CourseController.java");
+			System.out.println(courseNo + " <- courseNo   notTeacherCourseAssignList() for   CourseController.java");
 			
 			courseNoList.add(courseNo);
 			// 가져온강좌 코드를 강좌코드 리스트에 넣어준다.
 		}
 		
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("courseNoList", courseNoList);
-		// 강사가 배정이 안된 강좌목록 상세정보 리스트의 검색 키워드와 값을 넣어준다.
+		System.out.println(courseNoList.size()
+				+ " <- courseNoList.size()   notTeacherCourseAssignList()   CourseController.java");
 		
-		List<Map<String, Object>> courseNotAssignmentTeacherList = 
-				courseService.courseNotAssignTeacherOneOrList(map);
-		// 검색키워드를 매개변수로 넣어서 강사가 배정이 안된 강좌목록을 가져온다.
+		Map<String, Object> map = new HashMap<String, Object>();
+		// 강사가 배정이 안된 강좌목록 쿼리 검색시 키워드 저장 객체
+		
+		List<Map<String, Object>> courseNotAssignmentTeacherList = new ArrayList<Map<String, Object>>();
+		// 강사 배정안된 강좌목록 저장 객체
+		
+		if(courseNoList.size() > 0) { // 강사 배정이 안된 강좌가 존재한다면
+			map.put("courseNoList", courseNoList);
+			// 강사가 배정이 안된 강좌목록 상세정보 리스트의 검색 키워드와 값을 넣어준다.
+			
+			courseNotAssignmentTeacherList = courseService.courseNotAssignTeacherOneOrList(map);
+			// 검색키워드를 매개변수로 넣어서 강사가 배정이 안된 강좌목록을 가져온다.
+		}
 		
 		System.out.println(courseNotAssignmentTeacherList.toString()
 				+ " <- courseNotAssignmentTeacherList.toString()   "
@@ -760,7 +801,7 @@ public class CourseController {
 		
 		model.addAttribute("subjectList", subjectList);
 		
-		return "/view/lesson/courseAssign/listCourseAssign";
+		return "/view/lesson/courseAssign/listCourseAssignTeacher";
 	}
 	
 	
@@ -790,12 +831,22 @@ public class CourseController {
 				courseService.courseAssignmentOneOrList(searchVO);
 		// 해당 강좌코드를 참조하는 모든 강좌강의실 강사 배정목록을 가져온다.
 		
-		List<Map<String, Object>> courseList = courseService.courseOneOrList();
-		// 수정화면에서 강사의 담당 강좌를 바꿀 수 있도록 강좌목록을 넣어준다.
+		List<Map<String, Object>> courseList =
+				courseService.courseNotAssignmentTeacherSimpleList();
+		// 수정화면에서 강사의 담당 강좌를 바꿀 수 있도록
+		//        강사와 매칭되지않은 강좌목록을 넣어준다.
 		// 샐렉트박스에 넣어줄 강좌 리스트를 가져온다.
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("courseNo", (String)courseInfo.get("courseNo"));
+		map.put("courseNo", courseInfo.get("courseNo"));
+		// 해당 강좌가 참조하는 과목을 얻어오기 위한 쿼리 검색 키워드
+		// 강좌 샐랙트박스에 넣어줄 담당강좌의 강좌 코드
+		
+		courseList.add(map);
+		// 담당 강좌 정보를 추가해준다.
+		
+		//Course course = new Course();
+		//course.setCourseNo((String)courseInfo.get("courseNo"));
 		
 		oneMap = courseService.courseOneOrList(map);
 		// 샐렉트박스에 넣어줄 과목 정보를 가져온다.

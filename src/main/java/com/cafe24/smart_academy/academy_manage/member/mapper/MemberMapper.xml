@@ -380,7 +380,7 @@
 			,counsel_type_registered_date	AS counselTypeRegisteredDate
 		from
 			counsel_type
-		<if test="counselTypeNo != null and counselTypeNo neq ''.toString()">
+		<if test="counselTypeNo != null and counselTypeNo neq ''.toString() and counselTypeNo neq 'not'">
 		where
 			counsel_type_no = #{counselTypeNo}
 		</if>

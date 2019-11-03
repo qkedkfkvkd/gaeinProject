@@ -241,10 +241,13 @@ public class StudentInfoController {
 	
 	// 관리자 전용 특정학생 결제정보 입력처리
 	@PostMapping("/addPaymentInfo")
-	public String addPaymentInfo(Model model, PaymentInfo paymentInfo) {
+	public String addPaymentInfo(
+			 Model model
+			,PaymentInfo paymentInfo
+			,RedirectAttributes redirectAttributes) {
 		String message = studentInfoService.addPaymentInfo(paymentInfo);
 		
-		String path = "/view/academyRegister/studentInfo/detailPaymentInfo";
+		String path = "redirect:/updatePaymentInfo";
 		// 입력 성공시 결제정보 상세 페이지로 이동한다.
 		
 		if(message != null) { // 메세지가 널이 아니다. 메세지에 값이 존재한다면 입력 실패이다.
@@ -253,6 +256,10 @@ public class StudentInfoController {
 			
 			model.addAttribute("insertFail", "입력실패! 다시 입력해주세요.");
 		}
+		
+		redirectAttributes.addAttribute("memberId", paymentInfo.getMemberId());
+		// 결제정보 입력페이지로 이동하든, 상세페이지로 이동하든
+		// 항상 학생의 아이디는 가지고 가야한다.
 		
 		return path;
 	}
@@ -689,10 +696,10 @@ public class StudentInfoController {
 	// 관리자 : 상담예약현황 리스트에서 선택한 상담코드로 검색
 	@PostMapping("/searchCounselReservationStateList")
 	public String searchCounselReservationStateList(
-					CounselResult counselResult, Model model) {
+			CounselAppointment counselAppointment, Model model) {
 		
 		List<Map<String, Object>> counselReservationStateList = 
-				studentInfoService.counselReservationStateList(counselResult);
+				studentInfoService.counselAppointmentOneOrList(counselAppointment);
 		// 선택한 상담구분코드 혹은 상담구분코드와 상담결과코드로
 		// 상담구분 테이블에서 상담구분코드(기본키)와 상담구분명(전화상담, 방문상담 등),
 		// 상담결과 테이블에서 상담결과코드(기본키)와 상담결과명(입학상담, 성적상담 등),
@@ -796,6 +803,9 @@ public class StudentInfoController {
 			// 리턴받은 메세지가 널이라면 상담예약 추가에 성공했다는 뜻이다.
 			path = "redirect:/counselAppointmentList";
 			// 상담예약 리스트로 이동한다.
+			
+			redirectAttributes.addAttribute("counselWhether", "무");
+			// 상담이 안된 예약목록을 조회하므로 쿼리 검색키워드에 상담여부 "무"를 넣어준다.
 		}
 		
 		redirectAttributes.addAttribute("memberId", counselAppointment.getMemberId());
@@ -905,7 +915,9 @@ public class StudentInfoController {
 	// 관리자, 학생 : 상담예약신청 삭제처리
 	@GetMapping("/deleteCounselAppointment")
 	public String deleteCounselAppointment(
-			@RequestParam(value = "counselHistoryNo")String counselHistoryNo) {
+			 @RequestParam(value = "counselHistoryNo")String counselHistoryNo
+			,MemberLogin memberInfo
+			,RedirectAttributes redirectAttributes) {
 		
 		System.out.println(counselHistoryNo + " <- counselHistoryNo   deleteCounselAppointment()   StudentInfoController.java");
 		String message = studentInfoService.deleteCounselAppointment(counselHistoryNo);
@@ -913,7 +925,23 @@ public class StudentInfoController {
 		
 		System.out.println(message + " <- message   deleteCounselAppointment()   StudentInfoController.java");
 		
-		return "redirect:/currentReservationStateList";
+		String path = "redirect:/currentReservationStateList";
+		// 관리자가 상담예약을 삭제할 경우 이동할 상담예약현황 리스트
+		
+		if(memberInfo.getMemberLevel().equals("학생")) {
+			// 학생이 자신의 상담예약을 삭제한 경우라면
+			
+			path = "redirect:/counselAppointmentList";
+			// 자신의 상담예약현황 리스트로 이동한다
+			
+			redirectAttributes.addAttribute("memberId", memberInfo.getMemberId());
+			// 자신의 상담예약현황 리스트를 보여줘야 하므로 학생의 아이디를 넣어준다.
+			
+			redirectAttributes.addAttribute("counselWhether", "무");
+			// 상담이 안된 예약목록을 조회하므로 쿼리 검색키워드에 상담여부 "무"를 넣어준다.
+		}
+		
+		return path;
 	}
 	
 	

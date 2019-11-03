@@ -59,7 +59,7 @@
 						<!-- <div class="input-group"> -->
 						<select id="subjectList" class="form-control"
 								onchange="courseSelect(this.value)">
-							<option value="">선택</option>
+							<option value="not">선택</option>
 							<option th:each="subject : ${subjectList}"
 									th:value="${subject.subjectNo}"
 									th:text="${subject.subjectName}"></option>

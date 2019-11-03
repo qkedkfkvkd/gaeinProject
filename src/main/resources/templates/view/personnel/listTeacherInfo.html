@@ -75,7 +75,7 @@
 									</a>
 									<div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
 										<a class="dropdown-item"
-										   th:href="@{/updateTeacher(memberId=${teacher.memberId})}">
+										   th:href="@{/updateTeacherInfo(memberId=${teacher.memberId})}">
 											강사정보
 										</a>
 										<a class="dropdown-item"
@@ -83,15 +83,15 @@
 											강좌정보
 										</a>
 										<a class="dropdown-item"
-										   th:href="@{/teacherScheduleList(courseNo=${teacher.courseNo})}">
-											강좌 시간표
+										   th:href="@{/scheduleList(scheduleApprovalStatus='유', memberId=${teacher.memberId})}">
+											강좌시간표
 										</a>
 										<a class="dropdown-item"
-										   th:href="@{/enrolScoreCourseList(courseNo=${teacher.courseNo})}">
-											학생 성적
+										   th:href="@{/examinationDayList(testStandardDay='testComplete', memberId=${teacher.memberId}, memberLevel=${teacher.memberLevel})}">
+											완료된시험
 										</a>
 										<a class="dropdown-item"
-										   th:href="@{/enrolCourseList(courseNo=${teacher.courseNo})}">
+										   th:href="@{/teacherCourseEnrolleeStudentList(memberId=${teacher.memberId})}">
 											수강신청목록
 										</a>
 									</div>

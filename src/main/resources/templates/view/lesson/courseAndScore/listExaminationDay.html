@@ -16,6 +16,9 @@
 	
 	<div class="col-sm-12 col-md-offset-3">
 		<form class="form-inline" action="/examinationDayList">
+			<input type="hidden" name="testStandardDay" th:value="${testStandard}">
+			<input type="hidden" name="memberLevel" th:value="${session.memberLevel}">
+			
 			<div class="form-group">
 				<label class="sr-only" for="subjectList">과목명</label>
 				<!-- <div class="input-group"> -->
@@ -124,7 +127,7 @@
 					<td th:text="${test.subjectName}"></td>
 					<td>
 						<div class="navbar-menu-wrapper d-flex align-items-center"
-							 th:if="${session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()}">
+							 th:if="${(session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()) && testStandard == 'testComplete'.toString()}">
 							<ul class="navbar-nav navbar-nav-right">
 								<li class="nav-item nav-profile dropdown">
 									<a class="nav-link dropdown-toggle" th:href="@{#}"
@@ -148,7 +151,7 @@
 								<span class="mdi mdi-menu"></span>
 							</button>
 						</div>
-						<span th:if="${session.memberLevel == '학생'.toString()}">
+						<span th:if="${session.memberLevel == '학생'.toString() || testStandard == 'notTest'.toString()}">
 							[[${test.courseName}]]
 						</span>
 					</td>

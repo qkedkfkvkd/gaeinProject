@@ -1,5 +1,6 @@
 package com.cafe24.smart_academy.academy_manage.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,9 @@ public class ScheduleController {
 		// 강사의 강사 담당 시간표 접근 시 해당 강사의 간단한 정보를 저장할 객체
 		// 아이디, 이름, 생년월일
 		
-		if(searchVO.getMemberId() != null) { // 강사의 강사 담당시간표를 접근한 것이라면
+		if(searchVO.getMemberId() != null && !searchVO.getMemberId().equals("")) {
+			// 강사의 강사 담당시간표를 접근한 것이라면
+			
 			member = memberService.memberSimpleInfo(searchVO.getMemberId());
 			// 해당 강사의 간단한 정보를 가져온다. (아이디, 이름, 생년월일)
 		}
@@ -88,7 +91,7 @@ public class ScheduleController {
 			title = searchVO.getScheduleDay() + "요일";
 			// 몇요일의 날짜를 클릭했는지 제목부분에 표시해준다.
 			
-		} else if (searchVO.getMemberId() != null) {
+		} else if (searchVO.getMemberId() != null && !searchVO.getMemberId().equals("")) {
 			// 강사가 강사담당 강좌시간표를 접근한 것이라면
 			
 			title = member.getMemberId() + " : " + member.getMemberName() + " 강사의";
@@ -126,7 +129,7 @@ public class ScheduleController {
 			 CourseRoomSearchVO searchVO
 			,Model model) {
 		
-		if(searchVO.getMemberId() != null) {
+		if(searchVO.getMemberId() != null && !searchVO.getMemberId().equals("")) {
 			// 강사로 로그인하여 자신의 강좌시간표 승인요청 리스트로 이동할 경우
 			
 			System.out.println(searchVO.getMemberId()
@@ -220,8 +223,9 @@ public class ScheduleController {
 		// 특정 강사의 아이디를 참조하는 강좌강의실배정 리스트 가져오기
 		
 		
-		List<Map<String, Object>> scheduleList = scheduleService.scheduleOneOrList();
+		//List<Map<String, Object>> scheduleList = scheduleService.scheduleOneOrList();
 		// 관리자의 승인여부 상관없이 전체 강좌 시간표를 얻어온다.
+		
 		
 		model.addAttribute("teacherInfo", teacherInfo);
 		// 화면에 보여줄 특정 강사에 관한 정보 넣어주기
@@ -229,10 +233,11 @@ public class ScheduleController {
 		model.addAttribute("courseAssignList", courseAssignList);
 		// 샐랙트박스에 넣어줄 강사 담당 강좌의 강좌강의실 배정 리스트
 		
-		model.addAttribute("scheduleList", scheduleList);
+		
+		//model.addAttribute("scheduleList", scheduleList);
 		// 화면에 보여줄 전체 강좌 시간표
 		
-		model.addAttribute("scheduleListSize", scheduleList.size());
+		//model.addAttribute("scheduleListSize", scheduleList.size());
 		// 리스트의 사이즈를 보고 강좌시간표의 존재여부 판단
 		
 		return "/view/lesson/schedule/addSchedule";
@@ -247,9 +252,9 @@ public class ScheduleController {
 		
 		List<Map<String, Object>> scheduleList = null;
 		
-		if(scheduleDay.equals("all")) { // "선택"을 선택했을 경우
-			scheduleList = scheduleService.scheduleOneOrList();
-			// 요일 상관없이 모든 시간표를 가지고 온다.
+		if(scheduleDay.equals("not")) { // "선택"을 선택했을 경우
+			scheduleList = new ArrayList<Map<String,Object>>();
+			// 객체만 선언한다. (리스트의 사이즈가 0이다.)
 			
 		} else {
 			// 특정 요일을 선택했을 경우
@@ -350,8 +355,12 @@ public class ScheduleController {
 		// 특정 강사의 아이디를 참조하는 강좌강의실배정 리스트 가져오기
 		
 		
-		List<Map<String, Object>> scheduleList = scheduleService.scheduleOneOrList();
-		// 관리자의 승인여부 상관없이 전체 강좌 시간표를 얻어온다.
+		searchVO.setMemberId(null);
+		searchVO.setScheduleDay((String)scheduleInfo.get("scheduleDay"));
+		// 해당 요일의 강좌 시간표를 가져와야하므로 검색 키워드로 요일을 넣어준다.
+		
+		List<Map<String, Object>> scheduleList = scheduleService.scheduleOneOrList(searchVO);
+		// 관리자의 승인여부 상관없이 해당 요일의 강좌 시간표 가져오기
 		
 		
 		model.addAttribute("scheduleInfo", scheduleInfo);
@@ -396,6 +405,11 @@ public class ScheduleController {
 			redirectAttributes.addAttribute("memberId", memberId);
 			// 강사의 아이디를 넣어준다.
 		}
+		
+		redirectAttributes.addAttribute("scheduleApprovalStatus",
+					schedule.getScheduleApprovalStatus());
+		// 시간표 수정에 성공하여 강좌시간표 승인요청 리스트로 넘어갈 경우
+		// 관리자의 승인여부를 같이 넣어준다.
 		
 		return path;
 	}

@@ -20,7 +20,7 @@
 				<form role="form" id="updateScheduleJoinFrm"
 					  action="/updateSchedule" method="post">
 					<input type="hidden" name="memberId"
-						th:if="${session.memberLevel == '강사'.toString()}" value="${scheduleInfo.memberId}">
+						th:if="${session.memberLevel == '강사'.toString()}" th:value="${scheduleInfo.memberId}">
 					<!-- 강사회원이 수정처리 후 강좌시간표승인요청 리스트로 갈때 강사의 아이디를 가지고 가야한다. -->
 					
 					<input type="hidden" name="scheduleApprovalStatus" value="유"
@@ -61,7 +61,7 @@
 						<!-- <div class="input-group"> -->
 						<select id="scheduleDayList" name="scheduleDay"
 								onchange="viewScheduleByDay(this.value)" class="form-control">
-							<option value="all">선택</option>
+							<option value="not">선택</option>
 							<option value="월">월</option>
 							<option value="화">화</option>
 							<option value="수">수</option>

@@ -4,13 +4,13 @@
       layout:decorate="~{layout/default}">
 
 <th:block layout:fragment="customTitle">
-	<title th:text="${scoreInputInfo.memberName + ' 점수 상세'}"></title>
+	<title th:text="${scoreInputInfo.studentName + ' 점수 상세'}"></title>
 </th:block>
 
 <th:block layout:fragment="customContents">
 	<div class="page-header">
 		<div class="col-md-6 col-md-offset-3">
-			<h3 th:text="${scoreInputInfo.memberId + ' ' +scoreInputInfo.memberName + '학생 : ' + scoreInputInfo.examinationName + ' 점수 상세'}"></h3>
+			<h3 th:text="${scoreInputInfo.memberId + ' ' +scoreInputInfo.studentName + '학생 : ' + scoreInputInfo.examinationName + ' 점수 상세'}"></h3>
 		</div>
 	</div>
 	
@@ -57,7 +57,7 @@
 							<option value="">선택</option>
 							<option th:each="grade : ${GradingCriteriaList}"
 									th:value="${grade.gradingCriteriaRating}"
-									th:text="${grade.gradingCriteriaStartOfSection + ' ~ ' + grade.gradingCriteriaEndOfSection + '점 : ' + grade.gradingCriteria + '점'}"></option>
+									th:text="${grade.gradingCriteriaRating + ' (' + grade.gradingCriteriaStartOfSection + ' ~ ' + grade.gradingCriteriaEndOfSection + '점 : ' + grade.gradingCriteria + '점)'}"></option>
 						</select>
 						<!-- </div> -->
 					</div>
@@ -65,7 +65,8 @@
 					<div class="form-group">
 						<label for="inputScoreInputTestScore">점수</label>
 						<input type="text" class="form-control" id="inputScoreInputTestScore"
-							   name="scoreInputTestScore">
+							   name="scoreInputTestScore"
+							   th:value="${scoreInputInfo.scoreInputTestScore}">
 					</div>
 					
 					<div class="form-group">
@@ -116,14 +117,22 @@
 								<td th:text="${lists.count}"></td>
 								<td th:text="${grade.courseName}"></td>
 								<td th:text="${grade.roomFloor + '층 ' + grade.roomNumber + '호'}"></td>
-								<td th:text="${grade.memberName}"></td>
+								<td th:text="${grade.studentName}"></td>
 								<td th:text="${grade.scoreInputTestScore}"></td>
 								<td th:text="${grade.gradingCriteriaRating}"></td>
 								<td>
-									<button type="button" class="btn btn-success btn-sm"
-											th:onclick="'window.location.href = \'' + @{/updateScoreInput(scoreInputNo=${grade.scoreInputNo})} + '\''">
-										수정
-									</button>
+									<span th:if="${scoreInputInfo.scoreInputNo != grade.scoreInputNo}">
+										<button type="button" class="btn btn-success btn-sm"
+												th:onclick="'window.location.href = \'' + @{/updateScoreInput(scoreInputNo=${grade.scoreInputNo})} + '\''">
+											수정
+										</button>
+									</span>
+									<span th:unless="${scoreInputInfo.scoreInputNo != grade.scoreInputNo}">
+										<button type="button" class="btn btn-success btn-sm"
+												disabled="disabled">
+											수정
+										</button>
+									</span>
 								</td>
 							</tr>
 							
@@ -139,6 +148,18 @@
 </th:block>
 
 <th:block layout:fragment="customScript">
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+			var gradingCriteriaRating = /*[[ ${scoreInputInfo.gradingCriteriaRating} ]]*/;
+		/*]]*/
+		
+		$(document).ready(function(){
+			console.log(`gradingCriteriaRating:${gradingCriteriaRating}`);
+			
+			$("#GradingCriteriaList").val(gradingCriteriaRating);
+		});
+	</script>
+	
 	<script type="text/javascript">
 		
 		// 학생성적 수정 처리 전 공백 유효성 검사

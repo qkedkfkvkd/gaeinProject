@@ -32,6 +32,9 @@ public class CourseRoomSearchVO {
 	////// 학생 수강신청 강좌리스트 저장 객체
 	private List<String> courseList;		// 특정 학생이 수강신청한 강좌 리스트
 	
+	///// 강좌명 검색시
+	private String courseName;		// 강좌명
+	
 	
 	public String getSubjectNo() {
 		return subjectNo;
@@ -196,5 +199,14 @@ public class CourseRoomSearchVO {
 		System.out.println(courseList.size()
 				+ " <- courseList.size()   setCourseList()   CourseRoomSearchVO.java");
 		this.courseList = courseList;
+	}
+
+	public String getCourseName() {
+		return courseName;
+	}
+
+	public void setCourseName(String courseName) {
+		System.out.println(courseName + " <- courseName   setCourseName()   CourseRoomSearchVO.java");
+		this.courseName = courseName;
 	}
 }

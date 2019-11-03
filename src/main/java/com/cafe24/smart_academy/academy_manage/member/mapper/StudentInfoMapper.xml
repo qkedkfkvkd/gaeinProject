@@ -126,6 +126,7 @@
 			,end_course_day
 			,payment_reference
 			,payment_registered_date
+			,payment_modification_date
 		) values (
 			 #{memberId}
 			,#{paymentDay}
@@ -136,6 +137,7 @@
 			,#{startCourseDay}
 			,#{endCourseDay}
 			,#{paymentReference}
+			,curdate()
 			,curdate()
 		)
 	</insert>
@@ -476,7 +478,7 @@
 		</if>
 		
 		<!-- 상담구분코드 선택 후 검색 -->
-		<if test="counselTypeNo != null and counselTypeNo neq ''.toString()">
+		<if test="counselTypeNo != null and counselTypeNo neq ''.toString() and counselTypeNo neq 'not'">
 		and
 			ct.counsel_type_no = #{counselTypeNo}
 		</if>

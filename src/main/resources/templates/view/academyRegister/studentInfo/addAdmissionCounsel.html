@@ -47,7 +47,7 @@
 				<select id="counselTypeList"
 						onchange="counselResultListSelect(this.value)"
 						class="form-control">
-					<option value="">상담구분명</option>
+					<option value="not">상담구분명</option>
 					<option th:each="counselType : ${counselTypeList}"
 							th:value="${counselType.counselTypeNo}"
 							th:text="${counselType.counselTypeName}"></option>

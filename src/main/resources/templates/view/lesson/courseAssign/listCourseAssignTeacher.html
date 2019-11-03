@@ -19,8 +19,8 @@
 			<div class="form-group">
 				<label class="sr-only" for="subjectList">과목명</label>
 				<!-- <div class="input-group"> -->
-				<select id="subjectList" name="subjectNo"
-						class="form-control">
+				<select id="subjectList" class="form-control"
+						onchange="courseSelect(this.value)" name="subjectNo">
 					<option value="not">과목명</option>
 					<option th:each="subject : ${subjectList}"
 							th:value="${subject.subjectNo}"
@@ -31,8 +31,12 @@
 			
 			<div class="form-group">
 				<label class="sr-only" for="courseList">강좌명</label>
-				<input type="text" class="form-control" id="inputCourseName"
-					   name="courseName" placeholder="강좌명을 입력하세요.">
+				<!-- <div class="input-group"> -->
+				<select id="courseList" name="courseNo"
+						class="form-control">
+					<option value="">강좌명</option>
+				</select>
+				<!-- </div> -->
 			</div>
 			
 			<button type="submit" class="btn btn-success">검색</button>
@@ -64,7 +68,6 @@
 		</div>
 		
 		
-		<h4>강좌강의실 배정현황</h4>
 		<table class="table table-striped">
 			<thead>
 				<tr>
@@ -107,6 +110,33 @@
 </th:block>
 
 <th:block layout:fragment="customScript">
+	<script type="text/javascript">
+		// 과목명을 선택하면 해당 과목코드를 참조하는 강좌 리스트가 나온다.
+		function courseSelect(subjectNo) {
+			console.log(`subjectNo:${subjectNo}`);
+			
+			$.ajax({
+				 type: "POST"
+				,url: "/courseSelect"
+				,dataType:"json"
+				,data: subjectNo
+				,contentType: "application/json; charset=UTF-8"
+				,success: function(result){
+					//SELECT BOX 초기화           
+					$("#courseList").find("option").remove().end().append("<option value=''>강좌명</option>");
+					
+					//배열 개수 만큼 option 추가
+					$.each(result, function(i){
+						console.log(`넘어온 강좌코드:${result}`);
+						$("#courseList").append("<option value='"+result[i].courseNo+"'>"+result[i].courseName+"</option>");
+					});    
+				}
+				,error: function (jqXHR, textStatus, errorThrown) {
+					alert("오류가 발생하였습니다.");
+				}
+			});
+		}
+	</script>
 </th:block>
 
 </html>

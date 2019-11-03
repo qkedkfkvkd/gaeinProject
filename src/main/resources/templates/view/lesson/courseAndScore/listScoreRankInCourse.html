@@ -18,6 +18,8 @@
 		<div class="row">
 			<div class="col-md-4" >
 				<form class="form-inline" action="/scoreRankInCourseList">
+					<!-- <input type="hidden" name=""> -->
+					
 					<div class="form-group">
 						<label class="sr-only" for="inputMemberName">학생명</label>
 						<input type="text" class="form-control" id="inputMemberName"
@@ -67,6 +69,7 @@
 					<th>시험명</th>
 					<th>강좌</th>
 					<th>강의실</th>
+					<th>강사</th>
 					<th>학생</th>
 					<th>점수</th>
 					<th>등급</th>
@@ -82,7 +85,8 @@
 					<td th:text="${test.examinationName}"></td>
 					<td th:text="${test.courseName}"></td>
 					<td th:text="${test.roomFloor + '층 ' + test.roomNumber + '호'}"></td>
-					<td th:text="${test.memberName}"></td>
+					<td th:text="${test.teacherName}"></td>
+					<td th:text="${test.studentName}"></td>
 					<td th:text="${test.scoreInputTestScore}"></td>
 					<td th:text="${test.gradingCriteriaRating}"></td>
 					<td th:if="${session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()}">

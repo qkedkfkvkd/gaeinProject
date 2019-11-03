@@ -14,8 +14,8 @@
 		</div>
 	</div>
 	
-	<div class="col-sm-10 col-md-offset-3">
-		<form class="form-inline" action="/searchCourseAssignTeacherList" method="post">
+	<div class="col-sm-9 col-md-offset-3">
+		<form class="form-inline" action="/searchCourseAssignTeacherList">
 			<div class="form-group">
 				<label class="sr-only" for="subjectList">과목명</label>
 				<!-- <div class="input-group"> -->
@@ -60,11 +60,11 @@
 			<thead>
 				<tr>
 					<th>번호</th>
-					<th>코드</th>
+					<th th:if="${session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()}">코드</th>
 					<th>강좌</th>
 					<th>과목</th>
 					<th>강사</th>
-					<th>변경</th>
+					<th th:if="${session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()}">변경</th>
 					<th>등록일</th>
 					<th th:if="${session.memberLevel == '관리자'.toString()}">수정</th>
 				</tr>
@@ -73,11 +73,13 @@
 				<tr th:each="course, lists : ${courseTeacherList}"
 					th:if="${courseNotAssignListSize != 0}">
 					<td th:text="${lists.count}"></td>
-					<td th:text="${course.courseNo}"></td>
+					<td th:text="${course.courseNo}"
+						th:if="${session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()}"></td>
 					<td th:text="${course.courseName}"></td>
 					<td th:text="${course.subjectName}"></td>
 					<td th:text="${course.memberName}"></td>
-					<td th:text="${course.courseIsChanged}"></td>
+					<td th:text="${course.courseIsChanged}"
+						th:if="${session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()}"></td>
 					<td th:text="${#calendars.format(course.courseRegisteredDate,'yyyy-MM-dd')}"></td>
 					<td th:if="${session.memberLevel == '관리자'.toString()}">
 						<button type="button" class="btn btn-success btn-sm"

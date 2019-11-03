@@ -116,6 +116,8 @@
 				</if>
 			</if>
 		</trim>
+		order by
+			roomNumber asc
 	</select>
 	
 	
@@ -237,6 +239,9 @@
 				grading_criteria_rating = #{gradingCriteriaRating}
 			</if>
 		</trim>
+		order by
+			gradingCriteriaStartOfSection
+		desc
 	</select>
 	
 	

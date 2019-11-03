@@ -49,7 +49,7 @@
 					<option value="">선택</option>
 					<option th:each="examDay : ${examinationDayList}"
 							th:value="${examDay.examinationDayNo}"
-							th:text="${examDay.examinationName + ' : ' + examDay.roomFloor + '층 ' + examDay.roomNumber + '호 : ' + examDay.examinationDay + ' 일 ' + examDay.schedulePeriod  + '교시'}"></option>
+							th:text="${examDay.examinationName + ' : ' + examDay.roomFloor + '층 ' + examDay.roomNumber + '호 : ' + examDay.examinationDay + ' (' + examDay.schedulePeriod  + '교시)'}"></option>
 				</select>
 				<!-- </div> -->
 				
@@ -70,7 +70,7 @@
 					<option value="">선택</option>
 					<option th:each="grade : ${GradingCriteriaList}"
 							th:value="${grade.gradingCriteriaRating}"
-							th:text="${grade.gradingCriteriaStartOfSection + ' ~ ' + grade.gradingCriteriaEndOfSection + '점 : ' + grade.gradingCriteria + '점'}"></option>
+							th:text="${grade.gradingCriteriaRating + '(' + grade.gradingCriteriaStartOfSection + ' ~ ' + grade.gradingCriteriaEndOfSection + '점 : ' + grade.gradingCriteria + '점)'}"></option>
 				</select>
 				<!-- </div> -->
 				

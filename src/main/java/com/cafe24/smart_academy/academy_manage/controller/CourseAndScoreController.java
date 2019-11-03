@@ -103,6 +103,13 @@ public class CourseAndScoreController {
 				courseAndScoreService.courseEnrolleeOneOrList(searchVO);
 		// 학생 전체 수강신청 리스트를 가져온다.
 		
+		List<Subject> subjectList = courseManageService.subjectList();
+		// 샐렉트박스에 넣어줄 과목 리스트를 가져온다.
+		
+		
+		model.addAttribute("subjectList", subjectList);
+		// 샐렉트박스에 보여줄 과목 리스트
+		
 		model.addAttribute("courseEnrolleeList", courseEnrolleeList);
 		// 화면에 보여줄 학생 수강신청 리스트
 		
@@ -537,6 +544,10 @@ public class CourseAndScoreController {
 			
 			redirectAttributes.addAttribute("testStandardDay", "notTest");
 			// 쿼리문 실행시 아직 시험을 치르지 않은 날짜 리스트를 구해오기위한 검색 키워드
+			
+			redirectAttributes.addAttribute("memberLevel", "강사");
+			// 시험일 등록은 강사만이 할 수 있으므로 시험일 등록 후
+			// 해당 강사의 담당강좌 시험일 리스트로 이동한다.
 		}
 		
 		redirectAttributes.addAttribute("memberId", memberId);

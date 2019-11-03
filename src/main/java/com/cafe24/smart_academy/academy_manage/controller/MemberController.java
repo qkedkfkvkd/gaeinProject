@@ -412,13 +412,16 @@ public class MemberController {
 	@GetMapping("/counselTypeList")
 	public String counselTypeList(Model model) {
 		
-		List<CounselType> counselTypeList = memberService.counselTypeList();
+		List<CounselType> counselTypeViewList = memberService.counselTypeList();
 		// 상담구분코드 리스트 가져오기
 		
-		model.addAttribute("counselTypeList", counselTypeList);
+		model.addAttribute("counselTypeList", counselTypeViewList);
+		// 샐랙트 박스에 넣을 상담구분코드 리스트
+		
+		model.addAttribute("counselTypeViewList", counselTypeViewList);
 		// 화면에 보여줄 상담구분코드 리스트
 		
-		model.addAttribute("counselTypeListSize", counselTypeList.size());
+		model.addAttribute("counselTypeViewListSize", counselTypeViewList.size());
 		// 화면에 리스트의 존재 여부를 알려줄 리스트 사이즈
 		
 		return "/view/academyRegister/academyRegisterCode/listCounselType";

@@ -14,8 +14,8 @@
 		</div>
 	</div>
 	
-	<div class="col-sm-10 col-md-offset-3">
-		<form class="form-inline" action="/searchCourseList" method="post">
+	<div class="col-sm-8 col-md-offset-3">
+		<form class="form-inline" action="/searchCourseList">
 			<div class="form-group">
 				<label class="sr-only" for="subjectList">과목명</label>
 				<!-- <div class="input-group"> -->
@@ -70,7 +70,7 @@
 					<th>번호</th>
 					<th>강좌</th>
 					<th>과목</th>
-					<th>변경</th>
+					<th th:if="${session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()}">변경</th>
 					<th>등록일</th>
 					<th th:if="${session.memberLevel == '관리자'.toString()}">강좌수정</th>
 				</tr>
@@ -81,7 +81,8 @@
 					<td th:text="${lists.count}"></td>
 					<td th:text="${course.courseName}"></td>
 					<td th:text="${course.subjectName}"></td>
-					<td th:text="${course.courseIsChanged}"></td>
+					<td th:text="${course.courseIsChanged}"
+						th:if="${session.memberLevel == '관리자'.toString() || session.memberLevel == '강사'.toString()}"></td>
 					<td th:text="${course.courseRegisteredDate}"></td>
 					<td th:if="${session.memberLevel == '관리자'.toString()}">
 						<button type="button" class="btn btn-success btn-sm"
