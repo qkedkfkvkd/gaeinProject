@@ -16,10 +16,17 @@
 	
 	<div class="col-sm-11 col-md-offset-3">
 		<form class="form-inline" action="/scheduleList">
+			<input type="hidden" name="scheduleDay" th:value="${scheduleDay}"
+				   th:if="${#strings.containsIgnoreCase(title,'요일')}">
+			<!-- 만약 로그인전, 학생 회원이 특정 요일의 강좌시간표를 클릭했다면 발동한다. -->
+		
 			<input type="hidden" name="scheduleApprovalStatus" value="유">
+			<!-- 관리자 승인된 강좌 시간표만 검색해야 하므로 승인여부 "유"를 넣어준다. -->
 			
 			<input type="hidden" name="memberId" th:value="${session.memberId}"
 				   th:if="${session.memberLevel == '강사'.toString()}">
+			<!-- 강사 회원이 강좌시간표를 검색했을 경우 자신의 강좌시간표만 보여야 하므로
+				 강사 회원의 아이디를 넣어준다. -->
 			
 			<div class="form-group">
 				<label class="sr-only" for="subjectList">과목명</label>

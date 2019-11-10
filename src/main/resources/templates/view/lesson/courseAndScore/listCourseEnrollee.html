@@ -16,6 +16,10 @@
 	
 	<div class="col-sm-12 col-md-offset-3">
 		<form class="form-inline" action="/courseEnrolleeList">
+			<input type="hidden" name="memberId" th:value="${session.memberId}"
+				   th:if="${session.memberLevel == '학생'.toString()}">
+			<!-- 학생이 자신의 수강신청 목록에서 검색했을 경우 자신의 아이디를 물고가야 한다. -->
+			
 			<div class="form-group">
 				<label class="sr-only" for="subjectList">과목명</label>
 				<!-- <div class="input-group"> -->
@@ -57,7 +61,7 @@
 						<th>학부모명</th>
 						<th>학부모연락처</th>
 						<th>등록일</th>
-						<th>수강내역수정</th>
+						<th th:if="${session.memberLevel == '관리자'.toString()}">수강내역수정</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -73,7 +77,7 @@
 						<td th:text="${enrol.parentName}"></td>
 						<td th:text="${enrol.parentPhone}"></td>
 						<td th:text="${#calendars.format(enrol.courseEnrolleeRegisteredDate,'yyyy-MM-dd')}"></td>
-						<td>
+						<td th:if="${session.memberLevel == '관리자'.toString()}">
 							<button type="button" class="btn btn-success btn-sm"
 									th:onclick="'window.location.href = \'' + @{/updateCourseEnrollee(courseEnrolleeNo=${enrol.courseEnrolleeNo})} + '\''">
 								수정

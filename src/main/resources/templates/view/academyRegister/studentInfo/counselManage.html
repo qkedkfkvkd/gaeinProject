@@ -19,6 +19,7 @@
 	<div class="col-sm-12 col-md-offset-3">
 		<form class="form-inline mx-auto" action="/searchStudentInfoCounselManage" method="post">
 			<input type="hidden" th:value="${studentInfo.memberId}" name="memberId">
+			<!-- 상담관리 리스트 검색 시 학생의 아이디를 넣어준다. -->
 			
 			<div class="form-group">
 				<label class="sr-only" for="counselTypeList">상담구분명</label>
@@ -42,15 +43,16 @@
 				</select>
 				<!-- </div> -->
 			</div>
-			<button type="submit" class="btn btn-default">검색</button>
+			<button type="submit" class="btn btn-success">검색</button>
 		</form>
 		
 		
-		<!-- ${#strings.containsIgnoreCase(counselHistoryList.counselResultName,'입학상담')}
-			 상담 기록 중 입학상담이라는 명칭이 없다면 -->
-		<div class="row" th:if="${counselHistoryListSize == 0}">
-		<!-- 상담 기록이 없다면 - 어차피 학원 등록할때 처음 상담테이블에 입력하는 상담이 입학상담이다. -->
-			<div class="col-md-3" >
+		
+		<div class="row">
+			<!-- ${#strings.containsIgnoreCase(counselHistoryList.counselResultName,'입학상담')}
+			 	 상담 기록 중 입학상담이라는 명칭이 없다면 -->
+			<div class="col-md-2" th:if="${counselHistoryListSize == 0}">
+			<!-- 상담 기록이 없다면 - 어차피 학원 등록할때 처음 상담테이블에 입력하는 상담이 입학상담이다. -->
 				<table class="table">
 					<tbody>
 						<tr>
@@ -58,6 +60,20 @@
 								<button type="button" class="btn btn-primary btn-sm btn-block"
 										th:onclick="'window.location.href = \'' + @{/addAdmissionCounsel(memberId=${studentInfo.memberId})} + '\''">
 									입학상담
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="col-md-2">
+				<table class="table">
+					<tbody>
+						<tr>
+							<td>
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/studentList(memberLevel='학생')} + '\''">
+									목록
 								</button>
 							</td>
 						</tr>
@@ -143,7 +159,7 @@
 							</td>
 							<td>
 								<button type="button" class="btn btn-success btn-sm"
-								th:onclick="'window.location.href = \'' + @{/updateCounselAppointment(counselHistoryNo=${counsel.counselHistoryNo})} + '\''">
+								th:onclick="'window.location.href = \'' + @{/updateCounselAppointment(counselHistoryNo=${counsel.counselHistoryNo}, prevPage='counselManage')} + '\''">
 									수정
 								</button>
 							</td>

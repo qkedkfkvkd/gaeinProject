@@ -17,8 +17,11 @@
 	<div class="col-sm-10 col-md-offset-3">
 		<form action="/addTeacher" id="teacherJoinFrm" method="post">
 			<input type="hidden" name="memberLevel" value="강사">
+			<!-- 로그인 테이블의 권한 컬럼에 '강사'지정 -->
+			
 			<input type="hidden" name="teacherIsChanged" value="무">
 			<!-- 강사 처음 추가시 변경사항이 없으므로 강사코드변경유무 "무"로 지정한다. -->
+			
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
@@ -107,10 +110,14 @@
 					
 					<div class="form-group">
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
-							<div class="col-md-6">
+							<div class="col-md-4">
+								<button type="button" onclick="javascript:history.back()"
+									class="btn btn-primary btn-sm btn-block">뒤로</button>
+							</div>
+							<div class="col-md-4">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-6">
+							<div class="col-md-4">
 								<button type="button" id="teacherJoinFrmBtn"
 										class="btn btn-primary btn-sm btn-block">등록</button>
 							</div>
@@ -145,7 +152,7 @@
 	            contentType: "application/json; charset=UTF-8",
 	            success: function (response) {
 	                if(response.result == 1){
-	                	alert('사용 가능한 아이디 입니다.')
+	                	alert('사용 가능한 아이디 입니다.');
 	                    //$('#idOverlapMessage').text('사용가능한 아이디 입니다.');
 	                    $('#idOverlapClickChk').val(1);
 	                } else if(response.result == 0){
@@ -196,7 +203,7 @@
 	            contentType: "application/json; charset=UTF-8",
 	            success: function (response) {
 	                if(response.result == 1){
-	                	alert('사용 가능한 이메일 입니다.')
+	                	alert('사용 가능한 이메일 입니다.');
 	                    //$('#emailOverlapMessage').text('사용가능한 이메일 입니다.');
 	                    $('#emailOverlapClickChk').val(1);
 	                	// 회원 등록할 때 중복확인 버튼을 눌렀다는 걸 알려줄 값   0:안누름 / 1:누름
@@ -320,11 +327,6 @@
 		        $("#inputAddr").focus();
 		        return false;
 		    }
-		    
-		    /*if($("#agree").is(":checked") == false){
-		        alert('약관에 동의하셔야 합니다');
-		        return false;      
-		    }*/
 		    
 		    $('#teacherJoinFrm').submit();
 		});

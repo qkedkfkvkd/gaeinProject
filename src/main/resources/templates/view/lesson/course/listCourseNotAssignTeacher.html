@@ -11,6 +11,7 @@
 	<div class="page-header">
 		<div class="col-md-10 col-md-offset-3">
 			<h3>강사를 배정해야할 강좌목록</h3>
+			<h6>강사와 강좌는 1:1 매칭이 원칙입니다.</h6>
 		</div>
 	</div>
 	
@@ -79,8 +80,8 @@
 					<td th:text="${#calendars.format(course.courseRegisteredDate,'yyyy-MM-dd')}"></td>
 					<td>
 						<button type="button" class="btn btn-success btn-sm"
-								th:onclick="'window.location.href = \'' + @{/updateCourseAssignTeacher(courseNo=${course.courseNo}, memberLevel='강사')} + '\''">
-							강사 배정
+								th:onclick="'window.location.href = \'' + @{/addTeacher(courseNo=${course.courseNo})} + '\''">
+							강사추가
 						</button>
 					</td>
 					<td>

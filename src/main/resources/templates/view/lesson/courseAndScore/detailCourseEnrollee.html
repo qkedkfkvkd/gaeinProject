@@ -80,16 +80,20 @@
 					<div class="form-group">
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
 							<!-- 성적입력 테이블이 수강신청코드를 참조하므로 함부로 수강신청을 삭제하지 않도록 우측의 목록을 본다. -->
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<button type="button" class="btn btn-primary btn-sm btn-block"
 										th:onclick="'window.location.href = \'' + @{/deleteCourseEnrollee(courseEnrolleeNo=${courseEnrolleeInfo.courseEnrolleeNo})} + '\''">
 									삭제
 								</button>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
+								<button type="button" onclick="javascript:history.back()"
+										class="btn btn-primary btn-sm btn-block">뒤로</button>
+							</div>
+							<div class="col-md-3">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<button type="button" id="updateCourseEnrolleeFrmBtn"
 										class="btn btn-primary btn-sm btn-block">수정</button>
 							</div>
@@ -153,7 +157,7 @@
 		$(document).ready(function(){
 			$("#subjectList").val(subjectNo);
 			$("#courseList").find("option").remove();
-			$("#courseList").append('<option value="'+courseNo+'">'+courseName+'</option>').prop("selected", true);;
+			$("#courseList").append('<option value="'+courseNo+'">'+courseName+'</option>').prop("selected", true);
 		});
 	</script>
 	

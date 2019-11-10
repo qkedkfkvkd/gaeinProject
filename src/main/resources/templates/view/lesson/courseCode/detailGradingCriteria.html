@@ -69,7 +69,7 @@
 							<!-- 성적입력 테이블이 성적기준테이블의 기본키인 등급을 참조하므로 -->
 							<!-- 참조하는게 없는 등급만 삭제 가능하도록 한다. -->
 							<!-- 해당 등급을 참조하는 성적입력 테이블이 없다 → 삭제가능한 등급이다. -->
-							<div class="col-md-4" th:if="${gradeReferenceInputScoreListSize == 0}">
+							<div class="col-md-3" th:if="${gradeReferenceInputScoreListSize == 0}">
 								<button type="button" class="btn btn-primary btn-sm btn-block"
 										th:onclick="'window.location.href = \'' + @{/deleteGradingCriteria(gradingCriteriaRating=${gradingCriteria.gradingCriteriaRating})} + '\''">
 									삭제
@@ -78,10 +78,14 @@
 								변경처리한 다음에 삭제하거나 같이 삭제해야하므로
 								등급 삭제시 해당 등급을 참조하는 성적입력 목록도 같이 보여줘야 한다. -->
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
+								<button type="button" onclick="javascript:history.back()"
+									class="btn btn-primary btn-sm btn-block">뒤로</button>
+							</div>
+							<div class="col-md-3">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<button type="button" id="gradingCriteriaUpdateFrmBtn"
 										class="btn btn-primary btn-sm btn-block">수정</button>
 							</div>

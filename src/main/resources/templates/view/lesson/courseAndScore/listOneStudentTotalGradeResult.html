@@ -19,6 +19,8 @@
 			<div class="col-md-6">
 				<form class="form-inline" action="/oneStudentTotalGradeResultList">
 					<input type="hidden" name="memberId" th:value="${student.memberId}">
+					<!-- 본 페이지는 특정 학생의 성적결과 리스트이다. -->
+					<!-- 특정 학생의 성적결과 검색시 해당 학생의 아이디를 물고가야한다. -->
 					
 					<div class="form-group">
 						<label class="sr-only" for="subjectList">과목명</label>
@@ -61,6 +63,22 @@
 			</div>
 		</div>
 		
+		<div class="row" th:if="${session.memberLevel == '관리자'.toString()}">
+			<div class="col-md-2">
+				<table class="table">
+					<tbody>
+						<tr>
+							<td>
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/studentList(memberLevel='학생')} + '\''">
+									학생목록
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
 		
 		<table class="table table-striped">
 			<thead>

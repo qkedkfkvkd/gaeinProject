@@ -16,9 +16,14 @@
 	
 	<div class="col-sm-11 col-md-offset-3">
 		<form class="form-inline" action="/counselAppointmentList">
-			<input type="hidden" name="memberId" th:value="${member.memberId}"> <!-- 특정 학생의 상담예약정보 검색 -->
-			<input type="hidden" value="무" name="counselWhether"><!-- 상담여부 '무' 쿼리 검색 키워드 -->
-			<input type="hidden" value="무" name="counselAppointmentWhether"><!-- 상담예약 '무' 쿼리 검색 키워드 -->
+			<input type="hidden" name="memberId" th:value="${member.memberId}">
+			<!-- 특정 학생의 상담예약정보 검색 -->
+			
+			<input type="hidden" value="무" name="counselWhether">
+			<!-- 상담여부 '무' 쿼리 검색 키워드 -->
+			
+			<input type="hidden" value="무" name="counselAppointmentWhether">
+			<!-- 상담예약 '무' 쿼리 검색 키워드 -->
 			
 			<div class="form-group">
 				<label class="sr-only" for="counselTypeList">상담구분명</label>
@@ -99,7 +104,7 @@
 					</td>
 					<td>
 						<button type="button" class="btn btn-success btn-sm"
-								th:onclick="'window.location.href = \'' + @{/updateCounselAppointment(counselHistoryNo=${counsel.counselHistoryNo})} + '\''">
+								th:onclick="'window.location.href = \'' + @{/updateCounselAppointment(counselHistoryNo=${counsel.counselHistoryNo}, prevPage='counselAppointmentList')} + '\''">
 							수정
 						</button>
 					</td>

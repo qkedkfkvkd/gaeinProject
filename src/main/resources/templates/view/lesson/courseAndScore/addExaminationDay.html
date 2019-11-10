@@ -70,10 +70,14 @@
 			
 			<div class="form-group">
 				<div class="row"> <!-- style="vertical-align: bottom;" -->
-					<div class="col-md-6">
+					<div class="col-md-4">
+						<button type="button" onclick="javascript:history.back()"
+								class="btn btn-primary btn-sm btn-block">뒤로</button>
+					</div>
+					<div class="col-md-4">
 						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-4">
 						<button type="button" id="examinationDayJoinFrmBtn"
 								class="btn btn-primary btn-sm btn-block">입력</button>
 					</div>
@@ -107,7 +111,7 @@
 	            contentType: "application/json; charset=UTF-8",
 	            success: function (response) {
 	                if(response.result == 1){
-	                	alert('사용 가능한 코드 입니다.')
+	                	alert('사용 가능한 코드 입니다.');
 	                    $('#examinationDayNoOverlapClickChk').val(1);
 	                	// 중복확인 버튼 누름으로 변경 0:안누름 / 1:누름
 	                } else if(response.result == 0){

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cafe24.smart_academy.academy_manage.course.service.CourseService;
+import com.cafe24.smart_academy.academy_manage.course.vo.Course;
 import com.cafe24.smart_academy.academy_manage.member.service.TeacherInfoService;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
@@ -33,13 +34,15 @@ public class TeacherInfoController {
 	
 	
 	// 강사 등록 폼으로 이동
+	// 강사가 배정되지 않은 강좌에 강사 매칭
 	@GetMapping("/addTeacher")
-	public String addTeacher(Model model) {
+	public String addTeacher(Course course, Model model) {
 		
 		List<Map<String, Object>> courseList =
-				courseService.courseNotAssignmentTeacherSimpleList();
+				courseService.courseNotAssignmentTeacherSimpleList(course);
 		// 담당 강좌를 선택하게 하기 위해서 강사와 매칭되지않은 강좌 리스트를 가져온다.
 		// 강좌코드, 강좌명, 강좌 등록일, 과목코드, 과목명
+		// 강사가 배정되지않은 강좌의 정보 가져오기
 		
 		model.addAttribute("courseList", courseList);
 		// 화면에 보여줄 담당강좌 리스트 객체
@@ -59,6 +62,7 @@ public class TeacherInfoController {
 			,RedirectAttributes redirectAttributes) {
 		
 		String message = teacherInfoService.addTeacher(loginInfo, memberInfo, teacher);
+		// 강사의 로그인정보, 신상정보, 담당강좌 정보 등록 처리 후 메세지 반환
 		
 		String path = "/view/personnel/addTeacherInfo";
 		// 입력 실패했을 경우 강사 입력 폼 페이지로 이동한다.
@@ -194,7 +198,7 @@ public class TeacherInfoController {
 		// 강사 수정 처리 후 수정 처리된 숫자
 		
 		String path = "redirect:/";
-		// 강사 수정에 성공했을 경우 메인 인덱스 페이지로 이동한다.
+		// 강사 수정에 성공했을 경우  페이지로 이동한다.
 		
 		if(teacher.getTeacherIsChanged().equals("유") && result < 3) {
 			// 강사 담당 강좌의 변경사항이 있으면

@@ -17,7 +17,10 @@
 	<div class="col-sm-7 col-md-offset-3">
 		<form role="form" id="counselHistoryFrm" action="/addCounselHistory" method="post">
 			<input type="hidden" th:value="${counselAppointment.memberId}" name="memberId">
+			<!-- 상담내역 추가처리 후 해당 학생의 상담관리 페이지로 이동하기 위해 아이디를 넣어준다. -->
+			
 			<input type="hidden" value="유" name="counselWhether">
+			<!-- 상담여부 '유'처리 -->
 			
 			<div class="form-group">
 				<label for="inputCounselHistoryNo">상담내역코드</label>
@@ -26,14 +29,6 @@
 						   name="counselHistoryNo"
 						   th:value="${counselAppointment.counselHistoryNo}"
 						   readonly="readonly">
-						   
-						   
-					<!-- 학생 상담예약신청폼 작성시 참고 -->
-					<!-- <span class="input-group-btn">
-						<button type="button" class="btn btn-primary btn-sm"
-								id="counselHistoryNoOverlapBtn">중복확인</button>
-						<input type="hidden" id="counselHistoryNoOverlapClickChk" value="0">
-					</span> -->
 				</div>
 			</div>
 			
@@ -68,10 +63,14 @@
 			
 			<div class="form-group">
 				<div class="row"> <!-- style="vertical-align: bottom;" -->
-					<div class="col-md-6">
+					<div class="col-md-4">
+						<button type="button" onclick="javascript:history.back()"
+								class="btn btn-primary btn-sm btn-block">뒤로</button>
+					</div>
+					<div class="col-md-4">
 						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-4">
 						<button type="button" id="counselHistoryBtn"
 								class="btn btn-primary btn-sm btn-block">입력</button>
 					</div>
@@ -84,7 +83,6 @@
 <th:block layout:fragment="customScript">
 	<script type="text/javascript">
 		
-		// 학상 상담예약신청 폼 작성 시 복붙
 		// 상담내역코드 중복 확인
 		/*$('#counselHistoryNoOverlapBtn').on('click', function(e){
 			e.preventDefault();

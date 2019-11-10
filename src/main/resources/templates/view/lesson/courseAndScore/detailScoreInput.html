@@ -79,16 +79,20 @@
 					
 					<div class="form-group">
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<button type="button" class="btn btn-primary btn-sm btn-block"
 										th:onclick="'window.location.href = \'' + @{/deleteScoreInput(scoreInputNo=${scoreInputInfo.scoreInputNo}, examinationDayNo=${scoreInputInfo.examinationDayNo})} + '\''">
 									삭제
 								</button>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
+								<button type="button" onclick="javascript:history.back()"
+										class="btn btn-primary btn-sm btn-block">뒤로</button>
+							</div>
+							<div class="col-md-3">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<button type="button" id="updateScoreInputFrmBtn"
 										class="btn btn-primary btn-sm btn-block">수정</button>
 							</div>

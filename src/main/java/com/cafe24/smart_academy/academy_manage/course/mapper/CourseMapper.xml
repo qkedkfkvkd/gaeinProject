@@ -161,6 +161,12 @@
 			co.subject_no = #{subjectNo}
 		</if>
 		
+		<!-- 강사가 배정되지않은 강좌 정보 가져오기 -->
+		<if test="courseNo != null and courseNo neq ''.toString()">
+		and
+			co.course_no = #{courseNo}
+		</if>
+		
 		<!-- 강좌명을 입력하여 검색 -->
 		<if test="courseName != null and courseName neq ''.toString()">
 		and
@@ -410,8 +416,11 @@
 		update
 			course_room_assignment
 		<trim prefix="set" prefixOverrides=",">
+			<if test="courseNo != null and courseNo neq ''.toString()">
+				 course_no								= #{courseNo}
+			</if>
 			<if test="roomNo != null and roomNo neq ''.toString()">
-				 room_no								= #{roomNo}
+				,room_no								= #{roomNo}
 			</if>
 			<if test="courseAssignmentReasonForChange != null and courseAssignmentReasonForChange neq ''.toString()">
 				,course_assignment_reason_for_change	= #{courseAssignmentReasonForChange}

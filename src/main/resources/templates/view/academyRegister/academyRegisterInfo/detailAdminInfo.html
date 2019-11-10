@@ -109,10 +109,14 @@
 					
 					<div class="form-group">
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
-							<div class="col-md-6">
+							<div class="col-md-4">
+								<button type="button" onclick="javascript:history.back()"
+										class="btn btn-primary btn-sm btn-block">뒤로</button>
+							</div>
+							<div class="col-md-4">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-6">
+							<div class="col-md-4">
 								<button type="button" id="updateAdminFrmBtn"
 										class="btn btn-primary btn-sm btn-block">수정</button>
 							</div>
@@ -153,7 +157,7 @@
 	            contentType: "application/json; charset=UTF-8",
 	            success: function (response) {
 	                if(response.result == 1){
-	                	alert('사용 가능한 이메일 입니다.')
+	                	alert('사용 가능한 이메일 입니다.');
 	                    //$('#emailOverlapMessage').text('사용가능한 이메일 입니다.');
 	                    $('#emailOverlapClickChk').val(1);
 	                	// 회원 등록할 때 중복확인 버튼을 눌렀다는 걸 알려줄 값   0:안누름 / 1:누름

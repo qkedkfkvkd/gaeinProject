@@ -16,6 +16,9 @@
 	
 	<div class="col-sm-10 col-md-offset-3">
 		<form id="studentUpdateFrm" action="/updateStudentInfo" method="post">
+			<input type="hidden" name="memberLevel" th:value="${session.memberLevel}">
+			<!-- 수정하는 사람의 권한을 넘겨서 학생일 경우 인덱스 페이지, 관리자일 경우 학생 목록으로 이동한다. -->
+			
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
@@ -67,14 +70,23 @@
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="inputParentName">학부모명</label>
-						<input type="text" class="form-control" id="inputParentName"
-							   name="parentName" th:value="${studentInfo.parentName}"
-							   placeholder="학부모의 이름을 입력해주세요">
+						<span th:if="${session.memberLevel == '관리자'.toString()}">
+							<input type="text" class="form-control" id="inputParentName"
+								   name="parentName" th:value="${studentInfo.parentName}"
+								   placeholder="학부모의 이름을 입력해주세요">
+						</span>
+						<span th:unless="${session.memberLevel == '관리자'.toString()}">
+							<input type="text" class="form-control"
+								   th:value="${studentInfo.parentName}"
+								   name="parentName"
+								   readonly="readonly">
+						</span>
 					</div>
 					
 					<div class="form-group">
 						<label for="inputParentPhone">학부모 휴대폰 번호</label>
-						<div class="input-group">
+						<div class="input-group"
+							 th:if="${session.memberLevel == '관리자'.toString()}">
 							<input type="text" class="form-control" id="inputParentPhone"
 								   name="parentPhone" th:value="${studentInfo.parentPhone}"
 								   placeholder="학부모의 휴대폰 번호을 입력해주세요">
@@ -87,6 +99,13 @@
 								<input type="hidden" id="dbInputParentPhone" th:value="${studentInfo.parentPhone}">
 								<!-- 이미 디비에 저장되어있던 학부모 휴대폰 번호 -->
 							</span>
+						</div>
+						<div class="input-group"
+							 th:unless="${session.memberLevel == '관리자'.toString()}">
+							<input type="text" class="form-control"
+								   th:value="${studentInfo.parentPhone}"
+								   name="parentPhone"
+								   readonly="readonly">
 						</div>
 					</div>
 					
@@ -125,10 +144,15 @@
 								<!-- 회원을 삭제하려면 해당 회원 아이디를 참조하는 수강신청 목록을
 								변경처리한 다음에 삭제하거나 같이 삭제하거나 해당 회원 아이디가 있는 수강신청 목록을 삭제한 후에 처리되어야 하므로
 								회원 삭제시 해당 회원 아이디를 참조하는 수강신청 목록도 같이 보여줘야 한다. -->
-							<div class="col-md-6">
+							<div class="col-md-4">
+								<button type="button" onclick="javascript:history.back()"
+										class="btn btn-primary btn-sm btn-block">뒤로</button>
+							</div>
+							<div class="col-md-4">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-6">
+							<div class="col-md-4"
+								 th:if="${session.memberLevel == '관리자'.toString() || session.memberId == studentInfo.memberId}">
 								<button type="button" id="StudentUpdateFrmBtn"
 										class="btn btn-primary btn-sm btn-block">수정</button>
 							</div>
@@ -172,7 +196,7 @@
 	            contentType: "application/json; charset=UTF-8",
 	            success: function (response) {
 	                if(response.result == 1){
-	                	alert('사용 가능한 이메일 입니다.')
+	                	alert('사용 가능한 이메일 입니다.');
 	                    //$('#emailOverlapMessage').text('사용가능한 이메일 입니다.');
 	                    $('#emailOverlapClickChk').val(1);
 	                	// 회원 등록할 때 중복확인 버튼을 눌렀다는 걸 알려줄 값   0:안누름 / 1:누름
@@ -358,43 +382,7 @@
 	            return false;
 	        }
 	        
-	        /*if($("#agree").is(":checked") == false){
-	            alert('약관에 동의하셔야 합니다');
-	            return false;      
-	        }*/
-	        
 	        $('#studentUpdateFrm').submit();
-	        
-	        /*$.ajax({
-	            url: '/addMember',
-	            type: 'POST',
-	            data: {
-	            	member_id:$('#inputId').val(),
-	            	member_pw:$('#inputPassword').val(),
-	                name:$("#inputName").val(),
-	                
-	                email:$('#InputEmail').val(),
-	                
-	                telNO:$("#inputtelNO").val(),
-	                mobileNO:$("#inputMobile").val()
-	            },
-	            dataType: "json",
-	            success: function (response) {
-	                if(response.result == 1){
-	                    alert('가입 완료');
-	                    location.replace('../index.php'); // 화면 갱신
-	                } else if(response.result == 0){
-	                    alert('이미 가입된 아이디입니다');
-	                } else if(response.result == -2){
-	                    alert('입력된 값이 없습니다');
-	                } else {
-	                    alert('등록중에 에러가 발생했습니다');
-	                }
-	            },
-	            error: function(jqXHR, textStatus, errorThrown){
-	                alert("arjax error : " + textStatus + "\n" + errorThrown);
-	            }
-	        });*/
 		});
 	</script>
 </th:block>

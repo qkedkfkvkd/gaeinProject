@@ -4,19 +4,23 @@
       layout:decorate="~{layout/default}">
 
 <th:block layout:fragment="customTitle">
-	<title th:text="${student.memberName + ' 학생의 강좌 시간표'}"></title>
+	<title th:text="${student.memberName + ' 학생의 ' + selectScheduleDay + '요일 강좌 시간표'}"></title>
 </th:block>
 
 <th:block layout:fragment="customContents">
 	<div class="page-header">
 		<div class="col-md-6 col-md-offset-3">
-			<h3 th:text="${student.memberId + ' : ' + student.memberName + ' 학생의 강좌 시간표'}"></h3>
+			<h3 th:text="${student.memberId + ' : ' + student.memberName + ' 학생의 ' + selectScheduleDay + '요일 강좌 시간표'}"></h3>
 		</div>
 	</div>
 	
 	<div class="col-sm-11 col-md-offset-3">
 		<form class="form-inline" action="/oneStudentCourseScheduleList">
 			<input type="hidden" name="memberId" th:value="${student.memberId}">
+			<!-- 특정 학생의 수강신청 강좌 목록을 가져와야 하므로 학생의 아이디를 넘겨준다. -->
+			
+			<input type="hidden" name="scheduleDay" th:value="${selectScheduleDay}">
+			<!-- 어떤 요일의 강좌시간표를 검색하는지 알려주기 위해 요일값을 넘겨준다. -->
 			
 			<div class="form-group">
 				<label class="sr-only" for="subjectList">과목명</label>

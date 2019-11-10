@@ -21,8 +21,13 @@
 					  action="/updateCourseAssign" method="post">
 					
 					<input type="hidden" value="무" id="teacherIsChanged" name="teacherIsChanged">
+					<!-- 초기값 변경여부 '무', 담당 강좌 변경시 변경여부 '유'로 변경된다. -->
+					
 					<input type="hidden" value="무" id="courseIsChanged" name="courseIsChanged">
+					<!-- 초기값 변경여부 '무', 과목명 혹은 강좌명 변경시 변경여부 '유'로 변경된다. -->
+					
 					<input type="hidden" value="무" id="courseAssignmentIsChanged" name="courseAssignmentIsChanged">
+					<!-- 초기값 변경여부 '무', 강좌 혹은 강의실 변경시 변경여부 '유'로 변경된다. -->
 					
 					<div class="form-group">
 						<label for="inputCourseAssignmentNo">강좌배정코드</label>
@@ -145,16 +150,20 @@
 					
 					<div class="form-group">
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<button type="button" class="btn btn-primary btn-sm btn-block"
 										th:onclick="'window.location.href = \'' + @{/deleteCourseAssign(courseAssignmentNo=${course.courseAssignmentNo})} + '\''">
-									배정삭제
+									삭제
 								</button>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
+								<button type="button" onclick="javascript:history.back()"
+										class="btn btn-primary btn-sm btn-block">뒤로</button>
+							</div>
+							<div class="col-md-3">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<button type="button" id="courseAssignUpdateFrmBtn"
 										class="btn btn-primary btn-sm btn-block">수정</button>
 							</div>

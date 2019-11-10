@@ -61,25 +61,25 @@
 				</a>
 				<div class="collapse" id="ui-class">
 					<ul class="nav flex-column sub-menu" style="">
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/addCourse}">강좌등록</a>
 						</li>
 						
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/courseList}">강좌목록</a>
 						</li>
 						
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/courseAssignList}">강사배정목록</a>
 						</li>
 						
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/scheduleList(scheduleApprovalStatus='유')}">전체시간표</a>
 							<!-- 시간표 오름차순으로 강좌별 시간표를 조회한다. -->
 							<!-- 강사권한의 시간표 작성할 때 참고하면서 작성한다. -->
 						</li>
 						
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/scheduleApprovalRequestList(scheduleApprovalStatus='무')}">강좌시간표승인</a>
 							<!-- 시간표 오름차순으로 강좌별 시간표를 조회한다. -->
 							<!-- 강사권한의 시간표 작성할 때 참고하면서 작성한다. -->
@@ -95,10 +95,10 @@
 				</a>
 				<div class="collapse" id="ui-teacher">
 					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/addTeacher}">강사등록</a>
 						</li>
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/teacherList}">강사목록</a>
 						</li>
 					</ul>
@@ -112,12 +112,12 @@
 				</a>
 				<div class="collapse" id="ui-test">
 					<ul class="nav flex-column sub-menu" style="">
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/examinationDayList(testStandardDay='notTest', memberLevel=${session.memberLevel})}">시험일</a>
 							<!-- 아직 시험을 치르지 않은 시험날짜 강좌리스트를 조회한다. -->
 						</li>
 						
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/examinationDayList(testStandardDay='testComplete', memberLevel=${session.memberLevel})}">완료된시험목록</a>
 							<!-- 시험 완료된 강좌리스트를 보여주고 해당 강좌 클릭시 시험 상세정보를 조회한다. -->
 							<!-- 우측에 학생목록을 보여주고 점수를 내림차순하여 조회한다. -->
@@ -133,11 +133,11 @@
 				</a>
 				<div class="collapse" id="ui-counsel">
 					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!-- 수강생이 상담신청한 후 상담일과 제목 등 조회 -->
+						<li class="nav-item"> <!-- 수강생이 상담신청 -->
 							<a class="nav-link" href="/currentReservationStateList">상담예약현황</a>
 						</li>
 						
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/admissionCounselList}">신입생상담</a>
 						</li>
 					</ul>
@@ -151,7 +151,7 @@
 				</a>
 				<div class="collapse" id="ui-payment">
 					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/paymentStateList}">수납현황</a>
 						</li>
 						
@@ -169,10 +169,10 @@
 				</a>
 				<div class="collapse" id="ui-admin">
 					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/updateAdminInfo(memberId=${session.memberId})}">정보수정</a>
 						</li>
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/updateLoginPassword(memberId=${session.memberId})}">비밀번호수정</a>
 						</li>
 					</ul>

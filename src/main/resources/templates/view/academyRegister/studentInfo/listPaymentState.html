@@ -19,8 +19,12 @@
 			<div class="col-md-6">
 				<form action="/searchStudentInfoPaymentState">
 					<input type="hidden" name="title" th:value="${title}">
+					<!-- 수납현황 리스트인지, 미납현황 리스트인지 컨트롤러에 알려준다. -->
+					<!-- 컨트롤러에서 title를 보고 쿼리 검색키워드를 분기한다. -->
+					
 					<input type="hidden" name="paymentStateListSizeZeroMessage"
 						   th:value="${paymentStateListSizeZeroMessage}">
+					<!-- 수납현황 혹은 미납현황인 경우 리스트 사이즈 0일 때의 메세지 -->
 					
 					<div class="form-group">
 						<label class="sr-only" for="searchMemberName">학생명</label>

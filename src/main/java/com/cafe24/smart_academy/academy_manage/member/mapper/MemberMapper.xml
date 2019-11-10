@@ -551,7 +551,7 @@
 				 counsel_type_no					= #{counselTypeNo}
 			</if>
 			<if test="counselResultName != null and counselResultName neq ''.toString()">
-				 counsel_result_name				= #{counselResultName}
+				,counsel_result_name				= #{counselResultName}
 			</if>
 			<if test="counselResultReasonForChange != null and counselResultReasonForChange neq ''.toString()">
 				,counsel_result_reason_for_change	= #{counselResultReasonForChange}

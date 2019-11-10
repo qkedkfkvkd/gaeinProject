@@ -48,9 +48,14 @@ public class CourseManageController {
 	public String subjectList(Model model) {
 		
 		List<Subject> subjectList = courseManageService.subjectList();
+		// 전체 과목 리스트를 가져온다.
 		
 		model.addAttribute("subjectList", subjectList);
+		// 화면에 뿌려줄 전체 과목 리스트
+		
 		model.addAttribute("subjectListSize", subjectList.size());
+		// 리스트의 사이즈를 보고 리스트 존재여부 판단
+		
 		return "/view/lesson/courseCode/listSubject";
 	}
 	
@@ -69,6 +74,7 @@ public class CourseManageController {
 		System.out.println(subjectNo + " <- subjectNo   subjectOverlapCheck()   CourseManageController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
+		// 뷰페이지에 보낼 객체
 		
 		String result = courseManageService.subjectBySubjectNo(subjectNo);
 		// 과목 테이블에서 해당 과목코드가 존재하는지 확인
@@ -89,6 +95,7 @@ public class CourseManageController {
 	@PostMapping("/addSubject")
 	public String addSubject(Model model, Subject subject) {
 		String message = courseManageService.addSubject(subject);
+		// 과목 추가 처리 후 메세지 반환
 		
 		String path = "/view/lesson/courseCode/addSubject";
 		// 과목추가에 실패했을 경우 다시 과목을 추가하는 폼으로 이동하게 초기화한다.
@@ -133,6 +140,8 @@ public class CourseManageController {
 		// '등록된 강좌배정목록이 없습니다.'메세지를 뿌려줄 것인지 판단한다.
 		
 		model.addAttribute("courseList", courseList);
+		// 화면에 뿌려줄 해당 과목코드를 참조하는 강좌 리스트
+		
 		model.addAttribute("courseListSize", courseList.size());
 		// 강좌 리스트의 사이즈를 보고 강좌를 뿌려줄 것인지,
 		// '등록된 강좌목록이 없습니다.'메세지를 뿌려줄 것인지 판단한다.
@@ -148,6 +157,7 @@ public class CourseManageController {
 	public String updateSubject(Subject subject, Model model,
 			RedirectAttributes redirectAttributes) {
 		String message = courseManageService.updateSubject(subject);
+		// 과목 수정처리 후 메세지 반환
 		
 		String path = "redirect:/subjectList";
 		// 과목 수정에 성공했을 경우 과목리스트로 이동하게 초기화한다.
@@ -214,8 +224,14 @@ public class CourseManageController {
 		
 		
 		model.addAttribute("roomList", roomList);
+		// 화면에 뿌려줄 전체 강의실 리스트
+		
 		model.addAttribute("roomListSize", roomList.size());
+		// 리스트의 사이즈를 보고 리스트 존재여부 판단
+		
 		model.addAttribute("roomFloorList", roomFloorList);
+		// 검색 폼의 샐랙트 박스에 넣어줄 강의실 층수 리스트
+		
 		return "/view/lesson/courseCode/listAcademyRoom";
 	}
 	
@@ -274,8 +290,13 @@ public class CourseManageController {
 		
 		
 		model.addAttribute("roomList", roomList);
+		// 화면에 뿌려줄 강의실 검색결과 리스트
+		
 		model.addAttribute("roomListSize", roomList.size());
+		// 리스트의 사이즈를 보고 리스트 존재여부 판단
+		
 		model.addAttribute("roomFloorList", roomFloorList);
+		// 검색 폼의 샐랙트 박스에 넣어줄 강의실 층수 리스트
 		
 		return "/view/lesson/courseCode/listAcademyRoom";
 	}
@@ -295,6 +316,7 @@ public class CourseManageController {
 		System.out.println(roomNo + " <- roomNo   academyRoomOverlapCheck()   CourseManageController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
+		// 뷰페이지에 보낼 객체
 		
 		String result = courseManageService.academyRoomByRoomNo(roomNo);
 		// 강의실 테이블에서 해당 강의실 코드가 존재하는지 확인
@@ -313,8 +335,9 @@ public class CourseManageController {
 	
 	// 관리자 : 강의실 추가
 	@PostMapping("/addAcademyRoom")
-	public String addAcademyRoomCode(Model model, AcademyRoom room) {
+	public String addAcademyRoom(Model model, AcademyRoom room) {
 		String message = courseManageService.addAcademyRoom(room);
+		// 강의실 추가 처리 후 메세지 반환
 		
 		String path = "/view/lesson/courseCode/addAcademyRoom";
 		// 강의실 추가에 실패했을 경우 다시 강의실 추가 폼으로 이동한다.
@@ -357,11 +380,14 @@ public class CourseManageController {
 		
 			
 		model.addAttribute("courseAssignmentList", courseAssignmentList);
+		// 화면에 뿌려줄 해당 강의실코드를 참조하는 강좌강의실 배정 리스트
+		
 		model.addAttribute("courseAssignmentListSize", courseAssignmentList.size());
 		// 강좌강의실 배정리스트의 사이즈를 보고 강좌를 뿌려줄 것인지,
 		// '등록된 강좌배정목록이 없습니다.'메세지를 뿌려줄 것인지 판단한다.
 		
 		model.addAttribute("room", room);
+		// 화면에 뿌려줄 강의실 상세 정보
 		
 		return "/view/lesson/courseCode/detailAcademyRoom";
 	}
@@ -373,6 +399,7 @@ public class CourseManageController {
 			RedirectAttributes redirectAttributes) {
 		
 		String message = courseManageService.updateAcademyRoom(room);
+		// 강의실 수정처리 후 메세지 반환
 		
 		String path = "redirect:/academyRoomList";
 		// 강의실 수정에 성공했을 경우 강의실 리스트로 이동하게 초기화한다.
@@ -413,9 +440,17 @@ public class CourseManageController {
 		
 		List<GradingCriteria> gradingCriteriaList =
 				courseManageService.gradingCriteriaList();
+		// 전체 성적기준 리스트 가져오기
 		
 		model.addAttribute("gradingCriteriaList", gradingCriteriaList);
-		model.addAttribute("gradingCriteriaListSize", gradingCriteriaList.size());
+		// 검색 폼의 샐랙트 박스에 넣어줄 성적기준 리스트
+		
+		model.addAttribute("gradingCriteriaViewList", gradingCriteriaList);
+		// 화면에 뿌려줄 성적기준 리스트
+		
+		model.addAttribute("gradingCriteriaViewListSize", gradingCriteriaList.size());
+		// 리스트의 사이즈를 보고 성적기준 리스트의 존재여부 판단
+		
 		return "view/lesson/courseCode/listGradingCriteria";
 	}
 	
@@ -426,11 +461,18 @@ public class CourseManageController {
 			 @RequestParam(value = "gradingCriteriaRating") String gradingCriteriaRating
 			,Model model) {
 		
-		List<GradingCriteria> gradingCriteriaList =
+		List<GradingCriteria> gradingCriteriaViewList =
 				courseManageService.gradingCriteriaList(gradingCriteriaRating);
 		// 선택한 등급(성적기준테이블 기본키)로 검색한 결과를 가지고 온다.
 		
+		List<GradingCriteria> gradingCriteriaList =
+				courseManageService.gradingCriteriaList();
+		// 검색 폼의 샐랙트 박스에 넣어줄 성적기준 등급 리스트
+		
 		model.addAttribute("gradingCriteriaList", gradingCriteriaList);
+		// 검색 폼의 샐랙트박스에 넣어줄 성적기준 등급 리스트
+		
+		model.addAttribute("gradingCriteriaViewList", gradingCriteriaViewList);
 		// 결과는 하나의 객체만 나오지만 listGradingCriteriaCode.html에서는 무조건
 		// 결과를 리스트로 뿌려주므로 어찌됬든 리스트로 받아서 뿌려준다.
 		
@@ -453,6 +495,7 @@ public class CourseManageController {
 				+ " <- inputGradingCriteriaRating   gradingCriteriaRatingOverlapCheck()   CourseManageController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
+		// 뷰페이지에 보낼 객체
 		
 		String result = courseManageService.gradingCriteriaRatingOverlapCheck(inputGradingCriteriaRating);
 		// 성적기준 테이블에서 해당 등급이 존재하는지 확인
@@ -473,6 +516,7 @@ public class CourseManageController {
 	@PostMapping("/addGradingCriteria")
 	public String addGradingCriteria(Model model, GradingCriteria criteria) {
 		String message = courseManageService.addGradingCriteria(criteria);
+		// 성적평가기준 추가 처리 후 메세지 반환
 		
 		String path = "/view/lesson/courseCode/addGradingCriteria";
 		// 성적기준 추가에 실패했을 경우 다시 성적기준 추가 폼으로 이동한다.
@@ -514,8 +558,13 @@ public class CourseManageController {
 		// 해당 등급을 참조하는 모든 성적 리스트 가져오기
 		
 		model.addAttribute("gradingCriteria", gradingCriteria);
+		// 화면에 뿌려줄 성적평가기준 상세 정보
+		
 		model.addAttribute("gradeReferenceInputScoreList", gradeReferenceInputScoreList);
+		// 화면에 뿌려줄 해당 등급을 참조하는 성적결과 리스트
+		
 		model.addAttribute("gradeReferenceInputScoreListSize", gradeReferenceInputScoreList.size());
+		// 리스트의 사이즈를 보고 리스트 존재여부 판단 
 		
 		return "/view/lesson/courseCode/detailGradingCriteria";
 	}

@@ -19,6 +19,11 @@
 			<div class="col-md-3">
 				<form role="form" id="updateExaminationDayFrm"
 					  action="/updateExaminationDay" method="post">
+					<input type="hidden" name="testStandardDay" th:value="${testStandardDay}">
+					<!-- 완료된 시험일에서 수정을 눌렀는지, 미완료된 시험일에서 수정을 눌렀는지 체크한다. -->
+					
+					<input type="hidden" name="memberLevel" th:value="${session.memberLevel}">
+					<!-- 관리자가 수정했는지, 강사가 수정했는지 알기위해 수정한 사람의 권한을 넘긴다. -->
 					
 					<input type="hidden" name="memberId"
 						   th:if="${session.memberLevel == '강사'.toString()}"
@@ -101,7 +106,7 @@
 					
 					<div class="form-group">
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<span th:if="${session.memberLevel == '관리자'.toString()}">
 									<button type="button" class="btn btn-primary btn-sm btn-block"
 											th:onclick="'window.location.href = \'' + @{/deleteExaminationDay(examinationDayNo=${examInfo.examinationDayNo})} + '\''">
@@ -117,10 +122,14 @@
 								<!-- 시험일을 삭제하기 전에 해당 시험일코드를 참조하는 강좌학생 성적목록을 참조한다.
 								참조한 후, 삭제해도 되겠다 싶으면 해당 시험일을 삭제하게되면 CASCADE로 해당 성적목록도 같이 지워진다. -->
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
+								<button type="button" onclick="javascript:history.back()"
+										class="btn btn-primary btn-sm btn-block">뒤로</button>
+							</div>
+							<div class="col-md-3">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<button type="button" id="updateExaminationDayFrmBtn"
 										class="btn btn-primary btn-sm btn-block">입력</button>
 							</div>
@@ -214,6 +223,12 @@
 	        if($("#inputExaminationName").val() ==''){
 	            alert('시험명을 입력하세요');
 	            $("#inputExaminationName").focus();
+	            return false;
+	        }
+	        
+	        if($("#inputExaminationDayReasonForChange").val() ==''){
+	            alert('시험변경사유를 입력하세요');
+	            $("#inputExaminationDayReasonForChange").focus();
 	            return false;
 	        }
 	        

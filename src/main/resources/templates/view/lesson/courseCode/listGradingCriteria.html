@@ -62,7 +62,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="grade, lists : ${gradingCriteriaList}"
+				<tr th:each="grade, lists : ${gradingCriteriaViewList}"
 					th:if="${gradingCriteriaListSize != 0}">
 					<td th:text="${lists.count}"></td>
 					<td th:text="${grade.gradingCriteriaRating}"></td>
@@ -78,7 +78,7 @@
 					</td>
 				</tr>
 				
-				<tr th:unless="${gradingCriteriaListSize != 0}">
+				<tr th:unless="${gradingCriteriaViewListSize != 0}">
 					<td colspan="6">등록된 성적기준이 없습니다.</td>
 				</tr>
 			</tbody>

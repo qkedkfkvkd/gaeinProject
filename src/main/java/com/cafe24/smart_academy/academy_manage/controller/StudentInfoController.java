@@ -20,7 +20,6 @@ import com.cafe24.smart_academy.academy_manage.member.vo.Counsel;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselAppointment;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselResult;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
-import com.cafe24.smart_academy.academy_manage.member.vo.GetCounselResultNo;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
@@ -40,7 +39,7 @@ public class StudentInfoController {
 	
 	// 관리자의 학생 등록폼 이동하기
 	@GetMapping("/addStudent")
-	public String addMember() {
+	public String addStudent() {
 		//System.out.println("멤버컨트롤러 학생등록폼 이동메소드 들어왔다");
 		return "/view/academyRegister/studentInfo/addStudentInfo";
 	}
@@ -53,6 +52,7 @@ public class StudentInfoController {
 		System.out.println(inputParentPhone + "<- inputParentPhone   parentPhoneOverlapChk()   StudentInfoController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
+		// 뷰페이지에 보낼 객체
 		
 		String parentPhoneResult = studentInfoService.parentByPhone(inputParentPhone);
 		// 서비스의 학부모 휴대폰 중복확인 메소드 호출
@@ -79,6 +79,7 @@ public class StudentInfoController {
 			,Model model
 			,RedirectAttributes redirectAttributes) {
 		String message = studentInfoService.addStudent(loginInfo, memberInfo, parent);
+		// 로그인정보, 신상정보, 학부모 정보 등록 처리 후 메세지 반환
 		
 		String path = "/view/academyRegister/studentInfo/addStudentInfo";
 		// 입력 실패했을 경우 이동될 페이지로 미리 초기화시킨다.
@@ -107,7 +108,7 @@ public class StudentInfoController {
 	
 	// 관리자 전용 학생 목록 페이지 이동
 	@GetMapping("/studentList")
-	public String studentInfoList(MemberSearchVO memberSearchVO, Model model) {
+	public String studentList(MemberSearchVO memberSearchVO, Model model) {
 		
 		System.out.println(memberSearchVO.getMemberLevel()
 				+ " <- memberLevel   studentInfoList()   StudentInfoController.java");
@@ -116,6 +117,7 @@ public class StudentInfoController {
 		// 디비에서 권한이 학생인 사람들만 목록을 가져온다. (로그인 테이블 - 회원 신상정보 테이블 아이디로 조인)
 		
 		model.addAttribute("studentList", studentList);
+		// 화면에 보여줄 학생 리스트
 		
 		return "/view/academyRegister/studentInfo/listStudentInfo";
 	}
@@ -130,6 +132,7 @@ public class StudentInfoController {
 		// -> 로그인 테이블 - 회원 신상정보 테이블 아이디로 조인
 		
 		model.addAttribute("studentList", studentList);
+		// 화면에 보여줄 학생 검색결과 리스트
 		
 		return "/view/academyRegister/studentInfo/listStudentInfo";
 	}
@@ -161,7 +164,10 @@ public class StudentInfoController {
 	
 	// 관리자 : 특정 학생정보 수정 처리
 	@PostMapping("/updateStudentInfo")
-	public String updateStudentInfo(Member member, Parent parent, Model model
+	public String updateStudentInfo(
+			 Member member
+			,Parent parent
+			,@RequestParam(value = "memberLevel") String memberLevel
 			,RedirectAttributes redirectAttributes) {
 		String message = studentInfoService.updateStudentInfo(member, parent);
 		// 학생과 학부모 정보 수정 처리 후 메세지 반환
@@ -172,8 +178,17 @@ public class StudentInfoController {
 		if(message == null) {
 			// 리턴받은 메세지가 널이라면 학생정보 수정에 성공했다는 뜻이다.
 			
-			redirectAttributes.addAttribute("memberLevel", "학생");
-			// 권한이 학생인 회원목록을 가져와야 하므로 리스트 검색 키워드를 입력한다.
+			if(memberLevel.equals("학생")) { // 수정하는 사람이 학생이라면
+				path = "redirect:/";
+				// 해당 권한의 인덱스 페이지로 이동한다.
+				
+			} else {
+				// 학생을 수정할 수 있는 건 학생 자신과 관리자 뿐이다.
+				// 수정하는 사람이 관리자라면
+				
+				redirectAttributes.addAttribute("memberLevel", "학생");
+				// 권한이 학생인 회원목록을 가져와야 하므로 리스트 검색 키워드를 입력한다.
+			}
 			
 		} else {
 			// 리턴받은 메세지가 널이 아니라면 학생정보 수정에 실패했다는 뜻이다.
@@ -229,6 +244,7 @@ public class StudentInfoController {
 			// 결제 추가창 제목에 뿌려줄 학생의 아이디, 이름, 생년월일을 가져온다.
 			
 			model.addAttribute("student", studentSimpleInfo);
+			// 화면의 제목에 뿌려줄 학생의 아이디, 이름, 생년월일
 		}
 		
 		model.addAttribute("memberId", memberId);
@@ -246,6 +262,7 @@ public class StudentInfoController {
 			,PaymentInfo paymentInfo
 			,RedirectAttributes redirectAttributes) {
 		String message = studentInfoService.addPaymentInfo(paymentInfo);
+		// 결제정보 입력처리 후 메세지 반환
 		
 		String path = "redirect:/updatePaymentInfo";
 		// 입력 성공시 결제정보 상세 페이지로 이동한다.
@@ -345,9 +362,11 @@ public class StudentInfoController {
 		
 		if(title.contains("수납")) { // 수납현황에서 검색했을 경우
 			memberSearchVO.setKeyWord("payment");
+			// 납부예정액이 0원이고, 실납부금액이 0보다 큰 쿼리검색 키워드
 			
 		} else { // 미납현황에서 검색했을 경우
 			memberSearchVO.setKeyWord("notPayment");
+			// 납부예정액이 0보다 큰 쿼리 검색 키워드
 		}
 		
 		List<Map<String, Object>> paymentStateList =
@@ -516,6 +535,7 @@ public class StudentInfoController {
 				+ "<- inputCounselHistoryNo   counselHistoryNoOverlapChk()   StudentInfoController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
+		// 뷰페이지에 보낼 객체
 		
 		String counselHistoryNoResult =
 				studentInfoService.counselAppointmentByCounselHistoryNo(inputCounselHistoryNo);
@@ -682,12 +702,15 @@ public class StudentInfoController {
 		
 		
 		model.addAttribute("counselReservationStateList", counselReservationStateList);
+		// 화면에 보여줄 상담여부가 '무'인 상담예약현황 리스트
+		
 		model.addAttribute("counselReservationStateListSize",
 							counselReservationStateList.size());
 		// 상담예약현황 리스트의 사이즈를 전달하여 사이즈가 0일 경우와 0이 아닐 경우를 판단한다.
 		// 사이즈가 0이면 리스트 대신 '예약된 상담예약현황이 없습니다.' 메세지를 보여준다.
 		
 		model.addAttribute("counselTypeList", counselTypeList);
+		// 검색 폼의 샐랙트 박스에 넣을 상담구분코드 리스트
 		
 		return "/view/academyRegister/studentInfo/listCurrentReservationState";
 	}
@@ -715,12 +738,15 @@ public class StudentInfoController {
 		
 		
 		model.addAttribute("counselReservationStateList", counselReservationStateList);
+		// 화면에 보여줄 상담여부가 '무'인 상담예약현황 검색결과 리스트
+		
 		model.addAttribute("counselReservationStateListSize",
 							counselReservationStateList.size());
 		// 상담예약현황 리스트의 사이즈를 전달하여 사이즈가 0일 경우와 0이 아닐 경우를 판단한다.
 		// 사이즈가 0이면 리스트 대신 '예약된 상담예약현황이 없습니다.' 메세지를 보여준다.
 		
 		model.addAttribute("counselTypeList", counselTypeList);
+		// 검색 폼의 샐랙트 박스에 넣을 상담구분코드 리스트
 		
 		return "/view/academyRegister/studentInfo/listCurrentReservationState";
 	}
@@ -818,8 +844,10 @@ public class StudentInfoController {
 	// 관리자, 학생 : 학생 상담예약신청 상세보기
 	@GetMapping("/updateCounselAppointment")
 	public String updateCounselAppointment(
-			CounselAppointment counselAppointment, Model model) {
+			 CounselAppointment counselAppointment, Model model
+			,@RequestParam(value = "prevPage", required = false) String prevPage) {
 		System.out.println(counselAppointment.getCounselHistoryNo() + " <- counselHistoryNo   updateCounselAppointment()   StudentInfoController.java");
+		System.out.println(prevPage + " <- prevPage   updateCounselAppointment()   StudentInfoController.java");
 		
 		List<Map<String, Object>> oneMap =
 				studentInfoService.counselAppointmentOneOrList(counselAppointment);
@@ -841,6 +869,9 @@ public class StudentInfoController {
 		
 		model.addAttribute("counselTypeList", counselTypeList);
 		// 상세보기에서 보여줄 상담구분리스트를 넣어준다.
+		
+		model.addAttribute("prevPage", prevPage);
+		// 이전 페이지가 상담관리페이지에서 넘어왔는지 판단할 변수
 		
 		return "/view/academyRegister/studentInfo/detailCounselAppointment";
 	}
@@ -867,6 +898,7 @@ public class StudentInfoController {
 		System.out.println(counselHistoryNo + "<- counselHistoryNo   permissionCounselAppointment()   StudentInfoController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
+		// 뷰페이지에 보낼 객체
 		
 		String message = studentInfoService.permissionCounselAppointment(counselHistoryNo);
 		// 학생 상담예약신청 처리 메소드 호출
@@ -888,15 +920,41 @@ public class StudentInfoController {
 	
 	// 관리자, 학생 : 상담예약신청 수정처리
 	@PostMapping("/updateCounselAppointment")
-	public String updateCounselAppointment(CounselAppointment counselAppointment, Model model,
-			RedirectAttributes redirectAttributes) {
+	public String updateCounselAppointment(
+			 CounselAppointment counselAppointment
+			,@RequestParam(value = "prevPage", required = false) String prevPage
+			,RedirectAttributes redirectAttributes) {
 		String message = studentInfoService.updateCounselAppointment(counselAppointment);
 		// 상담예약 수정 처리 후 메세지를 리턴받는다.
+		
+		System.out.println(prevPage + " <- prevPage   updateCounselAppointment()   StudentInfoController.java");
+		// 넘어온 페이지가 관리자의 특정학생 상담관리 페이지인지, 학생의 상담예약현황 페이지인지 확인
 		
 		String path = "redirect:/currentReservationStateList";
 		// 상담예약 수정에 성공했을 경우 상담예약현황 리스트로 이동하게 초기화한다.
 		
-		if(message != null) {
+		if(message == null) {
+			// 리턴받은 메세지가 널이라면 상담예약 수정에 성공했다는 뜻이다.
+			
+			if(prevPage.equals("counselManage")) {
+				// 상담관리에서 넘어왔다면
+				
+				path = "redirect:/counselManage";
+				// 상담관리 페이지로 넘어간다.
+			} else {
+				// 학생전용 상담예약현황 페이지에서 넘어왔다면
+				
+				path = "redirect:/counselAppointmentList";
+				// 특정학생 상담예약현황 페이지로 넘어간다.
+				
+				redirectAttributes.addAttribute("counselWhether", "무");
+				// 쿼리 검색 키워드에 상담여부 "무"를 넣어준다.
+			}
+			
+			redirectAttributes.addAttribute("memberId", counselAppointment.getMemberId());
+			// 관리자의 경우 해당 학생의 상담관리 페이지로 넘어간다.
+			// 학생의 경우 자신의 상담예약현황 페이지로 넘어간다.
+		} else if(message != null) {
 			// 리턴받은 메세지가 널이 아니라면 상담예약 수정에 실패했다는 뜻이다.
 			
 			System.out.println("상담예약 수정 실패!!!!!!!!!!!!");
@@ -1016,6 +1074,7 @@ public class StudentInfoController {
 		
 		String counselAppointmentMessage =
 				studentInfoService.permissionCounsel(counselAppointment);
+		// 해당 상담내역 상담여부 '유'처리
 		
 		System.out.println(counselMessage + " <- counselMessage   addCounselHistory()   StudentInfoController.java");
 		

@@ -17,6 +17,8 @@
 	<div class="col-sm-10 col-md-offset-3">
 		<form action="/addStudent" id="studentJoinFrm" method="post">
 			<input type="hidden" name="memberLevel" value="학생">
+			<!-- 로그인 테이블의 권한 컬럼에 '학생'지정 -->
+			
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
@@ -110,10 +112,14 @@
 					
 					<div class="form-group">
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
-							<div class="col-md-6">
+							<div class="col-md-4">
+								<button type="button" onclick="javascript:history.back()"
+										class="btn btn-primary btn-sm btn-block">뒤로</button>
+							</div>
+							<div class="col-md-4">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-6">
+							<div class="col-md-4">
 								<button type="button" id="StudentJoinFrmBtn"
 										class="btn btn-primary btn-sm btn-block">등록</button>
 							</div>
@@ -149,7 +155,7 @@
 		            contentType: "application/json; charset=UTF-8",
 		            success: function (response) {
 		                if(response.result == 1){
-		                	alert('사용 가능한 아이디 입니다.')
+		                	alert('사용 가능한 아이디 입니다.');
 		                    //$('#idOverlapMessage').text('사용가능한 아이디 입니다.');
 		                    $('#idOverlapClickChk').val(1);
 		                } else if(response.result == 0){
@@ -200,7 +206,7 @@
 		            contentType: "application/json; charset=UTF-8",
 		            success: function (response) {
 		                if(response.result == 1){
-		                	alert('사용 가능한 이메일 입니다.')
+		                	alert('사용 가능한 이메일 입니다.');
 		                    //$('#emailOverlapMessage').text('사용가능한 이메일 입니다.');
 		                    $('#emailOverlapClickChk').val(1);
 		                	// 회원 등록할 때 중복확인 버튼을 눌렀다는 걸 알려줄 값   0:안누름 / 1:누름
@@ -381,44 +387,7 @@
 		            return false;
 		        }
 		        
-		        /*if($("#agree").is(":checked") == false){
-		            alert('약관에 동의하셔야 합니다');
-		            return false;      
-		        }*/
-		        
 		        $('#studentJoinFrm').submit();
-		        
-		        /*$.ajax({
-		            url: '/addMember',
-		            type: 'POST',
-		            data: {
-		            	member_id:$('#inputId').val(),
-		            	member_pw:$('#inputPassword').val(),
-		                name:$("#inputName").val(),
-		                
-		                email:$('#InputEmail').val(),
-		                
-		                telNO:$("#inputtelNO").val(),
-		                mobileNO:$("#inputMobile").val()
-		            },
-		            dataType: "json",
-		            success: function (response) {
-		                if(response.result == 1){
-		                    alert('가입 완료');
-		                    location.replace('../index.php'); // 화면 갱신
-		                } else if(response.result == 0){
-		                    alert('이미 가입된 아이디입니다');
-		                } else if(response.result == -2){
-		                    alert('입력된 값이 없습니다');
-		                } else {
-		                    alert('등록중에 에러가 발생했습니다');
-		                }
-		            },
-		            error: function(jqXHR, textStatus, errorThrown){
-		                alert("arjax error : " + textStatus + "\n" + errorThrown);
-		            }
-		        });*/
-		        
 		    });
 	
 		//});

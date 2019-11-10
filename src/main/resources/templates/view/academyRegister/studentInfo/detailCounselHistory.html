@@ -18,6 +18,8 @@
 		<form role="form" id="counselUpdateFrm"
 			  action="/updateCounsel" method="post">
 			<input type="hidden" name="memberId" th:value="${counsel.memberId}">
+			<!-- 상담내역 수정처리후 해당 학생의 상담관리 페이지로 이동해야하므로 넣어준다. -->
+			
 			<div class="form-group">
 				<label for="inputCounselHistoryNo">상담내역코드</label>
 				<input type="text" class="form-control" id="inputCounselHistoryNo"
@@ -72,16 +74,20 @@
 			
 			<div class="form-group">
 				<div class="row"> <!-- style="vertical-align: bottom;" -->
-					<div class="col-md-4">
+					<div class="col-md-3">
 						<button type="button" class="btn btn-primary btn-sm btn-block"
 								th:onclick="'window.location.href = \'' + @{/deleteCounsel(counselHistoryNo=${counsel.counselHistoryNo}, memberId=${counsel.memberId})} + '\''">
 							삭제
 						</button>
 					</div>
-					<div class="col-md-4">
+					<div class="col-md-3">
+						<button type="button" onclick="javascript:history.back()"
+								class="btn btn-primary btn-sm btn-block">뒤로</button>
+					</div>
+					<div class="col-md-3">
 						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 					</div>
-					<div class="col-md-4">
+					<div class="col-md-3">
 						<button type="button" id="counselUpdateFrmBtn"
 								class="btn btn-primary btn-sm btn-block">수정</button>
 					</div>

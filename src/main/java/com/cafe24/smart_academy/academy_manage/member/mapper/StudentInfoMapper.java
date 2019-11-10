@@ -9,7 +9,6 @@ import com.cafe24.smart_academy.academy_manage.member.vo.Counsel;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselAppointment;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselResult;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
-import com.cafe24.smart_academy.academy_manage.member.vo.GetCounselResultNo;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
 import com.cafe24.smart_academy.academy_manage.member.vo.Parent;
@@ -66,9 +65,6 @@ public interface StudentInfoMapper {
 	
 	public List<CounselResult> counselResultNameList();
 	// 관리자 : 상담결과코드 이름만 리스트로 가져오기
-	
-	public String getCounselResultNo(GetCounselResultNo getCounselResultNo);
-	// 관리자 : 상담구분코드와 상담결과명으로 상담결과코드를 얻어온다.
 	
 	public int addCounselAppointment(CounselAppointment appointment);
 	// 관리자 : 상담예약테이블 추가 처리

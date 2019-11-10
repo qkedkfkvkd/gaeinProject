@@ -19,6 +19,10 @@
 	<div class="col-sm-8 col-md-offset-3">
 		<form role="form" id="counselAppointmentUpdateFrm"
 			  action="/updateCounselAppointment" method="post">
+			<input type="hidden" id="prevPage" name="prevPage" th:value="${prevPage}">
+			<!-- 이전 페이지 정보 -->
+			<!-- 관리자 : 상담관리페이지, 학생 : 상담예약 리스트 페이지 -->
+			
 			<div class="form-group">
 				<label for="inputCounselHistoryNo">상담내역코드</label>
 				<div class="input-group">
@@ -56,8 +60,11 @@
 			<div class="form-group">
 				<label for="inputStudentName">상담학생명</label>
 				<input type="text" class="form-control" id="inputStudentName"
-						   name="memberId" th:value="${counselAppointment.memberName}"
-						   readonly="readonly">
+					   th:value="${counselAppointment.memberName}"
+					   readonly="readonly">
+				<input type="hidden" name="memberId" th:value="${counselAppointment.memberId}">
+				<!-- 관리자 : 수정처리후 상담관리페이지로 넘어갈 경우 필요한 학생 아이디 -->
+				<!-- 학생 : 자신의 상담예약현황 페이지로 넘어갈 경우 필요한 학생 아이디 -->
 			</div>
 			
 			<div class="form-group">
@@ -76,11 +83,25 @@
 			
 			<div class="form-group">
 				<div class="row"> <!-- style="vertical-align: bottom;" -->
-					<div class="col-md-3">
+					<div class="col-md-2">
 						<button type="button" class="btn btn-primary btn-sm btn-block"
 								th:onclick="'window.location.href = \'' + @{/deleteCounselAppointment(counselHistoryNo=${counselAppointment.counselHistoryNo}, memberLevel=${session.memberLevel}, memberId=${session.memberId})} + '\''">
 							삭제
 						</button>
+					</div>
+					<div class="col-md-2">
+						<span th:if="${prevPage != null}">
+							<button type="button" class="btn btn-success btn-sm btn-block"
+								th:onclick="'window.location.href = \'' + @{/counselManage(memberId=${counselAppointment.memberId})} + '\''">
+									목록
+							</button>
+						</span>
+						<span th:unless="${prevPage != null}">
+							<button type="button" class="btn btn-success btn-sm btn-block"
+								th:onclick="'window.location.href = \'' + @{/currentReservationStateList} + '\''">
+									목록
+							</button>
+						</span>
 					</div>
 					<div class="col-md-3"
 						 th:if="${session.memberLevel == '관리자'.toString()}">
@@ -97,7 +118,7 @@
 							</button>
 						</span>
 					</div>
-					<div class="col-md-3">
+					<div class="col-md-2">
 						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 					</div>
 					<div class="col-md-3">
@@ -151,7 +172,9 @@
 		$('#permissionCounselAppointmentBtn').on('click', function(e){
 			e.preventDefault();
 			
+			var prevPage = $('#prevPage').val();
 			var counselHistoryNo = $('#inputCounselHistoryNo').val();
+			console.log(`prevPage:${prevPage}`);
 			console.log(`counselHistoryNo:${counselHistoryNo}`);
 			
 			$.ajax({
@@ -163,7 +186,12 @@
 	            success: function (response) {
 	                if(response.result == 1){
 	                	alert('예약 성공');
-	                	location.href = "/currentReservationStateList";
+	                	if(prevPage == 'counselManage') {
+	                		location.href = "/updateCounselAppointment?counselHistoryNo="+counselHistoryNo + "&prevPage="+prevPage;
+	                	} else {
+	                		location.href = "/updateCounselAppointment?counselHistoryNo="+counselHistoryNo;
+	                	}
+	                	
 	                } else if(response.result == 0){
 	                	alert('예약 실패');
 	                } else {

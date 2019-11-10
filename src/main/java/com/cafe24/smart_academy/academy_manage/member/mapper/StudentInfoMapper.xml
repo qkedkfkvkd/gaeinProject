@@ -272,8 +272,6 @@
 	</select>
 	
 	
-	
-	
 	<!-- 학생 : 상담예약신청 시 상담내역코드 중복 확인 -->
 	<select id="counselAppointmentByCounselHistoryNo"
 			parameterType="String" resultType="String">
@@ -284,9 +282,6 @@
 		where
 			counsel_history_no = #{counselHistoryNo}
 	</select>
-	
-	
-	
 	
 	
 	<!-- 관리자 : 신입생상담 리스트 가져오기 -->
@@ -413,7 +408,7 @@
 		and
 			login.member_id = #{memberId}
 		</if>
-		<if test="counselTypeNo != null and counselTypeNo neq ''.toString()">
+		<if test="counselTypeNo != null and counselTypeNo neq ''.toString() and counselTypeNo neq 'not'.toString()">
 		and
 			ct.counsel_type_no = #{counselTypeNo}
 		</if>
@@ -530,22 +525,6 @@
 			counsel_result_name		AS counselResultName
 		from
 			counsel_result
-	</select>
-	
-	
-	<!-- 관리자 : 상담구분코드와 상담결과명으로 상담결과코드를 얻어온다. -->
-	<select id="getCounselResultNo" resultType="String">	
-		select
-			counsel_result_no		AS counselResultNo
-		from
-			 counsel_type			AS ct
-			,counsel_result			AS cr
-		where
-			ct.counsel_type_no = cr.counsel_type_no
-		and
-			ct.counsel_type_no = #{counselTypeNo}
-		and
-			cr.counsel_result_name = #{counselResultName}
 	</select>
 	
 	

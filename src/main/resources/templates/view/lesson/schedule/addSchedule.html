@@ -19,7 +19,7 @@
 			<div class="col-md-3">
 				<form role="form" id="scheduleJoinFrm"
 					  action="/addSchedule" method="post">
-					<input type="hidden" name="memberId" value="${teacherInfo.memberId}">
+					<input type="hidden" name="memberId" th:value="${teacherInfo.memberId}">
 					<!-- 추가처리 후 강좌시간표승인요청 리스트로 가든 -->
 					<!-- 추가실패하여 다시 추가폼으로 오든 강사의 아이디는 항상 가지고 가야한다. -->
 					
@@ -78,10 +78,14 @@
 					
 					<div class="form-group">
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
-							<div class="col-md-6">
+							<div class="col-md-4">
+								<button type="button" onclick="javascript:history.back()"
+									class="btn btn-primary btn-sm btn-block">뒤로</button>
+							</div>
+							<div class="col-md-4">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-6">
+							<div class="col-md-4">
 								<button type="button" id="scheduleJoinFrmBtn"
 										class="btn btn-primary btn-sm btn-block">입력</button>
 							</div>
@@ -214,7 +218,7 @@
 	            contentType: "application/json; charset=UTF-8",
 	            success: function (response) {
 	                if(response.result == 1){
-	                	alert('사용 가능한 코드 입니다.')
+	                	alert('사용 가능한 코드 입니다.');
 	                    $('#scheduleNoOverlapClickChk').val(1);
 	                	// 중복확인 버튼 누름으로 변경 0:안누름 / 1:누름
 	                } else if(response.result == 0){
@@ -267,7 +271,7 @@
 	            return false;
 	        }
 	        
-	        if($("#scheduleDayList").val() ==''){
+	        if($("#scheduleDayList").val() =='not'){
 	            alert('요일을 선택하세요');
 	            $("#scheduleDayList").focus();
 	            return false;

@@ -17,6 +17,7 @@
 	<div class="col-sm-11 col-md-offset-3">
 		<form class="form-inline" action="/searchCounselReservationStateList" method="post">
 			<input type="hidden" name="counselWhether" value="무">
+			<!-- 상담여부 '무' 쿼리 검색 키워드 -->
 			
 			<div class="form-group">
 				<label class="sr-only" for="counselTypeList">상담구분명</label>
@@ -104,9 +105,6 @@
 							</button>
 						</span>
 					</td>
-					<!-- 아이디 제외 -->
-					<!-- 학생의 아이디, 상담내역코드를 컨트롤러에 전달한다. -->
-					<!-- 부트스트랩 버튼으로 만들것. -->
 				</tr>
 				
 				<tr th:unless="${counselReservationStateListSize != 0}">

@@ -1,5 +1,6 @@
 package com.cafe24.smart_academy.academy_manage.member.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,6 @@ import com.cafe24.smart_academy.academy_manage.member.vo.Counsel;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselAppointment;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselResult;
 import com.cafe24.smart_academy.academy_manage.member.vo.CounselType;
-import com.cafe24.smart_academy.academy_manage.member.vo.GetCounselResultNo;
 import com.cafe24.smart_academy.academy_manage.member.vo.Member;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberLogin;
 import com.cafe24.smart_academy.academy_manage.member.vo.MemberSearchVO;
@@ -290,10 +290,7 @@ public class StudentInfoService {
 	}
 	
 	
-	// 관리자 : 상담구분코드와 상담결과명으로 상담결과코드를 얻어온다.
-	public String getCounselResultNo(GetCounselResultNo getCounselResultNo) {
-		return studentInfoMapper.getCounselResultNo(getCounselResultNo);
-	}
+	
 	
 	
 	// 관리자 : 상담예약테이블에 추가처리
@@ -336,16 +333,24 @@ public class StudentInfoService {
 		List<String> memberIdList = studentInfoMapper.admissionCounselMemberIdList();
 		// 신입생 학생 아이디를 가져온다.
 		
-		List<Member> admissionCounselList = null;
+		List<Member> admissionCounselList = new ArrayList<Member>();
+		// 신입생이 존재하지 않을 경우 이 객체가 그대로 리턴될 것이다. (사이즈 0)
 		
-		Map<String, Object> map = new HashMap<String, Object>();
-		// 검색할 키워드를 넣어줄 맵 객체를 선언한다.
+		System.out.println(memberIdList.toString()
+				+ "memberIdList.toString()   admissionCounselList()   StudentInfoService.java");
+		System.out.println(memberIdList.size()
+				+ "memberIdList.size()   admissionCounselList()   StudentInfoService.java");
 		
-		map.put("memberIdList", memberIdList);
-		// 신입생의 회원 아이디 리스트 검색 키워드를 넣어준다.
-		
-		admissionCounselList = studentInfoMapper.admissionCounselList(map);
-		// 가져온 학생 아이디리스트를 넣어서 해당 학생의 회원신상정보 리스트를 얻어온다.
+		if(memberIdList.size() > 0) { // 신입생이 존재한다면
+			Map<String, Object> map = new HashMap<String, Object>();
+			// 검색할 키워드를 넣어줄 맵 객체를 선언한다.
+			
+			map.put("memberIdList", memberIdList);
+			// 신입생의 회원 아이디 리스트 검색 키워드를 넣어준다.
+			
+			admissionCounselList = studentInfoMapper.admissionCounselList(map);
+			// 가져온 학생 아이디리스트를 넣어서 해당 학생의 회원신상정보 리스트를 얻어온다.
+		}
 		
 		return admissionCounselList;
 	}
@@ -359,25 +364,28 @@ public class StudentInfoService {
 		List<String> memberIdList = studentInfoMapper.admissionCounselMemberIdList();
 		// 신입생 학생 아이디를 가져온다.
 		
-		List<Member> admissionCounselList = null;
+		List<Member> admissionCounselList = new ArrayList<Member>();
+		// 신입생 학생 아이디 목록이 없을 경우 이 객체가 그대로 리턴된다.(사이즈:0)
 		
-		Map<String, Object> map = new HashMap<String, Object>();
-		// 검색할 키워드를 넣어줄 맵 객체를 선언한다.
-		
-		map.put("memberIdList", memberIdList);
-		// 신입생의 회원 아이디는 항상 필요하므로 조건문 밖에 두었다.
-		
-		map.put("memberName", memberSearchVO.getMemberName());
-		// 검색할 키워드 회원 이름을 넣어준다.
-		
-		map.put("startJoinDate", memberSearchVO.getStartJoinDate());
-		// 검색할 키워드 가입 시작기간을 넣어준다.
-		
-		map.put("endJoinDate", memberSearchVO.getEndJoinDate());
-		// 검색할 키워드 가입 마지막기간을 넣어준다.
-		
-		admissionCounselList = studentInfoMapper.admissionCounselList(map);
-		// 가져온 학생 아이디리스트를 넣어서 해당 학생의 회원신상정보 리스트를 얻어온다.
+		if(memberIdList.size() > 0) { // 신입생이 존재한다면
+			Map<String, Object> map = new HashMap<String, Object>();
+			// 검색할 키워드를 넣어줄 맵 객체를 선언한다.
+			
+			map.put("memberIdList", memberIdList);
+			// 신입생의 회원 아이디는 항상 필요하므로 조건문 밖에 두었다.
+			
+			map.put("memberName", memberSearchVO.getMemberName());
+			// 검색할 키워드 회원 이름을 넣어준다.
+			
+			map.put("startJoinDate", memberSearchVO.getStartJoinDate());
+			// 검색할 키워드 가입 시작기간을 넣어준다.
+			
+			map.put("endJoinDate", memberSearchVO.getEndJoinDate());
+			// 검색할 키워드 가입 마지막기간을 넣어준다.
+			
+			admissionCounselList = studentInfoMapper.admissionCounselList(map);
+			// 가져온 학생 아이디리스트를 넣어서 해당 학생의 회원신상정보 리스트를 얻어온다.
+		}
 		
 		return admissionCounselList;
 	}

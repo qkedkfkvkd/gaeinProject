@@ -18,6 +18,7 @@
 		<form role="form" id="subjectCodeJoinFrm"
 			  action="/addSubject" method="post">
 			<input type="hidden" value="무" name="subjectIsChanged">
+			<!-- 처음 등록시 변경사항이 없으므로 변경여부 '무'로 지정한다. -->
 			
 			<div class="form-group">
 				<label for="inputSubjectNo">과목코드</label>
@@ -40,10 +41,14 @@
 			
 			<div class="form-group">
 				<div class="row"> <!-- style="vertical-align: bottom;" -->
-					<div class="col-md-6">
+					<div class="col-md-4">
+						<button type="button" onclick="javascript:history.back()"
+								class="btn btn-primary btn-sm btn-block">뒤로</button>
+					</div>
+					<div class="col-md-4">
 						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-4">
 						<button type="button" id="subjectCodeJoinBtn"
 								class="btn btn-primary btn-sm btn-block">입력</button>
 					</div>
@@ -77,7 +82,7 @@
 		            contentType: "application/json; charset=UTF-8",
 		            success: function (response) {
 		                if(response.result == 1){
-		                	alert('사용 가능한 과목코드 입니다.')
+		                	alert('사용 가능한 과목코드 입니다.');
 		                    $('#subjectNoOverlapClickChk').val(1);
 		                } else if(response.result == 0){
 		                	alert('이미 사용 중인 과목코드 입니다');

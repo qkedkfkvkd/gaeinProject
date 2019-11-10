@@ -11,11 +11,11 @@
 				</a>
 				<div class="collapse" id="ui-course">
 					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/courseList}">강좌목록</a>
 						</li>
 						
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/courseAssignTeacherList}">강좌별 강사목록</a>
 						</li>
 					</ul>
@@ -33,7 +33,7 @@
 							<a class="nav-link" href="/academyRoomList">강의실 목록</a>
 						</li>
 						
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/courseAssignList}">강좌별 강의실목록</a>
 						</li>
 					</ul>
@@ -47,7 +47,7 @@
 				</a>
 				<div class="collapse" id="ui-schedule">
 					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"><!-- 시간표 오름차순으로 강좌별 시간표를 조회한다. -->
+						<li class="nav-item"><!-- 교시 오름차순으로 강좌별 시간표를 조회한다. -->
 							<a class="nav-link" th:href="@{/scheduleList(scheduleApprovalStatus='유', scheduleDay='월')}">월요일</a>
 						</li>
 						
@@ -78,25 +78,55 @@
 				</a>
 				<div class="collapse" id="ui-class">
 					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!--  -->
-							<a class="nav-link" th:href="@{/oneStudentCourseScheduleList(memberId=${session.memberId})}">강좌시간표</a>
-							<!-- 시간표 오름차순으로 강좌별 시간표를 조회한다. -->
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/courseEnrolleeList(memberId=${session.memberId})}">수강신청목록</a>
 						</li>
 						
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/examinationDayList(testStandardDay='notTest', memberId=${session.memberId}, memberLevel=${session.memberLevel})}">시험일 목록</a>
 						</li>
 						
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/gradingCriteriaList}">성적평가기준</a>
 						</li>
 						
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/oneStudentTotalGradeResultList(memberId=${session.memberId})}">성적결과</a>
 						</li>
 						
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/counselAppointmentList(memberId=${session.memberId}, counselWhether='무')}">상담예약현황</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+			
+			<li class="nav-item"
+				th:if="${session.memberLevel == '학생'.toString()}"><!-- 시간표 오름차순으로 강좌별 시간표를 조회한다. -->
+				<a class="nav-link collapsed" data-toggle="collapse" href="#ui-mySchedule" aria-expanded="false" aria-controls="ui-mySchedule">
+					<i class="mdi mdi-package-variant menu-icon"></i> 
+					<span class="menu-title">나의 시간표</span> <i class="menu-arrow"></i>
+				</a>
+				<div class="collapse" id="ui-mySchedule">
+					<ul class="nav flex-column sub-menu">
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/oneStudentCourseScheduleList(memberId=${session.memberId}, scheduleDay='월')}">월요일</a>
+						</li>
+						
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/oneStudentCourseScheduleList(memberId=${session.memberId}, scheduleDay='화')}">화요일</a>
+						</li>
+						
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/oneStudentCourseScheduleList(memberId=${session.memberId}, scheduleDay='수')}">수요일</a>
+						</li>
+						
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/oneStudentCourseScheduleList(memberId=${session.memberId}, scheduleDay='목')}">목요일</a>
+						</li>
+						
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/oneStudentCourseScheduleList(memberId=${session.memberId}, scheduleDay='금')}">금요일</a>
 						</li>
 					</ul>
 				</div>
@@ -110,10 +140,10 @@
 				</a>
 				<div class="collapse" id="ui-student">
 					<ul class="nav flex-column sub-menu">
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/updateStudentInfo(memberId=${session.memberId})}">정보수정</a>
 						</li>
-						<li class="nav-item"> <!--  -->
+						<li class="nav-item">
 							<a class="nav-link" th:href="@{/updateLoginPassword(memberId=${session.memberId})}">비밀번호수정</a>
 						</li>
 					</ul>

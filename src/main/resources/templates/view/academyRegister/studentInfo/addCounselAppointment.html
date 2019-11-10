@@ -18,8 +18,13 @@
 		<form role="form" id="counselAppointmentJoinFrm"
 				action="/addCounselAppointment" method="post">
 			<input type="hidden" th:value="${member.memberId}" name="memberId">
-			<input type="hidden" value="무" name="counselWhether"><!-- 상담여부 '무' 처리 -->
-			<input type="hidden" value="무" name="counselAppointmentWhether"> <!-- 상담예약 '무' 처리 -->
+			<!-- 상담예약을 등록하는 학생의 아이디 -->
+			
+			<input type="hidden" value="무" name="counselWhether">
+			<!-- 상담여부 '무' 처리 -->
+			
+			<input type="hidden" value="무" name="counselAppointmentWhether">
+			<!-- 상담예약 '무' 처리 -->
 			
 			<div class="form-group">
 				<label for="inputCounselHistoryNo">상담내역코드</label>
@@ -73,11 +78,14 @@
 			
 			<div class="form-group">
 				<div class="row"> <!-- style="vertical-align: bottom;" -->
-					
-					<div class="col-md-6">
+					<div class="col-md-4">
+						<button type="button" onclick="javascript:history.back()"
+								class="btn btn-primary btn-sm btn-block">뒤로</button>
+					</div>
+					<div class="col-md-4">
 						<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-4">
 						<button type="button" id="counselAppointmentJoinFrmBtn"
 								class="btn btn-primary btn-sm btn-block">입력</button>
 					</div>
@@ -136,7 +144,7 @@
 	            contentType: "application/json; charset=UTF-8",
 	            success: function (response) {
 	                if(response.result == 1){
-	                	alert('사용 가능한 코드 입니다.')
+	                	alert('사용 가능한 코드 입니다.');
 	                    $('#counselHistoryNoOverlapClickChk').val(1);
 	                } else if(response.result == 0){
 	                	alert('이미 등록된 코드 입니다');

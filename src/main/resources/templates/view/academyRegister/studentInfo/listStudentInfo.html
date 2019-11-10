@@ -15,16 +15,19 @@
 	</div>
 	
 	<div class="col-sm-11 col-md-offset-3">
-		<div class="row">
-			<div class="col-md-6">
-				<form action="/searchStudentInfo" method="post">
-					<input type="hidden" name="memberLevel" value="학생">
+		<form action="/searchStudentInfo" method="post">
+			<input type="hidden" name="memberLevel" value="학생">
+			<!-- 권한이 학생인 회원들 중에서 검색한다. -->
+			
+			<div class="row">
+				<div class="col-md-3">
 					<div class="form-group">
-						<label class="sr-only" for="searchMemberName">학생명</label>
+						<label for="searchMemberName">학생명</label>
 						<input type="text" class="form-control" id="searchMemberName"
 								   name="memberName" placeholder="학생 이름을 입력하세요.">
 					</div>
-					
+				</div>
+				<div class="col-md-5">
 					<div class="form-group">
 						<label for="inputJoinDate">가입기간</label>
 						<div class="input-group">
@@ -36,13 +39,13 @@
 							</span> 
 							
 							<input type="date" class="form-control" id="inputEndJoinDate"
-								   name="endJoinDate" placeholder="마지막 가입일을 선택하세요.">  
+								   name="endJoinDate" placeholder="마지막 가입일을 선택하세요.">
+							<button type="submit" class="btn btn-success">검색</button>
 						</div>
 					</div>
-					<button type="submit" class="btn btn-success">검색</button>
-				</form>
+				</div>
 			</div>
-		</div>
+		</form>
 		
 		
 		<table class="table table-striped">

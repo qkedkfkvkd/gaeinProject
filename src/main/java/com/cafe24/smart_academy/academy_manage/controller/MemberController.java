@@ -28,6 +28,7 @@ public class MemberController {
 	
 	@Autowired
 	private MemberService memberService;
+	// 회원 정보 관리 서비스 객체
 	
 	// 로그인 버튼 클릭시 로그인 폼으로 이동
 	@GetMapping("/loginMember")
@@ -56,6 +57,7 @@ public class MemberController {
 			session.setAttribute("memberId", map.get("memberId"));
 			session.setAttribute("memberLevel", map.get("memberLevel"));
 			session.setAttribute("memberName", map.get("memberName"));
+			// 세션객체에 아이디, 권한, 이름을 할당한다.
 			
 //			String level = (String)map.get("memberLevel");
 //			if(level.equals("관리자")) {
@@ -66,7 +68,7 @@ public class MemberController {
 				path = "/view/index";
 //			}
 			
-		} else {
+		} else { // 로그인 실패시
 			System.out.println(map.get("result") + "<- map.result   memberLogin()   MemberController.java");
 			
 			path = "/view/login/login";
@@ -108,21 +110,22 @@ public class MemberController {
 		System.out.println(memberEmail + "<- memberEmail   findLoginId()   MemberController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
+		// 뷰페이지에 보낼 객체
 		
 		String memberId = memberService.findLoginId(findLoginInfo);
 		// 아이디 찾기 메소드 호출
 		
 		System.out.println(memberId + " <- memberId   findLoginId()   MemberController.java");
 		
-		if(memberId != null) {
+		if(memberId != null) { // 아이디가 존재함 : 입력한 이름과 이메일이 디비의 데이터와 정확히 일치
 			map.put("result", "success");
-			// 아이디가 존재함 : 입력한 이름과 이메일이 디비의 데이터와 정확히 일치
+			// 아이디를 찾았다는 뷰페이지의 조건문 통과
 			
 			map.put("memberId", memberId);
 			// 찾은 아이디를 넣어줌
-		} else {
+		} else { // 아이디가 존재하지 않음 : 이름이나 이메일을 잘못 입력
 			map.put("result", "fail");
-			// 아이디가 존재하지 않음 : 이름이나 이메일을 잘못 입력
+			// 아이디를 찾지 못했다는 뷰페이지의 조건문 통과
 		}
 		
 		return map;
@@ -148,16 +151,17 @@ public class MemberController {
 		System.out.println(memberEmail + "<- memberEmail   findLoginPw()   MemberController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
+		// 뷰페이지에 보낼 객체
 		
 		MemberLogin loginInfo = memberService.findLoginPw(findLoginInfo);
 		// 비밀번호 찾기 메소드 호출
 		
-		if(loginInfo != null) {
+		if(loginInfo != null) { // 객체가 존재함 : 입력한 아이디와 이메일이 디비의 데이터와 정확히 일치
 			System.out.println(loginInfo.getMemberId() + " <- memberId   findLoginPw()   MemberController.java");
 			System.out.println(loginInfo.getMemberPw() + " <- memberPw   findLoginPw()   MemberController.java");
 			
 			map.put("result", "success");
-			// 객체가 존재함 : 입력한 아이디와 이메일이 디비의 데이터와 정확히 일치
+			// 비밀번호를 찾았다는 뷰페이지의 조건문 통과
 			
 			map.put("memberId", loginInfo.getMemberId());
 			// 아이디를 넣어줌
@@ -183,11 +187,12 @@ public class MemberController {
 		System.out.println(memberId + "<- memberId   memberIdOverlapChk()   MemberController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
+		// 뷰페이지에 보낼 객체
 		
 		String memberIdResult = memberService.memberLoginById(memberId);
 		// 서비스의 아이디 중복확인 메소드 호출
 		
-		if(memberIdResult == null) {
+		if(memberIdResult == null) { // 입력한 아이디가 존재한다면
 			map.put("result", 1);
 			// 로그인 테이블에 해당 아이디값이 존재하지 않음 : 사용 가능한 아이디
 			
@@ -210,11 +215,12 @@ public class MemberController {
 		System.out.println(memberEmail + "<- memberEmail   memberEmailOverlapChk()   MemberController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
+		// 뷰페이지에 보낼 객체
 		
 		String memberEmailResult = memberService.memberByEmail(memberEmail);
 		// 서비스의 이메일 중복확인 메소드 호출
 		
-		if(memberEmailResult == null) {
+		if(memberEmailResult == null) { // 입력한 이메일이 존재한다면
 			map.put("result", 1);
 			// 회원신상정보 테이블에 해당 이메일 값이 존재하지 않음 : 사용 가능한 이메일
 			
@@ -349,9 +355,17 @@ public class MemberController {
 		
 		
 		model.addAttribute("counselStandardList", counselStandardList);
+		// 화면에 보여줄 상담기준코드 리스트 (상담구분-상담결과 조인)
+		
 		model.addAttribute("counselStandardListSize", counselStandardList.size());
+		// 리스트의 사이즈를 보고 리스트 존재여부 판단
+		
 		model.addAttribute("counselTypeListSize", counselTypeListSize);
+		// 상담결과 추가 버튼 노출 시 참조하는 상담구분 테이블의 리스트 존재여부 판단
+		
 		model.addAttribute("counselTypeList", counselTypeList);
+		// 검색 폼의 샐랙트 박스에 넣어줄 상담구분 리스트
+		
 		//model.addAttribute("counselResultList", counselResultList);
 		
 		return "/view/academyRegister/academyRegisterCode/listCounselStandard";
@@ -370,7 +384,7 @@ public class MemberController {
 		
 		List<Map<String, Object>> counselResultList =
 				memberService.counselResultListBycounselTypeNo(counselTypeNo);
-		// 해당 강의실 층수로 강의실 실용도 리스트 가져오기
+		// 선택한 상담구분코드를 참조하는 상담결과 리스트 가져오기
 		
 		return counselResultList;
 	}
@@ -397,9 +411,16 @@ public class MemberController {
 		
 		
 		model.addAttribute("counselStandardList", searchCounselStandardList);
+		// 화면에 보여줄 상담기준 검색결과 리스트(상담구분 - 상담결과 조인)
+		
 		model.addAttribute("counselStandardListSize", searchCounselStandardList.size());
+		// 리스트의 사이즈를 보고 리스트 존재여부 판단
+		
 		model.addAttribute("counselTypeListSize", counselTypeListSize);
+		// 상담결과 추가 버튼 노출 시 참조하는 상담구분 테이블의 리스트 존재여부 판단
+		
 		model.addAttribute("counselTypeList", counselTypeList);
+		// 검색 폼의 샐랙트 박스에 넣어줄 상담구분 리스트
 		
 		return "/view/academyRegister/academyRegisterCode/listCounselStandard";
 	}
@@ -416,7 +437,7 @@ public class MemberController {
 		// 상담구분코드 리스트 가져오기
 		
 		model.addAttribute("counselTypeList", counselTypeViewList);
-		// 샐랙트 박스에 넣을 상담구분코드 리스트
+		// 검색 폼의 샐랙트 박스에 넣을 상담구분코드 리스트
 		
 		model.addAttribute("counselTypeViewList", counselTypeViewList);
 		// 화면에 보여줄 상담구분코드 리스트
@@ -435,13 +456,13 @@ public class MemberController {
 			,Model model) {
 		
 		List<CounselType> counselTypeList = memberService.counselTypeList();
-		// 샐랙트 박스에 넣어줄 상담구분코드 리스트 가져오기
+		// 검색 폼의 샐랙트 박스에 넣어줄 상담구분코드 리스트 가져오기
 		
 		List<CounselType> counselTypeViewList = memberService.counselTypeList(counselTypeNo);
 		// 상담구분코드 검색결과 리스트 가져오기
 		
 		model.addAttribute("counselTypeList", counselTypeList);
-		// 샐랙트 박스에 넣을 상담구분코드 리스트
+		// 검색 폼의 샐랙트 박스에 넣을 상담구분코드 리스트
 		
 		model.addAttribute("counselTypeViewList", counselTypeViewList);
 		// 화면에 보여줄 검색결과 상담구분코드 리스트
@@ -469,6 +490,7 @@ public class MemberController {
 				+ "<- inputCounselTypeNo   counselTypeNoOverlapChk()   MemberController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
+		// 뷰페이지에 보낼 객체
 		
 		String counselTypeNoResult = memberService.counselTypeByCounselTypeNo(inputCounselTypeNo);
 		// 서비스의 상담구분코드 중복확인 메소드 호출
@@ -490,6 +512,7 @@ public class MemberController {
 	@PostMapping("/addCounselType")
 	public String addCounselType(Model model, CounselType counselType) {
 		String message = memberService.addCounselType(counselType);
+		// 상담구분 추가처리 후 메세지 반환
 		
 		String path = "/view/academyRegister/academyRegisterCode/addCounselType";
 		// 상담구분코드 추가에 실패했을 경우 다시 상담구분코드를 추가하는 폼으로 이동하게 초기화한다.
@@ -520,7 +543,11 @@ public class MemberController {
 		// 해당 상담구분코드를 참조하는 상담결과목록 가져오기
 		
 		model.addAttribute("counselType", counselType);
+		// 화면에 보여줄 상담구분 상세정보
+		
 		model.addAttribute("counselResultList", counselResultList);
+		// 화면에 보여줄 해당 상담구분코드를 참조하는 상담결과 리스트
+		
 		model.addAttribute("counselResultListSize", counselResultList.size());
 		// 상담 리스트의 사이즈를 보고 상담구분-결과목록를 뿌려줄 것인지,
 		// '해당 항목으로 등록된 상담결과목록이 없습니다.'메세지를 뿌려줄 것인지 판단한다.
@@ -536,8 +563,8 @@ public class MemberController {
 		String message = memberService.updateCounselType(counselType);
 		// 해당 상담구분코드 수정 처리 후 메세지 반환
 		
-		String path = "redirect:/counselStandardList";
-		// 상담구분 수정에 성공했을 경우 상담기준코드 리스트로 이동하게 초기화한다.
+		String path = "redirect:/counselTypeList";
+		// 상담구분 수정에 성공했을 경우 상담구분코드 리스트로 이동하게 초기화한다.
 		
 		if(message != null) {
 			// 리턴받은 메세지가 널이 아니라면 상담구분 수정에 실패했다는 뜻이다.
@@ -642,7 +669,15 @@ public class MemberController {
 				memberService.counselAppointmentListBycounselResultNo(counselResultNo);
 		// 해당 상담결과코드를 참조하는 상담예약목록 가져오기
 		
+		List<CounselType> counselTypeList = memberService.counselTypeList();
+		// 샐랙트 박스에 넣어줄 상담구분코드 리스트 가져오기
+		
+		model.addAttribute("counselTypeList", counselTypeList);
+		// 샐랙트 박스에 넣어줄 상담구분코드 리스트
+		
 		model.addAttribute("counselResult", counselResult);
+		// 화면에 보여줄 상담결과 객체
+		
 		model.addAttribute("counselAppointmentList", counselAppointmentList);
 		model.addAttribute("counselAppointmentListSize", counselAppointmentList.size());
 		// 상담 리스트의 사이즈를 보고 상담구분-결과목록를 뿌려줄 것인지,

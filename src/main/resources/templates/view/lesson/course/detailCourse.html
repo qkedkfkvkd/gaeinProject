@@ -19,8 +19,9 @@
 			<div class="col-md-3">
 				<form role="form" id="courseUpdateFrm"
 					  action="/updateCourse" method="post">
-					
 					<input type="hidden" value="무" id="courseIsChanged" name="courseIsChanged">
+					<!-- 초기값 변경여부 '무', 과목명 혹은 강좌명 변경시
+						 변경여부 '유'로 변경된다. -->
 					
 					<div class="form-group">
 						<label for="inputCourseNo">강좌코드</label>
@@ -84,7 +85,7 @@
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
 							<!-- 강좌강의실배정 테이블이 강좌코드를 참조하므로 참조하는게 없는 강좌코드만 삭제 가능하도록 한다. -->
 							<!-- 해당 강좌코드를 참조하는 강좌강의실배정 테이블이 없다 → 삭제가능한 강좌다. -->
-							<div class="col-md-4" th:if="${courseAssignListSize == 0 && courseTeacherListSize == 0}">
+							<div class="col-md-3" th:if="${courseAssignListSize == 0 && courseTeacherListSize == 0}">
 								<button type="button" class="btn btn-primary btn-sm btn-block"
 										th:onclick="'window.location.href = \'' + @{/deleteCourse(courseNo=${course.courseNo})} + '\''">
 									삭제
@@ -93,10 +94,16 @@
 								변경처리한 다음에 삭제하거나 같이 삭제해야하므로
 								강좌 삭제시 해당 강좌코드를 참조하는 강좌강의실배정 리스트도 같이 보여줘야 한다. -->
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
+								<button type="button" class="btn btn-primary btn-sm btn-block"
+										th:onclick="'window.location.href = \'' + @{/courseList} + '\''">
+									목록
+								</button>
+							</div>
+							<div class="col-md-3">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<button type="button" id="courseUpdateFrmBtn"
 										class="btn btn-primary btn-sm btn-block">수정</button>
 							</div>
@@ -168,8 +175,8 @@
 								<td>
 									<button type="button" class="btn btn-success btn-sm"
 											th:onclick="'window.location.href = \'' + @{/updateCourseAssignTeacher(memberId=${courseAssign.memberId}, memberLevel='강사')} + '\''">
-										수정	<!-- 강좌 강사 매핑부분에서 하나의 강좌를 여러 명의 강사가 참조할 수 있다. -->
-									</button>	<!-- 한편, 강사아이디는 기본키로 한개밖에 없으므로 강사아이디를 줘서 해당 강좌강사 매핑부분을 찾으면 될 것이다. -->
+										수정
+									</button>
 								</td>
 							</tr>
 							

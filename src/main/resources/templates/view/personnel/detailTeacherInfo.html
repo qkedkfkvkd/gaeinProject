@@ -17,8 +17,9 @@
 	<div class="col-sm-10 col-md-offset-3">
 		<form action="/updateTeacherInfo" id="updateTeacherFrm" method="post">
 			<input type="hidden" id="teacherIsChanged" name="teacherIsChanged" value="무">
-			<!-- 강사테이블은 강좌코드를 참조하고 있으므로 강좌 코드가 바뀌었다면
-				 자동적으로 변경여부는 "유"로 바뀌어야 될 것이다. -->
+			<!-- 강사테이블은 강좌코드를 참조하고 있으므로 담당 강좌가 바뀌었다면
+				 자동으로 변경여부는 "유"로 바뀐다. -->
+			
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
@@ -36,7 +37,14 @@
 						<input type="password" class="form-control" id="inputPassword"
 							   name="memberPw"
 							   th:value="${teacherInfo.memberPw}"
-							   placeholder="비밀번호를 입력해주세요">
+							   placeholder="비밀번호를 입력해주세요"
+							   th:if="${session.memberLevel == '강사'.toString()}">
+							   
+						<input type="password" class="form-control"
+							   name="memberPw"
+							   th:value="${teacherInfo.memberPw}"
+							   readonly="readonly"
+							   th:if="${session.memberLevel == '관리자'.toString()}">
 					</div>
 					
 					<div class="form-group">
@@ -44,7 +52,13 @@
 						<input type="password" class="form-control"
 							   id="inputPasswordCheck"
 							   th:value="${teacherInfo.memberPw}"
-							   placeholder="비밀번호 확인을 위해 다시 한번 입력해주세요">
+							   placeholder="비밀번호 확인을 위해 다시 한번 입력해주세요"
+							   th:if="${session.memberLevel == '강사'.toString()}">
+						
+						<input type="password" class="form-control"
+							   th:value="${teacherInfo.memberPw}"
+							   readonly="readonly"
+							   th:if="${session.memberLevel == '관리자'.toString()}">
 					</div>
 					
 					<div class="form-group">
@@ -72,7 +86,8 @@
 							<span class="input-group-btn">
 								<button type="button" class="btn btn-primary btn-sm"
 										id="emailOverlapBtn">중복확인</button>
-								<input type="hidden" id="emailOverlapClickChk" value="0">
+								<input type="hidden" id="emailOverlapClickChk" value="1">
+								<input type="hidden" id="dbTeacherEmail" th:value="${teacherInfo.memberEmail}">
 							</span>
 						</div>
 					</div>
@@ -144,16 +159,21 @@
 					<div class="form-group">
 						<div class="row"> <!-- style="vertical-align: bottom;" -->
 							<!-- 강사는 오직 관리자만 삭제할 수 있다. -->
-							<div class="col-md-4" th:if="${session.memberLevel == '관리자'.toString()}">
+							<div class="col-md-3"
+								 th:if="${session.memberLevel == '관리자'.toString()}">
 								<button type="button" class="btn btn-primary btn-sm btn-block"
 										th:onclick="'window.location.href = \'' + @{/deleteTeacher(memberId=${teacherInfo.memberId})} + '\''">
 									삭제
 								</button>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
+								<button type="button" onclick="javascript:history.back()"
+									class="btn btn-primary btn-sm btn-block">뒤로</button>
+							</div>
+							<div class="col-md-3">
 								<button type="reset" class="btn btn-danger btn-sm btn-block">취소</button>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<button type="button" id="updateTeacherFrmBtn"
 										class="btn btn-primary btn-sm btn-block">수정</button>
 							</div>
@@ -205,7 +225,7 @@
 	            contentType: "application/json; charset=UTF-8",
 	            success: function (response) {
 	                if(response.result == 1){
-	                	alert('사용 가능한 이메일 입니다.')
+	                	alert('사용 가능한 이메일 입니다.');
 	                    //$('#emailOverlapMessage').text('사용가능한 이메일 입니다.');
 	                    $('#emailOverlapClickChk').val(1);
 	                	// 회원 등록할 때 중복확인 버튼을 눌렀다는 걸 알려줄 값   0:안누름 / 1:누름
@@ -226,7 +246,17 @@
 		// 값을 바꿨을 경우 중복확인 버튼을 다시 눌러야함 (중복확인 버튼 눌럿는지 체크하는 값을 0으로 셋팅) 0:안누름 / 1:누름
 		$("#inputEmail").on('change', function(e) {
 			e.preventDefault();
-			$('#emailOverlapClickChk').val(0);
+			
+			if($('#dbTeacherEmail').val() != $("#inputEmail").val()) {
+				// 디비에 저장된 강의실코드와 새로 선택한 강의실코드가 서로 다를 경우
+				$('#emailOverlapClickChk').val(0);
+				// 코드가 바뀌었다고 값을 넣어준다.
+				// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+			} else {
+				$('#emailOverlapClickChk').val(1);
+				// 다른걸 선택했다가 다시 원래 선택값으로 바꾸었다.
+				// 0:값 바뀜 / 1: 그대로(디비의 내용과 일치)
+			}
 		});
 		
 		
@@ -346,11 +376,6 @@
 	        	$("#teacherIsChanged").val("유");
 	        	// 강사담당 강좌변경유무를 "유"로 바꿔준다.
  	        }
-		    
-		    /*if($("#agree").is(":checked") == false){
-		        alert('약관에 동의하셔야 합니다');
-		        return false;      
-		    }*/
 		    
 		    $('#updateTeacherFrm').submit();
 		});

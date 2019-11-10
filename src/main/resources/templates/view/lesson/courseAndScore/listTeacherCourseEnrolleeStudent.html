@@ -19,6 +19,8 @@
 			<div class="col-md-5">
 				<form action="/teacherCourseEnrolleeStudentList">
 					<input type="hidden" name="memberId" th:value="${teacherInfo.memberId}">
+					<!-- 제목 부분에 강사 정보를 표시해야하므로 강사 아이디를 넣어준다.  -->
+					
 					<div class="form-group">
 						<label class="sr-only" for="searchMemberName">학생명</label>
 						<input type="text" class="form-control" id="searchMemberName"
@@ -66,7 +68,11 @@
 					<tr th:each="enrol, lists : ${teacherCourseEnrolleeStudentList}"
 						th:if="${teacherCourseEnrolleeStudentListSize != 0}">
 						<td th:text="${lists.count}"></td>
-						<td th:text="${enrol.memberId}"></td>
+						<td>
+							<a th:href="@{/updateStudentInfo(memberId=${enrol.memberId})}">
+								[[${enrol.memberId}]]
+							</a>
+						</td>
 						<td th:text="${enrol.memberName}"></td>
 						<td th:text="${#calendars.format(enrol.memberBirth,'yyyy-MM-dd')}"></td>
 						<td th:text="${enrol.memberEmail}"></td>

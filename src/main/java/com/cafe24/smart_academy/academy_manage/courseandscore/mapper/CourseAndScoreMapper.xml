@@ -8,9 +8,9 @@
 	
 	<!-- 관리자 : 전체 학생 수강신청 리스트 -->
 	<!-- 관리자 : 학생 수강신청 상세보기 -->
-	<!-- 관리자, 강사 : 특정 강좌에 수강신청한 학생들 리스트 -->
+	<!-- 관리자 : 특정 강좌에 수강신청한 학생들 리스트 -->
 	<!-- 관리자 : 학생 전체 수강신청 검색결과 리스트 -->
-	<!-- 관리자, 학생 : 특정 학생의 수강신청 목록 보기 -->
+	<!-- 학생 : 특정 학생의 수강신청 목록 보기 -->
 	<select id="courseEnrolleeOneOrList"
 			parameterType="com.cafe24.smart_academy.academy_manage.course.vo.CourseRoomSearchVO"
 			resultType="map">
@@ -449,6 +449,12 @@
 		<if test="memberId != null and memberId neq ''.toString()">
 		and
 			cen.member_id			= #{memberId}
+		</if>
+		
+		<!-- 특정 학생의 성적 결과 상세정보 가져오기 -->
+		<if test="scoreInputNo != null and scoreInputNo neq ''.toString()">
+		and
+			si.score_input_no		= #{scoreInputNo}
 		</if>
 		
 		<!-- 시험일 상세화면에서 해당 시험일코드를 참조하는 강좌시험성적 리스트 -->

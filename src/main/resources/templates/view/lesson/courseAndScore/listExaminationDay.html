@@ -17,7 +17,14 @@
 	<div class="col-sm-12 col-md-offset-3">
 		<form class="form-inline" action="/examinationDayList">
 			<input type="hidden" name="testStandardDay" th:value="${testStandard}">
+			<!-- 검색하는 페이지가 완료된 시험일인지. 미완료된 시험일인지 알려준다. -->
+			
 			<input type="hidden" name="memberLevel" th:value="${session.memberLevel}">
+			<!-- 검색하는 사람의 권한을 넣어주어서 컨트롤러의 조건문을 탄다. -->
+			
+			<input type="hidden" name="memberId" th:value="${session.memberId}"
+				   th:if="${session.memberLevel == '학생'.toString()}">
+			<!-- 검색하는 사람이 학생일 경우 아이디를 넣어서 자신의 수강신청 목록 내에서 검색한다. -->
 			
 			<div class="form-group">
 				<label class="sr-only" for="subjectList">과목명</label>
@@ -55,7 +62,11 @@
 				<!-- </div> -->
 			</div>
 			
-			<div class="form-group">
+			<div class="form-group"
+				 th:if="${session.memberLevel == '관리자'.toString()}">
+			<!-- 관리자가 접근할 경우만 강사 검색 할 수 있다. -->
+			<!-- 강사의 경우는 자신의 담당 강좌 시험일만 조회하므로 필요가 없다. -->
+			<!-- 학생의 경우는 수강신청 테이블의 회원 아이디와 강사 테이블의 강사아이디가 겹친다. -->
 				<label class="sr-only" for="teacherList">강사명</label>
 				<!-- <div class="input-group"> -->
 				<select id="teacherList" name="memberId"
@@ -163,7 +174,7 @@
 						<!-- 관리자는 무조건 수정이 가능하여야 하고 강사인 회원은 자신 담당 시험일만 수정할 수 있다. -->
 						<span th:if="${session.memberLevel == '관리자'.toString() || (session.memberLevel == '강사'.toString() && session.memberId == test.memberId)}">
 							<button type="button" class="btn btn-success btn-sm"
-									th:onclick="'window.location.href = \'' + @{/updateExaminationDay(examinationDayNo=${test.examinationDayNo})} + '\''">
+									th:onclick="'window.location.href = \'' + @{/updateExaminationDay(examinationDayNo=${test.examinationDayNo}, testStandardDay=${testStandard})} + '\''">
 								수정
 							</button>
 						</span>

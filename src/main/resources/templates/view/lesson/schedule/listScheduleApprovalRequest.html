@@ -17,9 +17,12 @@
 	<div class="col-sm-11 col-md-offset-3">
 		<form class="form-inline" action="/scheduleApprovalRequestList">
 			<input type="hidden" name="scheduleApprovalStatus" value="무">
+			<!-- 관리자 승인되지않은 강좌 시간표만 검색해야 하므로 승인여부 "무"를 넣어준다. -->
 			
 			<input type="hidden" name="memberId" th:value="${session.memberId}"
 				   th:if="${session.memberLevel == '강사'.toString()}">
+			<!-- 강사 회원이 강좌시간표를 검색했을 경우 자신의 강좌시간표만 보여야 하므로
+				 강사 회원의 아이디를 넣어준다. -->
 			
 			<div class="form-group">
 				<label class="sr-only" for="subjectList">과목명</label>
@@ -49,7 +52,7 @@
 				<!-- <div class="input-group"> -->
 				<select id="roomList" name="roomNo"
 						class="form-control">
-					<option value="not">강의실</option>
+					<option value="">강의실</option>
 					<option th:each="room : ${roomList}"
 							th:value="${room.roomNo}"
 							th:text="${room.roomFloor + '층 ' + room.roomNumber + '호'}"></option>
@@ -58,7 +61,8 @@
 			</div>
 			
 			<div class="form-group"
-				 th:if="${session.memberLevel != '강사'.toString()}">
+				 th:if="${session.memberLevel == '관리자'.toString()}">
+			<!-- 강사권한으로 강좌시간표승인요청 목록 접근 시 자신의 강좌시간표만 나오므로 필요없다. -->
 				<label class="sr-only" for="teacherList">강사명</label>
 				<!-- <div class="input-group"> -->
 				<select id="teacherList" name="memberId"

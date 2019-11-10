@@ -86,11 +86,13 @@ public class ScheduleController {
 		String title = "전체";
 		// 시간표 페이지의 제목부분
 		
-		if(searchVO.getScheduleDay() != null) {
+		if(searchVO.getScheduleDay() != null && !searchVO.getScheduleDay().equals("")) {
 			// 로그인 전 및 학생로그인 후 특정 요일의 강좌 시간표를 클릭했다면
 			title = searchVO.getScheduleDay() + "요일";
 			// 몇요일의 날짜를 클릭했는지 제목부분에 표시해준다.
 			
+			model.addAttribute("scheduleDay", searchVO.getScheduleDay());
+			// 어떤 요일의 강좌시간표를 클릭했는지 해당 요일에서 검색할 수 있도록 요일을 모델에 넣어준다.
 		} else if (searchVO.getMemberId() != null && !searchVO.getMemberId().equals("")) {
 			// 강사가 강사담당 강좌시간표를 접근한 것이라면
 			
@@ -103,13 +105,13 @@ public class ScheduleController {
 		// 시간표 페이지의 제목부분
 		
 		model.addAttribute("subjectList", subjectList);
-		// 샐랙트 박스에 넣어줄 전체 과목 리스트
+		// 검색 폼의 샐랙트 박스에 넣어줄 전체 과목 리스트
 		
 		model.addAttribute("roomList", roomList);
-		// 샐랙트박스에 넣어줄 전체 강의실 리스트
+		// 검색 폼의 샐랙트박스에 넣어줄 전체 강의실 리스트
 		
 		model.addAttribute("teacherList", teacherList);
-		// 샐랙트박스에 넣어줄 전체 강사 리스트
+		// 검색 폼의 샐랙트박스에 넣어줄 전체 강사 리스트
 		
 		model.addAttribute("scheduleList", scheduleList);
 		// 화면에 보여줄 시간표 리스트
@@ -151,13 +153,13 @@ public class ScheduleController {
 		
 		
 		model.addAttribute("subjectList", subjectList);
-		// 샐랙트 박스에 넣어줄 전체 과목 리스트
+		// 검색 폼의 샐랙트 박스에 넣어줄 전체 과목 리스트
 		
 		model.addAttribute("roomList", roomList);
-		// 샐랙트박스에 넣어줄 전체 강의실 리스트
+		// 검색 폼의 샐랙트박스에 넣어줄 전체 강의실 리스트
 		
 		model.addAttribute("teacherList", teacherList);
-		// 샐랙트박스에 넣어줄 전체 강사 리스트
+		// (관리자)검색 폼의 샐랙트박스에 넣어줄 전체 강사 리스트
 		
 		model.addAttribute("scheduleList", scheduleList);
 		// 화면에 보여줄 시간표 리스트
@@ -176,6 +178,7 @@ public class ScheduleController {
 		System.out.println(scheduleNo + "<- scheduleNo   scheduleApproval()   ScheduleController.java");
 		
 		Map<Object, Object> map = new HashMap<Object, Object>();
+		// 뷰페이지에 보낼 객체
 		
 		String message = scheduleService.scheduleApproval(scheduleNo);
 		// 해당 시간표 관리자 승인 처리 메소드 호출
@@ -251,6 +254,7 @@ public class ScheduleController {
 		System.out.println(scheduleDay + "<- scheduleDay   getScheduleByDay()   ScheduleController.java");
 		
 		List<Map<String, Object>> scheduleList = null;
+		// 뷰페이지에 보낼 객체
 		
 		if(scheduleDay.equals("not")) { // "선택"을 선택했을 경우
 			scheduleList = new ArrayList<Map<String,Object>>();
@@ -279,6 +283,7 @@ public class ScheduleController {
 				+ " <- scheduleNo   scheduleNoOverlapChk()   ScheduleController.java");
 		
 		Map<String, Object> map = new HashMap<String, Object>();
+		// 뷰페이지에 보낼 객체
 		
 		String result = scheduleService.CourseScheduleByscheduleNo(scheduleNo);
 		// 강좌시간표 테이블에서 해당 시간표코드가 존재하는지 확인
@@ -319,7 +324,7 @@ public class ScheduleController {
 			// 강좌시간표 승인 요청 목록으로 이동한다.
 		}
 		
-		redirectAttributes.addFlashAttribute("memberId", memberId);
+		redirectAttributes.addAttribute("memberId", memberId);
 		// 시간표 추가에 실패하여 추가폼으로 가든,
 		// 시간표 추가에 성공하여 시간표 리스트로 가든
 		// 강사 자신의 아이디는 항상 가지고 가야한다.
@@ -347,6 +352,9 @@ public class ScheduleController {
 		
 		
 		searchVO.setScheduleNo(null);
+		// 시간표 상세보기 폼 우측에 상세보기의 요일을 참조하는 시간표리스트를 가져와야 하므로
+		// 강좌시간표 테이블의 기본키인 시간표코드를 없애줘야한다.
+		
 		searchVO.setMemberId((String)scheduleInfo.get("memberId"));
 		// 강좌강의실 배정리스트를 특정 강사의 아이디를 검색 키워드로 넣어서 조회한다.
 		
@@ -356,6 +364,9 @@ public class ScheduleController {
 		
 		
 		searchVO.setMemberId(null);
+		// 해당 요일을 참조하는 전체 시간표리스트를 가져와야하므로
+		// 해당 시간표의 강사아이디 검색 쿼리가 발동하면 안된다.
+		
 		searchVO.setScheduleDay((String)scheduleInfo.get("scheduleDay"));
 		// 해당 요일의 강좌 시간표를 가져와야하므로 검색 키워드로 요일을 넣어준다.
 		
@@ -399,17 +410,18 @@ public class ScheduleController {
 			
 			path = "redirect:/updateSchedule";
 			// 시간표 상세 페이지로 이동
+		} else {
+			// 리턴받은 메세지가 널이라면 시간표 수정에 성공했다는 뜻이다.
+			
+			redirectAttributes.addAttribute("scheduleApprovalStatus", "무");
+			// 시간표 수정에 성공하여 강좌시간표 승인요청 리스트로 넘어갈 경우
+			// 관리자의 승인여부를 같이 넣어준다.
 		}
 		
 		if(memberId != null) { // 강사회원이 시간표를 수정한 것이라면
 			redirectAttributes.addAttribute("memberId", memberId);
 			// 강사의 아이디를 넣어준다.
 		}
-		
-		redirectAttributes.addAttribute("scheduleApprovalStatus",
-					schedule.getScheduleApprovalStatus());
-		// 시간표 수정에 성공하여 강좌시간표 승인요청 리스트로 넘어갈 경우
-		// 관리자의 승인여부를 같이 넣어준다.
 		
 		return path;
 	}
@@ -462,6 +474,8 @@ public class ScheduleController {
 		// 전체 강의실 리스트를 가져온다.
 		
 		
+		model.addAttribute("selectScheduleDay", searchVO.getScheduleDay());
+		// 화면의 제목 부분에 보여줄 특정 요일
 		
 		model.addAttribute("student", student);
 		// 화면의 제목 부분에 보여줄 학생의 간단한 정보
@@ -474,10 +488,10 @@ public class ScheduleController {
 		
 		
 		model.addAttribute("subjectList", subjectList);
-		// 샐랙트 박스에 넣어줄 전체 과목 리스트
+		// 검색 폼의 샐랙트 박스에 넣어줄 전체 과목 리스트
 		
 		model.addAttribute("roomList", roomList);
-		// 샐랙트박스에 넣어줄 전체 강의실 리스트
+		// 검색 폼의 샐랙트박스에 넣어줄 전체 강의실 리스트
 		
 		return "/view/lesson/schedule/listOneStudentCourseSchedule";
 	}
